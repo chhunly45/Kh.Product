@@ -9,14 +9,23 @@ services:
     buildCommand: npm install
     startCommand: npm start
     envVars:
-      - key: MONGO_URI
-        value: "mongodb+srv://REDACTED:REDACTED@REDACTED.mongodb.net/marketplace-kh?retryWrites=true&w=majority"
+      - key: MONGODB_URI
+        value: "mongodb+srv://username:password@cluster.mongodb.net/marketplace-kh?retryWrites=true&w=majority"
         sync: false
       - key: JWT_SECRET
-        value: "REDACTED"
+        value: "your-secret-key-here"
         sync: false
-      - key: CLIENT_ORIGIN
-        value: "https://REDACTED-frontend.vercel.app"
+      - key: CLIENT_URL
+        value: "https://kh-product.vercel.app"
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        value: "your-cloud-name"
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        value: "your-api-key"
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        value: "your-api-secret"
         sync: false
       - key: NODE_ENV
         value: production
