@@ -5,8 +5,9 @@ services:
     plan: free
     repo: https://github.com/chhunly45/Kh.Product.git
     branch: main
-    buildCommand: cd server && npm install
-    startCommand: cd server && npm start
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
     envVars:
       - key: MONGO_URI
         value: "mongodb+srv://REDACTED:REDACTED@REDACTED.mongodb.net/marketplace-kh?retryWrites=true&w=majority"
