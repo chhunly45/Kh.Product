@@ -1,0 +1,30 @@
+import { Routes, Route } from 'react-router-dom';
+import HomePage from '../pages/HomePage';
+import LoginPage from '../pages/LoginPage';
+import RegisterPage from '../pages/RegisterPage';
+import ProductDetailPage from '../pages/ProductDetailPage';
+import ProductListPage from '../pages/ProductListPage';
+import PostProductPage from '../pages/PostProductPage';
+import ProfilePage from '../pages/ProfilePage';
+import ChatPage from '../pages/ChatPage';
+import DashboardPage from '../pages/DashboardPage';
+import AdminDashboardPage from '../pages/AdminDashboardPage';
+import NotFoundPage from '../pages/NotFoundPage';
+
+const AppRoutes = () => (
+  <Routes>
+    <Route path="/" element={<HomePage />} />
+    <Route path="/login" element={<LoginPage />} />
+    <Route path="/register" element={<RegisterPage />} />
+    <Route path="/products" element={<ProductListPage />} />
+    <Route path="/products/:id" element={<ProductDetailPage />} />
+    <Route path="/post-product" element={<PostProductPage />} />
+    <Route path="/profile" element={<ProfilePage />} />
+    <Route path="/chat" element={<ChatPage />} />
+    <Route path="/dashboard" element={<DashboardPage />} />
+    <Route path="/admin" element={<AdminDashboardPage />} />
+    <Route path="*" element={<NotFoundPage />} />
+  </Routes>
+);
+
+export default AppRoutes;

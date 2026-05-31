@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: marketplace-kh-server
+    env: node
+    plan: free
+    repo: https://github.com/REDACTED/REPO
+    branch: main
+    buildCommand: cd server && npm install
+    startCommand: cd server && npm start
+    envVars:
+      - key: MONGO_URI
+        value: "mongodb+srv://REDACTED:REDACTED@REDACTED.mongodb.net/marketplace-kh?retryWrites=true&w=majority"
+        sync: false
+      - key: JWT_SECRET
+        value: "REDACTED"
+        sync: false
+      - key: CLIENT_ORIGIN
+        value: "https://REDACTED-frontend.vercel.app"
+        sync: false
+      - key: NODE_ENV
+        value: production
+        sync: false
