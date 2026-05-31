@@ -1,11 +1,8 @@
 import { io, Socket } from 'socket.io-client';
 
 const getViteEnv = (key: string, fallback: string) => {
-  try {
-    return new Function(`return import.meta.env.${key}`)();
-  } catch {
-    return process.env[key] || fallback;
-  }
+  const value = (import.meta.env as Record<string, string>)[key];
+  return value || fallback;
 };
 
 const baseURL = getViteEnv('VITE_API_BASE_URL', 'http://localhost:4000/api').replace(/\/api\/?$/, '');

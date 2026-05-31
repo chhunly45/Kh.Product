@@ -1,11 +1,8 @@
 import axios from 'axios';
 
 const getViteEnv = (key: string, fallback: string) => {
-  try {
-    return new Function(`return import.meta.env.${key}`)();
-  } catch {
-    return process.env[key] || fallback;
-  }
+  const value = (import.meta.env as Record<string, string>)[key];
+  return value || fallback;
 };
 
 const api = axios.create({
