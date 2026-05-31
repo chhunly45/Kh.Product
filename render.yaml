@@ -3,7 +3,7 @@ services:
     name: marketplace-kh-server
     env: node
     plan: free
-    repo: https://github.com/REDACTED/REPO
+    repo: https://github.com/chhunly45/Kh.Product.git
     branch: main
     buildCommand: cd server && npm install
     startCommand: cd server && npm start
