@@ -5,7 +5,7 @@ const getViteEnv = (key: string, fallback: string) => {
   return value || fallback;
 };
 
-const baseURL = getViteEnv('VITE_API_BASE_URL', 'http://localhost:4000/api').replace(/\/api\/?$/, '');
+const baseURL = getViteEnv('VITE_API_BASE_URL', 'https://kh-product-1.onrender.com/api').replace(/\/api\/?$/, '');
 
 const socket: Socket = io(baseURL, {
   autoConnect: false,

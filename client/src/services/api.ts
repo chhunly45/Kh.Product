@@ -6,7 +6,7 @@ const getViteEnv = (key: string, fallback: string) => {
 };
 
 const api = axios.create({
-  baseURL: getViteEnv('VITE_API_BASE_URL', 'http://localhost:4000/api'),
+  baseURL: getViteEnv('VITE_API_BASE_URL', 'https://kh-product-1.onrender.com/api'),
   headers: {
     'Content-Type': 'application/json'
   },
