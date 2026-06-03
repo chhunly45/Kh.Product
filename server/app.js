@@ -72,14 +72,14 @@ const apiLimiter = rateLimit({
 
 app.use('/api/auth', authLimiter);
 app.use(apiLimiter);
-app.use(csurf({ cookie: { httpOnly: true, secure: config.nodeEnv === 'production', sameSite: 'strict' } }));
+app.use(csurf({ cookie: { httpOnly: true, secure: config.nodeEnv === 'production', sameSite: 'none' } }));
 
 app.use((req, res, next) => {
   if (typeof req.csrfToken === 'function') {
     res.cookie('XSRF-TOKEN', req.csrfToken(), {
       httpOnly: false,
       secure: config.nodeEnv === 'production',
-      sameSite: 'strict'
+      sameSite: 'none'
     });
   }
   next();
