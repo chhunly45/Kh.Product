@@ -60,19 +60,41 @@ const getProductById = async (productId) => {
   return product;
 };
 
+const normalizeSlug = (text) => {
+  if (!text || typeof text !== 'string') return '';
+  const baseSlug = text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  return baseSlug || `product-${Date.now()}`;
+};
+
 const createProduct = async (sellerId, payload) => {
-  await Category.findById(payload.category).orFail();
+  const categoryId = payload.category?._id || payload.category;
+  await Category.findById(categoryId).orFail();
+
+  let slug = payload.slug || normalizeSlug(payload.title);
+  if (!slug) {
+    slug = `product-${Date.now()}`;
+  }
+
+  const existing = await Product.findOne({ slug });
+  if (existing) {
+    slug = `${slug}-${Date.now()}`;
+  }
+
   const product = await Product.create({
     seller: sellerId,
     title: payload.title,
-    slug: payload.slug || payload.title.toLowerCase().replace(/\s+/g, '-'),
+    slug,
     description: payload.description,
-    price: payload.price,
+    price: Number(payload.price),
     currency: payload.currency || 'KHR',
     condition: payload.condition || 'used',
     location: payload.location,
-    category: payload.category,
-    tags: payload.tags || [],
+    category: categoryId,
+    tags: Array.isArray(payload.tags) ? payload.tags : [],
     metaTitle: payload.metaTitle || payload.title,
     metaDescription: payload.metaDescription || payload.description,
     extraAttributes: payload.extraAttributes || {}

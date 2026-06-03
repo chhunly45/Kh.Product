@@ -22,9 +22,11 @@ const getProduct = async (req, res, next) => {
 const createProduct = async (req, res, next) => {
   try {
     const payload = req.body;
+    console.error('Create product payload:', payload);
     const product = await productService.createProduct(req.user.id, payload);
     res.status(201).json({ success: true, data: product });
   } catch (error) {
+    console.error('Create product error:', error);
     next(error);
   }
 };
