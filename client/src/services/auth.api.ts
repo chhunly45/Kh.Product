@@ -24,13 +24,11 @@ export interface AuthResponse {
 export const register = async (payload: RegisterPayload): Promise<AuthResponse> => {
   const response = await api.post('/auth/register', payload);
   if (response.data.success && response.data.data) {
-    const { accessToken, refreshToken } = response.data.data;
-    if (accessToken) {
-      localStorage.setItem('authToken', accessToken);
-    }
-    if (refreshToken) {
-      localStorage.setItem('refreshToken', refreshToken);
-    }
+    const data = response.data.data || response.data;
+    const token = data?.accessToken || data?.authToken || response.data?.accessToken || response.data?.authToken || response.data?.token || data?.token;
+    const refreshToken = data?.refreshToken || response.data?.refreshToken;
+    if (token) localStorage.setItem('authToken', token);
+    if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
   }
   return response.data.data;
 };
@@ -38,13 +36,11 @@ export const register = async (payload: RegisterPayload): Promise<AuthResponse> 
 export const login = async (payload: LoginPayload): Promise<AuthResponse> => {
   const response = await api.post('/auth/login', payload);
   if (response.data.success && response.data.data) {
-    const { accessToken, refreshToken } = response.data.data;
-    if (accessToken) {
-      localStorage.setItem('authToken', accessToken);
-    }
-    if (refreshToken) {
-      localStorage.setItem('refreshToken', refreshToken);
-    }
+    const data = response.data.data || response.data;
+    const token = data?.accessToken || data?.authToken || response.data?.accessToken || response.data?.authToken || response.data?.token || data?.token;
+    const refreshToken = data?.refreshToken || response.data?.refreshToken;
+    if (token) localStorage.setItem('authToken', token);
+    if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
   }
   return response.data.data;
 };
@@ -70,13 +66,11 @@ export const refreshAuthToken = async (): Promise<AuthResponse> => {
   const refreshToken = localStorage.getItem('refreshToken');
   const response = await api.post('/auth/refresh', { refreshToken });
   if (response.data.success && response.data.data) {
-    const { accessToken, refreshToken: newRefreshToken } = response.data.data;
-    if (accessToken) {
-      localStorage.setItem('authToken', accessToken);
-    }
-    if (newRefreshToken) {
-      localStorage.setItem('refreshToken', newRefreshToken);
-    }
+    const data = response.data.data || response.data;
+    const token = data?.accessToken || data?.authToken || response.data?.accessToken || response.data?.authToken || response.data?.token || data?.token;
+    const newRefreshToken = data?.refreshToken || response.data?.refreshToken;
+    if (token) localStorage.setItem('authToken', token);
+    if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
   }
   return response.data.data;
 };
