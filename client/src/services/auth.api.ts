@@ -24,9 +24,9 @@ export interface AuthResponse {
 export const register = async (payload: RegisterPayload): Promise<AuthResponse> => {
   const response = await api.post('/auth/register', payload);
   if (response.data.success && response.data.data) {
-    const { authToken, refreshToken } = response.data.data;
-    if (authToken) {
-      localStorage.setItem('authToken', authToken);
+    const { accessToken, refreshToken } = response.data.data;
+    if (accessToken) {
+      localStorage.setItem('authToken', accessToken);
     }
     if (refreshToken) {
       localStorage.setItem('refreshToken', refreshToken);
@@ -38,9 +38,9 @@ export const register = async (payload: RegisterPayload): Promise<AuthResponse> 
 export const login = async (payload: LoginPayload): Promise<AuthResponse> => {
   const response = await api.post('/auth/login', payload);
   if (response.data.success && response.data.data) {
-    const { authToken, refreshToken } = response.data.data;
-    if (authToken) {
-      localStorage.setItem('authToken', authToken);
+    const { accessToken, refreshToken } = response.data.data;
+    if (accessToken) {
+      localStorage.setItem('authToken', accessToken);
     }
     if (refreshToken) {
       localStorage.setItem('refreshToken', refreshToken);
@@ -70,9 +70,9 @@ export const refreshAuthToken = async (): Promise<AuthResponse> => {
   const refreshToken = localStorage.getItem('refreshToken');
   const response = await api.post('/auth/refresh', { refreshToken });
   if (response.data.success && response.data.data) {
-    const { authToken, refreshToken: newRefreshToken } = response.data.data;
-    if (authToken) {
-      localStorage.setItem('authToken', authToken);
+    const { accessToken, refreshToken: newRefreshToken } = response.data.data;
+    if (accessToken) {
+      localStorage.setItem('authToken', accessToken);
     }
     if (newRefreshToken) {
       localStorage.setItem('refreshToken', newRefreshToken);
