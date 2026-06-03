@@ -115,11 +115,13 @@ io.on('connection', (socket) => {
   });
 });
 
+const PORT = process.env.PORT || 5000;
+
 const startServer = async () => {
   await connectDatabase();
 
-  server.listen(config.port, () => {
-    console.log(`Marketplace-Kh backend listening on port ${config.port}`);
+  server.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on port ${PORT}`);
   });
 };
 
