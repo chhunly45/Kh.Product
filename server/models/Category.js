@@ -3,6 +3,7 @@ const { Schema, model, Types } = mongoose;
 
 const CategorySchema = new Schema({
   name: { type: String, required: true, trim: true },
+  labelKh: { type: String, trim: true, default: '' },
   slug: { type: String, required: true, unique: true, lowercase: true, trim: true },
   parent: { type: Types.ObjectId, ref: 'Category', default: null },
   description: { type: String, trim: true },

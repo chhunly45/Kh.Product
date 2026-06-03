@@ -39,7 +39,8 @@ const SearchBar = ({ initialFilters }: SearchBarProps) => {
   const [maxPrice, setMaxPrice] = useState(initialFilters?.maxPrice || '');
   const [datePosted, setDatePosted] = useState(initialFilters?.datePosted || '');
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [categories, setCategories] = useState<Array<{ _id: string; name: string }>>([]);
+  interface CategoryItem { _id: string; name: string; labelKh?: string }
+  const [categories, setCategories] = useState<CategoryItem[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -140,7 +141,7 @@ const SearchBar = ({ initialFilters }: SearchBarProps) => {
               <option value="">Any category</option>
               {categories.map((cat) => (
                 <option key={cat._id} value={cat._id}>
-                  {cat.name}
+                  {cat.labelKh || cat.name}
                 </option>
               ))}
             </select>

@@ -31,7 +31,7 @@ const listProducts = async (filters) => {
   const [items, total] = await Promise.all([
     Product.find(query)
       .populate('seller', 'displayName profileImageUrl location')
-      .populate('category', 'name slug')
+      .populate('category', 'name labelKh slug')
       .populate('images')
       .sort({ createdAt: -1 })
       .skip(skip)
@@ -46,7 +46,7 @@ const listProducts = async (filters) => {
 const getProductById = async (productId) => {
   const product = await Product.findById(productId)
     .populate('seller', 'displayName profileImageUrl location email')
-    .populate('category', 'name slug')
+    .populate('category', 'name labelKh slug')
     .populate('images');
 
   if (!product || product.status === 'archived') {

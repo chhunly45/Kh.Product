@@ -8,7 +8,7 @@ const PostProductPage = () => {
   const [price, setPrice] = useState('');
   const [location, setLocation] = useState('');
   const [category, setCategory] = useState('');
-  const [categories, setCategories] = useState<Array<{ _id: string; name: string }>>([]);
+  const [categories, setCategories] = useState<Array<{ _id: string; name: string; labelKh?: string }>>([]);
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [status, setStatus] = useState<string>('');
@@ -98,7 +98,7 @@ const PostProductPage = () => {
               className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
             >
               {categories.map((item) => (
-                <option key={item._id} value={item._id}>{item.name}</option>
+                  <option key={item._id} value={item._id}>{item.labelKh || item.name}</option>
               ))}
             </select>
           </label>

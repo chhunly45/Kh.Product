@@ -56,7 +56,7 @@ const ProductDetailPage = () => {
           sku: product._id,
           brand: {
             '@type': 'Brand',
-            name: product.category?.name || 'Marketplace Kh'
+            name: product.category?.labelKh || product.category?.name || 'Marketplace Kh'
           },
           offers: {
             '@type': 'Offer',
@@ -95,7 +95,7 @@ const ProductDetailPage = () => {
           )}
 
           <div className="mt-4 space-y-3 text-sm text-slate-600">
-            <p><span className="font-semibold text-slate-900">Category:</span> {product.category?.name || 'N/A'}</p>
+            <p><span className="font-semibold text-slate-900">Category:</span> {product.category?.labelKh || product.category?.name || 'N/A'}</p>
             <p><span className="font-semibold text-slate-900">Location:</span> {product.location || 'N/A'}</p>
             <p><span className="font-semibold text-slate-900">Condition:</span> {product.condition || 'N/A'}</p>
           </div>

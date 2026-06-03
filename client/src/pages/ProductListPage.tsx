@@ -76,7 +76,7 @@ const ProductListPage = () => {
                   title={product.title}
                   price={product.price.toLocaleString ? `KHR ${product.price.toLocaleString()}` : product.price}
                   location={product.location || 'Unknown'}
-                  category={product.category?.name || 'General'}
+                  category={product.category?.labelKh || product.category?.name || 'General'}
                 />
               ))}
             </div>

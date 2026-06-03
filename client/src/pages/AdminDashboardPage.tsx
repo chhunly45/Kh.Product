@@ -297,7 +297,7 @@ const AdminDashboardPage = () => {
                   <tr key={product._id}>
                     <td className="px-6 py-4">
                       <div className="font-semibold text-slate-900">{product.title}</div>
-                      <div className="mt-1 text-slate-500">{product.category?.name || 'General'}</div>
+                      <div className="mt-1 text-slate-500">{product.category?.labelKh || product.category?.name || 'General'}</div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="text-slate-900">{product.seller?.displayName || 'Unknown'}</div>

@@ -5,7 +5,8 @@ const { Server } = require('socket.io');
 const app = require('./app');
 const connectDatabase = require('./config/database');
 const config = require('./config');
-const { User, Chat } = require('./models');
+const categoriesSeed = require('./config/categories');
+const { User, Chat, Category } = require('./models');
 const chatService = require('./services/chat.service');
 
 const onlineUsers = new Map();
@@ -117,8 +118,21 @@ io.on('connection', (socket) => {
 
 const PORT = process.env.PORT || 5000;
 
+const seedCategories = async () => {
+  for (const category of categoriesSeed) {
+    const existing = await Category.findOne({ slug: category.slug });
+    if (!existing) {
+      await Category.create(category);
+    } else if (!existing.labelKh && category.labelKh) {
+      existing.labelKh = category.labelKh;
+      await existing.save();
+    }
+  }
+};
+
 const startServer = async () => {
   await connectDatabase();
+  await seedCategories();
 
   server.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on port ${PORT}`);

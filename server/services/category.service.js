@@ -15,7 +15,7 @@ const getCategoryById = async (categoryId) => {
   return category;
 };
 
-const createCategory = async ({ name, slug, parent, description, icon, order }) => {
+const createCategory = async ({ name, slug, parent, description, icon, order, labelKh }) => {
   const exists = await Category.findOne({ slug });
   if (exists) {
     const error = new Error('Category slug already exists');
@@ -23,7 +23,15 @@ const createCategory = async ({ name, slug, parent, description, icon, order }) 
     throw error;
   }
 
-  const category = await Category.create({ name, slug, parent: parent || null, description, icon, order: order || 0 });
+  const category = await Category.create({
+    name,
+    labelKh: labelKh || '',
+    slug,
+    parent: parent || null,
+    description,
+    icon,
+    order: order || 0
+  });
   return category;
 };
 
