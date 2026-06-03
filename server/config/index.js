@@ -7,6 +7,10 @@ module.exports = {
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '1h',
   refreshTokenExpiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN || '7d',
   clientOrigin: process.env.CLIENT_URL || process.env.CLIENT_ORIGIN || 'http://localhost:5173',
+  allowedOrigins: [
+    'http://localhost:5173',
+    'https://kh-product.vercel.app'
+  ],
   rateLimitWindowMs: Number(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
   rateLimitMax: Number(process.env.RATE_LIMIT_MAX) || 100,
   authRateLimitWindowMs: Number(process.env.AUTH_RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
