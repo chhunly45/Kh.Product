@@ -84,7 +84,8 @@ const SearchBar = ({ initialFilters }: SearchBarProps) => {
     if (maxPrice) params.append('maxPrice', maxPrice);
     if (datePosted) params.append('datePosted', datePosted);
 
-    navigate(`/products?${params.toString()}`);
+    const queryString = params.toString();
+    navigate(queryString ? `/products?${queryString}` : '/products');
   };
 
   return (
