@@ -4,31 +4,27 @@ const { Product } = require('../models');
 
 const repairProductTextIndex = async () => {
   const collection = Product.collection;
-  const indexes = await collection.indexes();
+  const existingIndexes = await collection.indexes();
+  console.log('Existing Product indexes before repair:', JSON.stringify(existingIndexes, null, 2));
 
-  const invalidIndex = indexes.find((idx) => {
-    const key = idx.key || {};
-    return key.title === 'text' && key.description === 'text' && key.tags === 1;
+  const textIndexes = existingIndexes.filter((idx) => {
+    const keys = Object.values(idx.key || {});
+    return keys.some((value) => value === 'text');
   });
 
-  if (invalidIndex) {
-    await collection.dropIndex(invalidIndex.name);
-    console.log(`Dropped invalid Product text index: ${invalidIndex.name}`);
+  for (const index of textIndexes) {
+    await collection.dropIndex(index.name);
+    console.log(`Dropped Product text index: ${index.name}`);
   }
 
-  const validIndex = indexes.find((idx) => {
-    const key = idx.key || {};
-    return key.title === 'text' && key.description === 'text' && !('tags' in key);
-  });
+  await collection.createIndex(
+    { title: 'text', description: 'text' },
+    { name: 'ProductTextIndex', background: true }
+  );
+  console.log('Created valid Product text index on title and description.');
 
-  if (!validIndex) {
-    await collection.createIndex(
-      { title: 'text', description: 'text' },
-      { name: 'ProductTextIndex', background: true }
-    );
-    console.log('Created valid Product text index on title and description.');
-  }
-
+  const repairedIndexes = await collection.indexes();
+  console.log('Existing Product indexes after repair:', JSON.stringify(repairedIndexes, null, 2));
   console.log('Product text index repaired');
 };
 

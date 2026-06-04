@@ -21,11 +21,12 @@ const ProductSchema = new Schema({
   locationRegion: { type: String, trim: true },
   extraAttributes: { type: Schema.Types.Mixed }
 }, {
-  timestamps: true
+  timestamps: true,
+  autoIndex: false
 });
 
-ProductSchema.index({ title: 'text', description: 'text' });
-ProductSchema.index({ category: 1, location: 1, status: 1, condition: 1, price: 1 });
-ProductSchema.index({ createdAt: -1 });
+ProductSchema.index({ title: 'text', description: 'text' }, { background: true });
+ProductSchema.index({ category: 1, location: 1, status: 1, condition: 1, price: 1 }, { background: true });
+ProductSchema.index({ createdAt: -1 }, { background: true });
 
 module.exports = model('Product', ProductSchema);

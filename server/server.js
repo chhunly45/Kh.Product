@@ -6,7 +6,7 @@ const app = require('./app');
 const connectDatabase = require('./config/database');
 const config = require('./config');
 const categoriesSeed = require('./config/categories');
-const { User, Chat, Category } = require('./models');
+const { User, Chat, Category, Product } = require('./models');
 const { repairProductTextIndex } = require('./scripts/repair-product-text-index');
 const chatService = require('./services/chat.service');
 
@@ -136,6 +136,7 @@ const startServer = async () => {
 
   try {
     await repairProductTextIndex();
+    await Product.createIndexes();
   } catch (error) {
     console.warn('Product text index repair failed:', error.message);
   }
