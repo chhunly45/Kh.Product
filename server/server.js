@@ -5,6 +5,7 @@ const { Server } = require('socket.io');
 const app = require('./app');
 const connectDatabase = require('./config/database');
 const config = require('./config');
+require('./config/cloudinary');
 const categoriesSeed = require('./config/categories');
 const { User, Chat, Category, Product } = require('./models');
 const { repairProductTextIndex } = require('./scripts/repair-product-text-index');
