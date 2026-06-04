@@ -1,10 +1,19 @@
 const { Image, Product } = require('../models');
 const cloudinary = require('../config/cloudinary');
+const { validateCloudinaryConfig } = require('../utils/cloudinary-validator');
 
 const uploadStream = (fileBuffer, options) => {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(options, (error, result) => {
-      if (error) return reject(error);
+      if (error) {
+        console.error('Cloudinary upload error:', {
+          message: error.message,
+          code: error.code,
+          statusCode: error.status,
+          http_code: error.http_code
+        });
+        return reject(error);
+      }
       resolve(result);
     });
     stream.end(fileBuffer);
@@ -12,35 +21,50 @@ const uploadStream = (fileBuffer, options) => {
 };
 
 const createImages = async (userId, files, productId) => {
+  try {
+    validateCloudinaryConfig();
+  } catch (configError) {
+    console.error('Upload failed: Cloudinary not configured');
+    throw configError;
+  }
+
   if (productId) {
     await Product.findById(productId).orFail();
   }
 
   const createdImages = await Promise.all(files.map(async (file) => {
-    const result = await uploadStream(file.buffer, {
-      folder: `marketplace/${productId || 'tmp'}`,
-      resource_type: 'image',
-      transformation: [
-        { quality: 'auto' },
-        { fetch_format: 'auto' }
-      ]
-    });
+    try {
+      const result = await uploadStream(file.buffer, {
+        folder: `marketplace/${productId || 'tmp'}`,
+        resource_type: 'image',
+        transformation: [
+          { quality: 'auto' },
+          { fetch_format: 'auto' }
+        ]
+      });
 
-    const image = await Image.create({
-      product: productId || null,
-      uploadedBy: userId,
-      url: result.secure_url || result.url,
-      secureUrl: result.secure_url || result.url,
-      publicId: result.public_id,
-      altText: file.originalname,
-      sortOrder: 0
-    });
+      const image = await Image.create({
+        product: productId || null,
+        uploadedBy: userId,
+        url: result.secure_url || result.url,
+        secureUrl: result.secure_url || result.url,
+        publicId: result.public_id,
+        altText: file.originalname,
+        sortOrder: 0
+      });
 
-    if (productId) {
-      await Product.findByIdAndUpdate(productId, { $push: { images: image._id } });
+      if (productId) {
+        await Product.findByIdAndUpdate(productId, { $push: { images: image._id } });
+      }
+
+      return image;
+    } catch (uploadError) {
+      console.error('Failed to upload single image:', {
+        file: file.originalname,
+        error: uploadError.message
+      });
+      throw uploadError;
     }
-
-    return image;
   }));
 
   return createdImages;
