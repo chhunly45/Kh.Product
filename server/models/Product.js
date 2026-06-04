@@ -13,7 +13,7 @@ const ProductSchema = new Schema({
   location: { type: String, trim: true },
   status: { type: String, enum: ['draft', 'published', 'sold', 'archived', 'flagged'], default: 'published' },
   images: [{ type: Types.ObjectId, ref: 'Image' }],
-  tags: [{ type: String, trim: true }],
+  tags: { type: [{ type: String, trim: true }], default: [] },
   viewsCount: { type: Number, default: 0 },
   isFeatured: { type: Boolean, default: false },
   metaTitle: { type: String, trim: true },
@@ -24,7 +24,7 @@ const ProductSchema = new Schema({
   timestamps: true
 });
 
-ProductSchema.index({ title: 'text', description: 'text', tags: 1 });
+ProductSchema.index({ title: 'text', description: 'text' });
 ProductSchema.index({ category: 1, location: 1, status: 1, condition: 1, price: 1 });
 ProductSchema.index({ createdAt: -1 });
 
