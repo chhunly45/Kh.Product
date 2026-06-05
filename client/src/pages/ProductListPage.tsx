@@ -28,6 +28,7 @@ const ProductListPage = () => {
       setError('');
       try {
         const { items, meta } = await getProducts(Object.fromEntries(searchParams.entries()));
+        console.debug('ProductListPage loaded products sample images:', items && items[0] && items[0].images ? items[0].images : null);
         setProducts(items || []);
         setTotal(meta?.total || 0);
       } catch (err) {
