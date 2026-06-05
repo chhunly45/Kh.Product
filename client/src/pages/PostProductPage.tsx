@@ -43,17 +43,22 @@ const PostProductPage = () => {
     setStatus('Publishing product...');
     setIsSubmitting(true);
 
+    const payload = {
+      title,
+      description,
+      price: Number(price),
+      location,
+      category
+    };
+    console.debug('PostProductPage create payload:', payload);
+
     try {
-      const product = await createProduct({
-        title,
-        description,
-        price: Number(price),
-        location,
-        category
-      });
+      const product = await createProduct(payload);
+      console.debug('PostProductPage created product:', product);
 
       if (images.length) {
-        await uploadProductImages(product._id, images);
+        const uploadResult = await uploadProductImages(product._id, images);
+        console.debug('PostProductPage upload response:', uploadResult);
       }
 
       setStatus('Your product was published successfully.');
@@ -64,6 +69,7 @@ const PostProductPage = () => {
       setImages([]);
       setPreviews([]);
     } catch (error) {
+      console.error('PostProductPage publish error:', error);
       setStatus('Failed to publish product. Please try again.');
     } finally {
       setIsSubmitting(false);

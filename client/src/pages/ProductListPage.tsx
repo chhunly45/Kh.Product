@@ -77,6 +77,7 @@ const ProductListPage = () => {
                   price={product.price.toLocaleString ? `KHR ${product.price.toLocaleString()}` : product.price}
                   location={product.location || 'Unknown'}
                   category={product.category?.labelKh || product.category?.name || 'General'}
+                  imageUrl={product.images?.[0]?.secureUrl || product.images?.[0]?.url || ''}
                 />
               ))}
             </div>

@@ -6,15 +6,22 @@ interface ProductCardProps {
   location: string;
   category: string;
   id: string;
+  imageUrl?: string;
 }
 
-const ProductCard = ({ title, price, location, category, id }: ProductCardProps) => {
+const ProductCard = ({ title, price, location, category, id, imageUrl }: ProductCardProps) => {
   return (
     <Link to={`/products/${id}`} className="group block overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg">
-      <div className="h-52 bg-slate-200 flex items-end p-4 bg-[linear-gradient(180deg,transparent,rgba(15,23,42,0.75))]">
-        <span className="rounded-full bg-sky-600 px-3 py-1 text-xs font-medium uppercase tracking-wide text-white">
-          {category}
-        </span>
+      <div className="relative h-52 overflow-hidden bg-slate-200">
+        {imageUrl ? (
+          <img src={imageUrl} alt={title} className="h-full w-full object-cover transition duration-200 group-hover:scale-105" />
+        ) : null}
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent,rgba(15,23,42,0.75))]" />
+        <div className="absolute inset-x-0 bottom-0 p-4">
+          <span className="rounded-full bg-sky-600 px-3 py-1 text-xs font-medium uppercase tracking-wide text-white">
+            {category}
+          </span>
+        </div>
       </div>
       <div className="p-5">
         <h3 className="text-lg font-semibold text-slate-900">{title}</h3>

@@ -9,6 +9,7 @@ const uploadImages = async (req, res, next) => {
     }
 
     const images = await uploadService.createImages(req.user.id, req.files, req.body.productId);
+    console.info('Upload response:', images);
     res.status(201).json({ success: true, data: images });
   } catch (error) {
     next(error);
