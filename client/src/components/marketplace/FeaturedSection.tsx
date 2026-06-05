@@ -39,7 +39,11 @@ const FeaturedSection = ({ title, description, products, viewAllLink = '/' }: Fe
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {products.map((product) => (
-            <ProductCard key={product.id} {...product} />
+            <ProductCard
+              key={product.id}
+              {...product}
+              imageUrl={(product as any).images?.[0]?.secureUrl || (product as any).images?.[0]?.url || (product as any).imageUrl || ''}
+            />
           ))}
         </div>
       </div>
