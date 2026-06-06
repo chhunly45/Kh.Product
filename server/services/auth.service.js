@@ -118,7 +118,7 @@ const loginUser = async (identifier, password) => {
     throw error;
   }
 
-  const otp = generateLoginOtp();
+  const otp = generateOtp();
   user.loginOtpHash = await bcrypt.hash(otp, 12);
   user.loginOtpExpiresAt = new Date(now.getTime() + 5 * 60 * 1000);
   user.loginOtpRequestedAt = now;
