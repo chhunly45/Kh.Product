@@ -5,7 +5,7 @@ import { login } from '../services/auth.api';
 const LoginPage = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    email: '',
+    emailOrPhone: '',
     password: ''
   });
   const [error, setError] = useState('');
@@ -26,8 +26,8 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      if (!formData.email.trim()) {
-        setError('Email is required');
+      if (!formData.emailOrPhone.trim()) {
+        setError('Email or phone is required');
         setLoading(false);
         return;
       }
@@ -37,8 +37,11 @@ const LoginPage = () => {
         return;
       }
 
-      await login(formData);
-      // Login successful, redirect to dashboard
+      const email = formData.emailOrPhone.includes('@')
+        ? formData.emailOrPhone
+        : `${formData.emailOrPhone.replace(/\D/g, '') || 'user'}@marketplace.kh`;
+
+      await login({ email, password: formData.password });
       navigate('/dashboard');
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || err.message || 'Login failed. Please try again.';
@@ -64,14 +67,14 @@ const LoginPage = () => {
 
       <form className="mt-10 space-y-6" onSubmit={handleSubmit}>
         <label className="block">
-          <span className="text-sm font-medium text-slate-700">Email</span>
-          <input 
-            type="email" 
-            name="email"
-            value={formData.email}
+          <span className="text-sm font-medium text-slate-700">Email or Phone</span>
+          <input
+            type="text"
+            name="emailOrPhone"
+            value={formData.emailOrPhone}
             onChange={handleChange}
-            placeholder="you@example.com" 
-            className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100" 
+            placeholder="Email or phone number"
+            className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
             disabled={loading}
           />
         </label>

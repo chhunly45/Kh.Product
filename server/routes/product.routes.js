@@ -10,6 +10,7 @@ const router = express.Router();
 router.get('/',
   query('search').optional().trim().isString(),
   query('category').optional().isMongoId(),
+  query('seller').optional().isMongoId(),
   query('minPrice').optional().isFloat({ min: 0 }),
   query('maxPrice').optional().isFloat({ min: 0 }),
   query('province').optional().trim().isString(),

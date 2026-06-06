@@ -3,11 +3,14 @@ import ProductCard from './ProductCard';
 import { ArrowRight } from 'lucide-react';
 
 interface Product {
-  id: string;
+  _id?: string;
+  id?: string;
   title: string;
-  price: string;
-  location: string;
-  category: string;
+  price: number | string;
+  location?: string;
+  category?: { name?: string; labelKh?: string } | string;
+  images?: Array<{ secureUrl?: string; url?: string }>;
+  imageUrl?: string;
 }
 
 interface FeaturedSectionProps {
@@ -38,13 +41,24 @@ const FeaturedSection = ({ title, description, products, viewAllLink = '/' }: Fe
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {products.map((product) => (
-            <ProductCard
-              key={product.id}
-              {...product}
-              imageUrl={(product as any).images?.[0]?.secureUrl || (product as any).images?.[0]?.url || (product as any).imageUrl || ''}
-            />
-          ))}
+          {products.map((product) => {
+            const id = product._id || product.id || 'unknown';
+            const categoryLabel = typeof product.category === 'string'
+              ? product.category
+              : product.category?.labelKh || product.category?.name || 'General';
+            const imageUrl = product.images?.[0]?.secureUrl || product.images?.[0]?.url || product.imageUrl || '';
+            return (
+              <ProductCard
+                key={id}
+                id={id}
+                title={product.title}
+                price={product.price}
+                location={product.location || 'Unknown'}
+                category={categoryLabel}
+                imageUrl={imageUrl}
+              />
+            );
+          })}
         </div>
       </div>
     </section>

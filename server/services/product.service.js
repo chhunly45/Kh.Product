@@ -5,6 +5,7 @@ const listProducts = async (filters) => {
   const locationFilters = [];
 
   if (filters.category) query.category = filters.category;
+  if (filters.seller) query.seller = filters.seller;
   if (filters.province) locationFilters.push({ location: new RegExp(filters.province, 'i') });
   if (filters.location) locationFilters.push({ location: new RegExp(filters.location, 'i') });
   if (locationFilters.length) query.$and = [...(query.$and || []), ...locationFilters];

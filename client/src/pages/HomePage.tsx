@@ -1,26 +1,31 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import SearchBar from '../components/marketplace/SearchBar';
 import CategoriesGrid from '../components/marketplace/CategoriesGrid';
 import FeaturedSection from '../components/marketplace/FeaturedSection';
 import SEO from '../components/SEO';
-import { Star, TrendingUp, Zap, ShieldCheck } from 'lucide-react';
-
-// Sample product data
-const featuredProducts = [
-  { id: '1', title: 'Mountain Bike for Sale', price: 'KHR 1,200,000', location: 'Phnom Penh', category: 'Sports' },
-  { id: '2', title: 'Second-hand Motorcycle', price: 'KHR 3,500,000', location: 'Siem Reap', category: 'Vehicles' },
-  { id: '3', title: 'Office Desk and Chair Set', price: 'KHR 800,000', location: 'Kampot', category: 'Furniture' },
-  { id: '4', title: 'iPhone 13 Pro Max', price: 'KHR 5,200,000', location: 'Phnom Penh', category: 'Electronics' },
-];
-
-const latestProducts = [
-  { id: '5', title: 'Gaming Laptop (RTX 3060)', price: 'KHR 2,800,000', location: 'Phnom Penh', category: 'Electronics' },
-  { id: '6', title: 'Vintage Coffee Table', price: 'KHR 450,000', location: 'Siem Reap', category: 'Furniture' },
-  { id: '7', title: 'Professional Camera Equipment', price: 'KHR 6,500,000', location: 'Battambang', category: 'Electronics' },
-  { id: '8', title: 'Toyota Camry 2015', price: 'KHR 12,000,000', location: 'Phnom Penh', category: 'Vehicles' },
-];
+import { Star, TrendingUp, Zap, ShieldCheck, ArrowRight } from 'lucide-react';
+import { getProducts } from '../services/product.api';
 
 const HomePage = () => {
+  const [topAds, setTopAds] = useState<any[]>([]);
+  const [loadingAds, setLoadingAds] = useState(false);
+
+  useEffect(() => {
+    const loadTopAds = async () => {
+      setLoadingAds(true);
+      try {
+        const { items } = await getProducts({ page: '1', perPage: '8' });
+        setTopAds(items || []);
+      } catch (error) {
+        setTopAds([]);
+      } finally {
+        setLoadingAds(false);
+      }
+    };
+    loadTopAds();
+  }, []);
+
   return (
     <div className="bg-gradient-to-b from-slate-50 to-white">
       <SEO
@@ -29,87 +34,158 @@ const HomePage = () => {
         url="https://marketplace-kh.com/"
         image="https://via.placeholder.com/1200x630.png?text=Marketplace+Kh"
       />
-      {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-        <div className="space-y-8">
-          {/* Hero Content */}
-          <div className="space-y-4 sm:space-y-6">
-            <div className="space-y-2">
-              <p className="text-sm sm:text-base font-semibold text-sky-600 uppercase tracking-wider">Welcome to Khmer24</p>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight">
-                Buy, Sell & Discover Local Products
-              </h1>
-            </div>
-            <p className="text-lg sm:text-xl text-slate-600 max-w-2xl">
-              Cambodia's trusted marketplace for local products. Fast search, secure messaging, and easy listings for everyone.
-            </p>
-          </div>
 
-          {/* Hero CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 sm:gap-3">
-            <Link
-              to="/post-product"
-              className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 rounded-lg bg-sky-500 text-white font-semibold hover:bg-sky-600 transition shadow-lg shadow-sky-500/30 text-center"
-            >
-              Post a Product
-            </Link>
-            <Link
-              to="/register"
-              className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 rounded-lg border-2 border-sky-500 text-sky-600 font-semibold hover:bg-sky-50 transition text-center"
-            >
-              Create Account
-            </Link>
+      {/* Hero Banner Section - Large & Impressive */}
+      <section className="relative overflow-hidden bg-gradient-to-r from-sky-600 via-blue-600 to-blue-700 text-white">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 left-10 w-80 h-80 bg-white rounded-full mix-blend-multiply filter blur-3xl"></div>
+          <div className="absolute bottom-0 right-10 w-80 h-80 bg-sky-300 rounded-full mix-blend-multiply filter blur-3xl"></div>
+        </div>
+
+        {/* Background Image Overlay */}
+        <div className="absolute inset-0">
+          <img 
+            src="https://images.unsplash.com/photo-1556740738-b6a63e27c4df?auto=format&fit=crop&w=2000&q=80"
+            alt="Background"
+            className="w-full h-full object-cover opacity-20 mix-blend-overlay"
+          />
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 lg:py-32">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+            {/* Left Content */}
+            <div className="space-y-6 lg:space-y-8">
+              <div className="space-y-3">
+                <p className="text-sm sm:text-base font-semibold uppercase tracking-widest text-sky-200">
+                  🇰🇭 Welcome to Cambodia's #1 Marketplace
+                </p>
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight">
+                  Buy, Sell & Discover Amazing Deals
+                </h1>
+              </div>
+              
+              <p className="text-lg sm:text-xl text-sky-100 max-w-xl leading-relaxed">
+                Join millions of Cambodians buying and selling everything from electronics to real estate. Fast, safe, and 100% free.
+              </p>
+
+              {/* Stats Row */}
+              <div className="grid grid-cols-3 gap-4 py-6 border-t border-b border-sky-400/30">
+                <div>
+                  <div className="text-2xl sm:text-3xl font-bold">10K+</div>
+                  <p className="text-xs sm:text-sm text-sky-200">Products</p>
+                </div>
+                <div>
+                  <div className="text-2xl sm:text-3xl font-bold">50K+</div>
+                  <p className="text-xs sm:text-sm text-sky-200">Trusted Users</p>
+                </div>
+                <div>
+                  <div className="text-2xl sm:text-3xl font-bold">24/7</div>
+                  <p className="text-xs sm:text-sm text-sky-200">Support</p>
+                </div>
+              </div>
+
+              {/* CTA Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                <Link
+                  to="/register"
+                  className="group inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 rounded-lg bg-white text-sky-600 font-bold hover:shadow-2xl hover:shadow-white/50 transition transform hover:scale-105"
+                >
+                  Get Started
+                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition" />
+                </Link>
+                <Link
+                  to="/post-product"
+                  className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 rounded-lg border-2 border-white text-white font-bold hover:bg-white/10 transition"
+                >
+                  <Zap className="w-4 h-4 mr-2" />
+                  Post Now
+                </Link>
+              </div>
+            </div>
+
+            {/* Right Content - Feature Cards */}
+            <div className="hidden lg:grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Feature Card 1 */}
+              <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition">
+                <Zap className="w-8 h-8 mb-3 text-yellow-300" />
+                <h3 className="font-bold text-lg mb-2">Lightning Fast</h3>
+                <p className="text-sm text-sky-100">Post in seconds</p>
+              </div>
+              {/* Feature Card 2 */}
+              <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition">
+                <ShieldCheck className="w-8 h-8 mb-3 text-green-300" />
+                <h3 className="font-bold text-lg mb-2">100% Safe</h3>
+                <p className="text-sm text-sky-100">Secure transactions</p>
+              </div>
+              {/* Feature Card 3 */}
+              <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition">
+                <TrendingUp className="w-8 h-8 mb-3 text-blue-300" />
+                <h3 className="font-bold text-lg mb-2">Real Results</h3>
+                <p className="text-sm text-sky-100">Connect instantly</p>
+              </div>
+              {/* Feature Card 4 */}
+              <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition">
+                <Star className="w-8 h-8 mb-3 text-amber-300" />
+                <h3 className="font-bold text-lg mb-2">Always Free</h3>
+                <p className="text-sm text-sky-100">No hidden charges</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Search Bar Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      {/* Search Bar Section - Sticky */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 -mt-6 relative z-10">
         <SearchBar />
       </section>
 
-      {/* Stats Section */}
-      <section className="bg-gradient-to-r from-sky-600 to-blue-600 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="text-3xl sm:text-4xl font-bold mb-2">10K+</div>
-              <p className="text-sm sm:text-base text-sky-100">Active Listings</p>
+      {/* Browse By Category */}
+      <section className="py-12 sm:py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-12">
+            <div>
+              <p className="text-sm uppercase tracking-widest text-sky-600 font-bold">Find Anything</p>
+              <h2 className="mt-2 text-3xl sm:text-4xl font-bold text-slate-900">Browse by Category</h2>
             </div>
-            <div className="text-center">
-              <div className="text-3xl sm:text-4xl font-bold mb-2">50K+</div>
-              <p className="text-sm sm:text-base text-sky-100">Happy Users</p>
+            <Link
+              to="/products"
+              className="inline-flex items-center justify-center rounded-lg bg-sky-500 px-6 py-3 text-sm font-bold text-white hover:bg-sky-600 transition group"
+            >
+              Explore All
+              <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition" />
+            </Link>
+          </div>
+        </div>
+        <CategoriesGrid />
+      </section>
+
+      {/* Latest Products Section */}
+      <section className="py-12 sm:py-16 bg-slate-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-12">
+            <div>
+              <p className="text-sm uppercase tracking-widest text-slate-500 font-bold">🔥 Hot Deals</p>
+              <h2 className="mt-2 text-3xl sm:text-4xl font-bold text-slate-900">Latest Products from Sellers Near You</h2>
             </div>
-            <div className="text-center">
-              <div className="text-3xl sm:text-4xl font-bold mb-2">100K+</div>
-              <p className="text-sm sm:text-base text-sky-100">Transactions</p>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl sm:text-4xl font-bold mb-2">24/7</div>
-              <p className="text-sm sm:text-base text-sky-100">Support</p>
-            </div>
+            <Link
+              to="/products"
+              className="inline-flex items-center justify-center rounded-lg border-2 border-slate-300 bg-white px-6 py-3 text-sm font-bold text-slate-900 hover:bg-slate-100 transition group"
+            >
+              View All
+              <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition" />
+            </Link>
+          </div>
+
+          <div className="mt-8">
+            {loadingAds ? (
+              <div className="rounded-2xl border border-slate-200 bg-white p-12 text-center text-slate-600">Loading products…</div>
+            ) : (
+              <FeaturedSection title="" products={topAds} viewAllLink="/products" />
+            )}
           </div>
         </div>
       </section>
-
-      {/* Categories Section */}
-      <CategoriesGrid />
-
-      {/* Featured Products Section */}
-      <FeaturedSection
-        title="Featured Listings"
-        description="Hot picks from our sellers this week"
-        products={featuredProducts}
-        viewAllLink="/products?featured=true"
-      />
-
-      {/* Latest Products Section */}
-      <FeaturedSection
-        title="Latest Products"
-        description="Recently added by our community"
-        products={latestProducts}
-        viewAllLink="/products?sort=latest"
-      />
 
       {/* Why Choose Us Section */}
       <section className="py-12 sm:py-16 bg-white">
@@ -118,7 +194,7 @@ const HomePage = () => {
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
             {/* Feature 1 */}
-            <div className="rounded-2xl border border-slate-200 p-8 hover:shadow-lg transition">
+            <div className="rounded-2xl border border-slate-200 p-8 hover:shadow-lg hover:border-sky-200 transition">
               <div className="w-14 h-14 rounded-xl bg-sky-100 flex items-center justify-center mb-4">
                 <Zap className="w-7 h-7 text-sky-600" />
               </div>
@@ -127,7 +203,7 @@ const HomePage = () => {
             </div>
 
             {/* Feature 2 */}
-            <div className="rounded-2xl border border-slate-200 p-8 hover:shadow-lg transition">
+            <div className="rounded-2xl border border-slate-200 p-8 hover:shadow-lg hover:border-green-200 transition">
               <div className="w-14 h-14 rounded-xl bg-green-100 flex items-center justify-center mb-4">
                 <ShieldCheck className="w-7 h-7 text-green-600" />
               </div>
@@ -136,7 +212,7 @@ const HomePage = () => {
             </div>
 
             {/* Feature 3 */}
-            <div className="rounded-2xl border border-slate-200 p-8 hover:shadow-lg transition">
+            <div className="rounded-2xl border border-slate-200 p-8 hover:shadow-lg hover:border-purple-200 transition">
               <div className="w-14 h-14 rounded-xl bg-purple-100 flex items-center justify-center mb-4">
                 <TrendingUp className="w-7 h-7 text-purple-600" />
               </div>
@@ -145,7 +221,7 @@ const HomePage = () => {
             </div>
 
             {/* Feature 4 */}
-            <div className="rounded-2xl border border-slate-200 p-8 hover:shadow-lg transition">
+            <div className="rounded-2xl border border-slate-200 p-8 hover:shadow-lg hover:border-amber-200 transition">
               <div className="w-14 h-14 rounded-xl bg-amber-100 flex items-center justify-center mb-4">
                 <Star className="w-7 h-7 text-amber-600" />
               </div>
@@ -159,18 +235,18 @@ const HomePage = () => {
       {/* CTA Section */}
       <section className="py-12 sm:py-16 bg-gradient-to-r from-sky-500 to-blue-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white space-y-6">
-          <h2 className="text-3xl sm:text-4xl font-bold">Ready to Get Started?</h2>
-          <p className="text-lg text-sky-100 max-w-2xl mx-auto">Join thousands of buyers and sellers on Cambodia's most trusted marketplace.</p>
+          <h2 className="text-3xl sm:text-4xl font-bold">Ready to Join Khmer24?</h2>
+          <p className="text-lg text-sky-100 max-w-2xl mx-auto">Start buying and selling with Cambodia's most trusted community today.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <Link
               to="/register"
-              className="inline-flex items-center justify-center px-8 py-3 rounded-lg bg-white text-sky-600 font-semibold hover:bg-sky-50 transition"
+              className="inline-flex items-center justify-center px-8 py-3 rounded-lg bg-white text-sky-600 font-bold hover:bg-sky-50 transition"
             >
-              Sign Up Now
+              Sign Up for Free
             </Link>
             <Link
               to="/products"
-              className="inline-flex items-center justify-center px-8 py-3 rounded-lg border-2 border-white text-white font-semibold hover:bg-white/10 transition"
+              className="inline-flex items-center justify-center px-8 py-3 rounded-lg border-2 border-white text-white font-bold hover:bg-white/10 transition"
             >
               Browse Products
             </Link>
