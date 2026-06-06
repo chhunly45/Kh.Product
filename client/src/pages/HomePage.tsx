@@ -9,21 +9,37 @@ import { getProducts } from '../services/product.api';
 
 const HomePage = () => {
   const [topAds, setTopAds] = useState<any[]>([]);
-  const [loadingAds, setLoadingAds] = useState(false);
+  const [latestProducts, setLatestProducts] = useState<any[]>([]);
+  const [loadingTopAds, setLoadingTopAds] = useState(false);
+  const [loadingLatest, setLoadingLatest] = useState(false);
 
   useEffect(() => {
     const loadTopAds = async () => {
-      setLoadingAds(true);
+      setLoadingTopAds(true);
       try {
         const { items } = await getProducts({ page: '1', perPage: '8' });
         setTopAds(items || []);
       } catch (error) {
         setTopAds([]);
       } finally {
-        setLoadingAds(false);
+        setLoadingTopAds(false);
       }
     };
+
+    const loadLatest = async () => {
+      setLoadingLatest(true);
+      try {
+        const { items } = await getProducts({ page: '1', perPage: '8' });
+        setLatestProducts(items || []);
+      } catch (error) {
+        setLatestProducts([]);
+      } finally {
+        setLoadingLatest(false);
+      }
+    };
+
     loadTopAds();
+    loadLatest();
   }, []);
 
   return (
@@ -160,28 +176,53 @@ const HomePage = () => {
         <CategoriesGrid />
       </section>
 
+      {/* Top Ads Section */}
+      <section className="py-12 sm:py-16 bg-slate-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-12">
+            <div>
+              <p className="text-sm uppercase tracking-widest text-slate-500 font-bold">Top ads</p>
+              <h2 className="mt-2 text-3xl sm:text-4xl font-bold text-slate-900">Featured products in your area</h2>
+            </div>
+            <Link
+              to="/products"
+              className="inline-flex items-center justify-center rounded-lg bg-slate-900 px-6 py-3 text-sm font-semibold text-white hover:bg-slate-800 transition"
+            >
+              View all listings
+            </Link>
+          </div>
+
+          <div className="mt-8">
+            {loadingTopAds ? (
+              <div className="rounded-2xl border border-slate-200 bg-white p-12 text-center text-slate-600">Loading featured products…</div>
+            ) : (
+              <FeaturedSection title="" products={topAds} viewAllLink="/products" />
+            )}
+          </div>
+        </div>
+      </section>
+
       {/* Latest Products Section */}
       <section className="py-12 sm:py-16 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-12">
             <div>
-              <p className="text-sm uppercase tracking-widest text-slate-500 font-bold">🔥 Hot Deals</p>
-              <h2 className="mt-2 text-3xl sm:text-4xl font-bold text-slate-900">Latest Products from Sellers Near You</h2>
+              <p className="text-sm uppercase tracking-widest text-slate-500 font-bold">Latest additions</p>
+              <h2 className="mt-2 text-3xl sm:text-4xl font-bold text-slate-900">Newest products</h2>
             </div>
             <Link
               to="/products"
-              className="inline-flex items-center justify-center rounded-lg border-2 border-slate-300 bg-white px-6 py-3 text-sm font-bold text-slate-900 hover:bg-slate-100 transition group"
+              className="inline-flex items-center justify-center rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white hover:bg-slate-800 transition"
             >
-              View All
-              <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition" />
+              Browse latest
             </Link>
           </div>
 
           <div className="mt-8">
-            {loadingAds ? (
-              <div className="rounded-2xl border border-slate-200 bg-white p-12 text-center text-slate-600">Loading products…</div>
+            {loadingLatest ? (
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-12 text-center text-slate-600">Loading latest products…</div>
             ) : (
-              <FeaturedSection title="" products={topAds} viewAllLink="/products" />
+              <FeaturedSection title="" products={latestProducts} viewAllLink="/products" />
             )}
           </div>
         </div>
