@@ -1,4 +1,5 @@
 const { User, Product, Chat, Report } = require('../models');
+const notificationService = require('./notification.service');
 
 const getOverview = async () => {
   const [users, products, chats, reports] = await Promise.all([
@@ -29,7 +30,37 @@ const updateUserStatus = async (userId, updates) => {
 
   if (updates.role) user.role = updates.role;
   if (updates.isActive !== undefined) user.isActive = updates.isActive;
+  if (updates.verified !== undefined) {
+    user.verified = updates.verified;
+    user.verificationStatus = updates.verified ? 'approved' : updates.verificationStatus || 'rejected';
+  }
+
+  if (updates.verificationStatus) {
+    user.verificationStatus = updates.verificationStatus;
+    if (updates.verificationStatus === 'approved') {
+      user.verified = true;
+    }
+    if (updates.verificationStatus === 'rejected') {
+      user.verified = false;
+    }
+    if (updates.verificationStatus === 'pending') {
+      user.verified = false;
+    }
+  }
+
   await user.save();
+
+  if (updates.verificationStatus && ['approved', 'rejected'].includes(updates.verificationStatus)) {
+    await notificationService.addNotification(user._id, {
+      type: 'verification',
+      title: `Verification ${updates.verificationStatus}`,
+      message: updates.verificationStatus === 'approved'
+        ? 'Your seller verification request has been approved.'
+        : 'Your seller verification request has been rejected.',
+      link: '/profile'
+    });
+  }
+
   return user;
 };
 

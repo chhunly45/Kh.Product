@@ -10,7 +10,15 @@ router.use(authMiddleware, roleMiddleware(['admin', 'moderator']));
 
 router.get('/overview', adminController.getOverview);
 router.get('/users', adminController.listUsers);
-router.patch('/users/:id/status', param('id').isMongoId(), body('isActive').optional().isBoolean(), body('role').optional().isIn(['user','seller','admin','moderator']), validate, adminController.updateUserStatus);
+router.patch('/users/:id/status',
+  param('id').isMongoId(),
+  body('isActive').optional().isBoolean(),
+  body('role').optional().isIn(['user','seller','admin','moderator']),
+  body('verified').optional().isBoolean(),
+  body('verificationStatus').optional().isIn(['none','pending','approved','rejected']),
+  validate,
+  adminController.updateUserStatus
+);
 router.get('/products', adminController.listProducts);
 router.patch('/products/:id/status', param('id').isMongoId(), body('status').isIn(['published','sold','archived','flagged']).withMessage('Invalid status'), validate, adminController.updateProductStatus);
 router.get('/reports', adminController.listReports);

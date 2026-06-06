@@ -103,6 +103,30 @@ const AdminDashboardPage = () => {
     }
   };
 
+  const handleApproveVerification = async (userId: string) => {
+    setLoading(true);
+    try {
+      await updateAdminUserStatus(userId, { verified: true, verificationStatus: 'approved' });
+      await loadUsers();
+    } catch {
+      setMessage('Unable to approve verification request.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRejectVerification = async (userId: string) => {
+    setLoading(true);
+    try {
+      await updateAdminUserStatus(userId, { verified: false, verificationStatus: 'rejected' });
+      await loadUsers();
+    } catch {
+      setMessage('Unable to reject verification request.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleChangeProductStatus = async (productId: string, status: string) => {
     setLoading(true);
     try {
@@ -230,6 +254,7 @@ const AdminDashboardPage = () => {
                   <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">User</th>
                   <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Role</th>
                   <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Status</th>
+                  <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Verification</th>
                   <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Actions</th>
                 </tr>
               </thead>
@@ -257,6 +282,11 @@ const AdminDashboardPage = () => {
                         {user.isActive ? 'Active' : 'Banned'}
                       </span>
                     </td>
+                    <td className="px-6 py-4">
+                      <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${user.verified ? 'bg-emerald-100 text-emerald-700' : user.verificationStatus === 'pending' ? 'bg-amber-100 text-amber-700' : user.verificationStatus === 'rejected' ? 'bg-rose-100 text-rose-700' : 'bg-slate-100 text-slate-700'}`}>
+                        {user.verified ? 'Verified' : user.verificationStatus === 'pending' ? 'Pending' : user.verificationStatus === 'rejected' ? 'Rejected' : 'Unverified'}
+                      </span>
+                    </td>
                     <td className="px-6 py-4 space-x-2">
                       <button
                         type="button"
@@ -266,6 +296,26 @@ const AdminDashboardPage = () => {
                       >
                         {user.isActive ? 'Ban' : 'Unban'}
                       </button>
+                      {user.role === 'seller' && !user.verified && (
+                        <>
+                          <button
+                            type="button"
+                            disabled={loading}
+                            onClick={() => handleApproveVerification(user._id)}
+                            className="rounded-full px-4 py-2 text-sm font-medium bg-emerald-600 text-white hover:bg-emerald-700 transition"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            type="button"
+                            disabled={loading}
+                            onClick={() => handleRejectVerification(user._id)}
+                            className="rounded-full px-4 py-2 text-sm font-medium bg-rose-600 text-white hover:bg-rose-700 transition"
+                          >
+                            Reject
+                          </button>
+                        </>
+                      )}
                     </td>
                   </tr>
                 ))}
