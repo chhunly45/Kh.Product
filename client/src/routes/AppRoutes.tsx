@@ -13,6 +13,7 @@ import NotFoundPage from '../pages/NotFoundPage';
 
 const AppRoutes = () => (
   <Routes>
+    {/* Root route renders the new Khmer24 homepage component */}
     <Route path="/" element={<HomePage />} />
     <Route path="/login" element={<LoginPage />} />
     <Route path="/register" element={<RegisterPage />} />
