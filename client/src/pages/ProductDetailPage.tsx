@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { Phone, MessageCircle, ShieldCheck, ArrowUpRight, AlertTriangle, MapPin, CalendarDays, Heart } from 'lucide-react';
 import { getProductById, getProducts } from '../services/product.api';
 import { checkFavorite, addFavorite, removeFavorite } from '../services/favorites.api';
+import { createReport } from '../services/report.api';
 import SellerContactCard from '../components/marketplace/SellerContactCard';
 import SEO from '../components/SEO';
 import ProductCard from '../components/marketplace/ProductCard';
@@ -15,7 +16,8 @@ const ProductDetailPage = () => {
   const [status, setStatus] = useState('');
   const [isFavorite, setIsFavorite] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
-  const [reportReason, setReportReason] = useState('');
+  const [reportTargetType, setReportTargetType] = useState<'product' | 'user'>('product');
+  const [reportReason, setReportReason] = useState<'scam' | 'fake_product' | 'duplicate_listing' | 'wrong_category' | 'other' | ''>('');
   const [reportMessage, setReportMessage] = useState('');
   const [reportSuccess, setReportSuccess] = useState('');
 
@@ -63,15 +65,23 @@ const ProductDetailPage = () => {
     return value.replace(/[^0-9+]/g, '');
   };
 
-  const reportProduct = () => {
+  const reportProduct = async () => {
     if (!product) return;
-    const reason = reportReason || 'Other concern';
-    const message = reportMessage || `Please review this listing: ${product.title}`;
-    setReportSuccess(`Your report has been submitted. Reason: ${reason}.`);
-    setReportOpen(false);
-    setReportReason('');
-    setReportMessage('');
-    window.open(`mailto:support@marketplace-kh.com?subject=Report%20Product%20${encodeURIComponent(product.title)}&body=${encodeURIComponent(message)}`);
+    const reason = reportReason || 'other';
+    try {
+      await createReport({
+        targetType: reportTargetType,
+        targetId: reportTargetType === 'product' ? product._id : product.seller?._id,
+        reason,
+        details: reportMessage || `Please review this listing: ${product.title}`
+      });
+      setReportSuccess('Your report has been submitted and will be reviewed by our team.');
+      setReportOpen(false);
+      setReportReason('');
+      setReportMessage('');
+    } catch (error) {
+      setReportSuccess('Unable to submit the report. Please try again.');
+    }
   };
 
   if (!product) {
@@ -255,31 +265,47 @@ const ProductDetailPage = () => {
                     telegramHandle={product.seller?.telegramHandle}
                   />
                   
-                  <button
-                    type="button"
-                    onClick={() => setReportOpen(!reportOpen)}
-                    className="w-full inline-flex items-center justify-center gap-2 rounded-3xl border border-rose-300 bg-white px-4 py-3 text-sm font-semibold text-rose-600 hover:bg-rose-50 transition"
-                  >
-                    <AlertTriangle className="w-4 h-4" /> Report listing
-                  </button>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setReportTargetType('product');
+                        setReportOpen(!reportOpen);
+                      }}
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-3xl border border-rose-300 bg-white px-4 py-3 text-sm font-semibold text-rose-600 hover:bg-rose-50 transition"
+                    >
+                      <AlertTriangle className="w-4 h-4" /> Report listing
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setReportTargetType('user');
+                        setReportOpen(!reportOpen);
+                      }}
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-3xl border border-amber-300 bg-white px-4 py-3 text-sm font-semibold text-amber-700 hover:bg-amber-50 transition"
+                    >
+                      <ShieldCheck className="w-4 h-4" /> Report seller
+                    </button>
+                  </div>
                 </div>
 
                 {reportOpen && (
                   <div className="mt-5 rounded-3xl border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-sm font-semibold text-slate-700">Report this listing</p>
+                    <p className="text-sm font-semibold text-slate-700">Report this {reportTargetType === 'product' ? 'listing' : 'seller'}</p>
                     <div className="mt-3 space-y-4">
                       <label className="block text-sm text-slate-700">
                         Reason
                         <select
                           value={reportReason}
-                          onChange={(e) => setReportReason(e.target.value)}
+                          onChange={(e) => setReportReason(e.target.value as 'scam' | 'fake_product' | 'duplicate_listing' | 'wrong_category' | 'other' | '')}
                           className="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-100"
                         >
                           <option value="">Select reason</option>
-                          <option value="fraud">Suspicious or fraudulent</option>
-                          <option value="misleading">Misleading description</option>
-                          <option value="duplicate">Duplicate listing</option>
-                          <option value="other">Other concern</option>
+                          <option value="scam">Scam</option>
+                          <option value="fake_product">Fake product</option>
+                          <option value="duplicate_listing">Duplicate listing</option>
+                          <option value="wrong_category">Wrong category</option>
+                          <option value="other">Other</option>
                         </select>
                       </label>
                       <label className="block text-sm text-slate-700">
