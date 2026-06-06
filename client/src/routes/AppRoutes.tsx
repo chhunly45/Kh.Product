@@ -6,6 +6,7 @@ import ProductDetailPage from '../pages/ProductDetailPage';
 import ProductListPage from '../pages/ProductListPage';
 import PostProductPage from '../pages/PostProductPage';
 import ProfilePage from '../pages/ProfilePage';
+import FavoritesPage from '../pages/FavoritesPage';
 import ChatPage from '../pages/ChatPage';
 import DashboardPage from '../pages/DashboardPage';
 import AdminDashboardPage from '../pages/AdminDashboardPage';
@@ -21,6 +22,7 @@ const AppRoutes = () => (
     <Route path="/products/:id" element={<ProductDetailPage />} />
     <Route path="/post-product" element={<PostProductPage />} />
     <Route path="/profile" element={<ProfilePage />} />
+    <Route path="/favorites" element={<FavoritesPage />} />
     <Route path="/chat" element={<ChatPage />} />
     <Route path="/dashboard" element={<DashboardPage />} />
     <Route path="/admin" element={<AdminDashboardPage />} />

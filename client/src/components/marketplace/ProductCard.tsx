@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useEffect, useState, MouseEvent } from 'react';
 import { MapPin, Heart } from 'lucide-react';
 
 interface ProductCardProps {
@@ -8,9 +9,16 @@ interface ProductCardProps {
   category?: string;
   id: string;
   imageUrl?: string;
+  isFavorite?: boolean;
+  onToggleFavorite?: (productId: string, currentlyFavorite: boolean) => void;
 }
 
-const ProductCard = ({ title, price, location, category, id, imageUrl }: ProductCardProps) => {
+const ProductCard = ({ title, price, location, category, id, imageUrl, isFavorite = false, onToggleFavorite }: ProductCardProps) => {
+  const [isSaved, setIsSaved] = useState<boolean>(isFavorite);
+
+  useEffect(() => {
+    setIsSaved(Boolean(isFavorite));
+  }, [isFavorite]);
   const fallback = 'https://via.placeholder.com/600x400.png?text=No+Image';
   const src = imageUrl || fallback;
   
@@ -48,13 +56,23 @@ const ProductCard = ({ title, price, location, category, id, imageUrl }: Product
         
         {/* Wishlist Button */}
         <button 
-          onClick={(e) => {
+          type="button"
+          onClick={(e: MouseEvent<HTMLButtonElement>) => {
             e.preventDefault();
             e.stopPropagation();
+            const nextValue = !isSaved;
+            setIsSaved(nextValue);
+            if (onToggleFavorite) {
+              onToggleFavorite(id, isSaved);
+            }
           }}
           className="absolute top-3 right-3 rounded-full bg-white/90 p-2 text-slate-400 hover:text-red-500 hover:bg-white transition shadow-md"
+          aria-label={isSaved ? 'Remove from favorites' : 'Save to favorites'}
         >
-          <Heart className="w-5 h-5" />
+          <Heart
+            className={`w-5 h-5 transition ${isSaved ? 'text-red-500 fill-current' : 'text-slate-400'}`}
+            fill={isSaved ? 'currentColor' : 'none'}
+          />
         </button>
       </div>
 

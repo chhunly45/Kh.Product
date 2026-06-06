@@ -3,10 +3,12 @@ import { useSearchParams } from 'react-router-dom';
 import SearchBar from '../components/marketplace/SearchBar';
 import ProductCard from '../components/marketplace/ProductCard';
 import { getProducts } from '../services/product.api';
+import { getFavoriteIds, addFavorite, removeFavorite } from '../services/favorites.api';
 
 const ProductListPage = () => {
   const [searchParams] = useSearchParams();
   const [products, setProducts] = useState<Array<any>>([]);
+  const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [total, setTotal] = useState(0);
@@ -19,8 +21,25 @@ const ProductListPage = () => {
     condition: searchParams.get('condition') || '',
     minPrice: searchParams.get('minPrice') || '',
     maxPrice: searchParams.get('maxPrice') || '',
-    datePosted: searchParams.get('datePosted') || ''
+    datePosted: searchParams.get('datePosted') || '',
+    sort: searchParams.get('sort') || ''
   }), [searchParams]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (!token) return;
+
+    const loadFavoriteIds = async () => {
+      try {
+        const ids = await getFavoriteIds();
+        setFavoriteIds(ids);
+      } catch (err) {
+        setFavoriteIds([]);
+      }
+    };
+
+    loadFavoriteIds();
+  }, []);
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -79,6 +98,20 @@ const ProductListPage = () => {
                   location={product.location || 'Unknown'}
                   category={product.category?.labelKh || product.category?.name || 'General'}
                   imageUrl={product.images?.[0]?.secureUrl || product.images?.[0]?.url || ''}
+                  isFavorite={favoriteIds.includes(product._id)}
+                  onToggleFavorite={async (productId, currentFavorite) => {
+                    try {
+                      if (currentFavorite) {
+                        await removeFavorite(productId);
+                        setFavoriteIds((current) => current.filter((id) => id !== productId));
+                      } else {
+                        await addFavorite(productId);
+                        setFavoriteIds((current) => [...current, productId]);
+                      }
+                    } catch (toggleError) {
+                      console.error('Favorite toggle failed:', toggleError);
+                    }
+                  }}
                 />
               ))}
             </div>
