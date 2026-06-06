@@ -6,6 +6,8 @@ const uploadRoutes = require('./upload.routes');
 const chatRoutes = require('./chat.routes');
 const favoriteRoutes = require('./favorite.routes');
 const adminRoutes = require('./admin.routes');
+const reportRoutes = require('./report.routes');
+const notificationRoutes = require('./notification.routes');
 
 const router = express.Router();
 
@@ -15,6 +17,8 @@ router.use('/products', productRoutes);
 router.use('/favorites', favoriteRoutes);
 router.use('/upload', uploadRoutes);
 router.use('/chats', chatRoutes);
+router.use('/reports', reportRoutes);
+router.use('/notifications', notificationRoutes);
 router.use('/admin', adminRoutes);
 
 module.exports = router;

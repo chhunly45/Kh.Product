@@ -1,4 +1,5 @@
 const { Product, Category, User } = require('../models');
+const notificationService = require('./notification.service');
 
 const listProducts = async (filters) => {
   const query = { status: 'published' };
@@ -29,12 +30,19 @@ const listProducts = async (filters) => {
   const limit = Number(filters.perPage) || 20;
   const skip = (page - 1) * limit;
 
+  const sortOptions = {
+    newest: { createdAt: -1 },
+    priceAsc: { price: 1 },
+    priceDesc: { price: -1 }
+  };
+  const sortBy = sortOptions[filters.sort] || sortOptions.newest;
+
   const [items, total] = await Promise.all([
     Product.find(query)
       .populate('seller', 'displayName profileImageUrl location')
       .populate('category', 'name labelKh slug')
       .populate('images')
-      .sort({ createdAt: -1 })
+      .sort(sortBy)
       .skip(skip)
       .limit(limit)
       .lean(),
@@ -46,7 +54,7 @@ const listProducts = async (filters) => {
 
 const getProductById = async (productId) => {
   const product = await Product.findById(productId)
-    .populate('seller', 'displayName profileImageUrl location email')
+    .populate('seller', 'displayName profileImageUrl location email verified createdAt')
     .populate('category', 'name labelKh slug')
     .populate('images');
 
@@ -119,6 +127,8 @@ const updateProduct = async (productId, user, updates) => {
     throw error;
   }
 
+  const previousStatus = product.status;
+
   Object.keys(updates).forEach((key) => {
     if (['title', 'description', 'price', 'condition', 'location', 'status', 'category', 'tags', 'metaTitle', 'metaDescription', 'extraAttributes'].includes(key)) {
       product[key] = updates[key];
@@ -130,6 +140,16 @@ const updateProduct = async (productId, user, updates) => {
   }
 
   await product.save();
+
+  if (updates.status === 'sold' && previousStatus !== 'sold' && product.seller) {
+    await notificationService.addNotification(product.seller, {
+      type: 'sold',
+      title: 'Listing sold',
+      message: `Your product ${product.title} has been marked as sold.`,
+      link: `/products/${product._id}`
+    });
+  }
+
   return product;
 };
 

@@ -1,8 +1,9 @@
 import { useEffect, useState, FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingBag, UploadCloud, LogIn, User, Globe, Search, ChevronDown, MapPin, Menu, X, Heart } from 'lucide-react';
+import { ShoppingBag, UploadCloud, LogIn, User, Globe, Search, ChevronDown, MapPin, Menu, X, Heart, Bell } from 'lucide-react';
 import api from '../../services/api';
 import { getFavoritesCount } from '../../services/favorites.api';
+import { getNotificationsCount } from '../../services/notification.api';
 
 interface CategoryItem {
   _id: string;
@@ -16,6 +17,7 @@ const Header = () => {
   const [category, setCategory] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [favoriteCount, setFavoriteCount] = useState(0);
+  const [notificationCount, setNotificationCount] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -39,8 +41,20 @@ const Header = () => {
       }
     };
 
+    const fetchNotificationsCount = async () => {
+      const token = localStorage.getItem('authToken');
+      if (!token) return;
+      try {
+        const count = await getNotificationsCount();
+        setNotificationCount(count);
+      } catch (error) {
+        setNotificationCount(0);
+      }
+    };
+
     fetchCategories();
     fetchFavoriteCount();
+    fetchNotificationsCount();
   }, []);
 
   const handleSearch = (event: FormEvent<HTMLFormElement>) => {
@@ -135,6 +149,18 @@ const Header = () => {
               Sell
             </Link>
             <Link
+              to="/notifications"
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+            >
+              <Bell className="w-4 h-4" />
+              Notifications
+              {notificationCount > 0 && (
+                <span className="ml-1 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-rose-500 px-2 text-[0.65rem] font-semibold text-white">
+                  {notificationCount}
+                </span>
+              )}
+            </Link>
+            <Link
               to="/favorites"
               className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
             >
@@ -208,6 +234,13 @@ const Header = () => {
               onClick={() => setMobileMenuOpen(false)}
             >
               Login
+            </Link>
+            <Link
+              to="/notifications"
+              className="block rounded-lg border border-slate-300 bg-white px-4 py-2 text-center text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Notifications{notificationCount > 0 ? ` (${notificationCount})` : ''}
             </Link>
             <Link
               to="/favorites"

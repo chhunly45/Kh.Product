@@ -1,4 +1,5 @@
 const { Favorite, Product } = require('../models');
+const notificationService = require('./notification.service');
 
 const getFavorites = async (userId) => {
   const favorites = await Favorite.find({ user: userId })
@@ -37,11 +38,21 @@ const addFavorite = async (userId, productId) => {
     throw error;
   }
 
-  const favorite = await Favorite.findOneAndUpdate(
-    { user: userId, product: productId },
-    { user: userId, product: productId },
-    { upsert: true, new: true, setDefaultsOnInsert: true }
-  );
+  const already = await Favorite.findOne({ user: userId, product: productId });
+  if (already) {
+    return already;
+  }
+
+  const favorite = await Favorite.create({ user: userId, product: productId });
+
+  if (product.seller && product.seller.toString() !== userId.toString()) {
+    await notificationService.addNotification(product.seller, {
+      type: 'favorite',
+      title: 'New favorite',
+      message: `Your listing ${product.title} was saved by a user.`,
+      link: `/products/${productId}`
+    });
+  }
 
   return favorite;
 };
