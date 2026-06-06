@@ -19,8 +19,31 @@ const findUserByIdentifier = async (identifier) => {
   return User.findOne({ phoneNumber: phone });
 };
 
+const generateOtp = () => String(Math.floor(100000 + Math.random() * 900000));
+
+const sendEmailVerificationCodeEmail = async (user, code) => {
+  const message = `Welcome to Marketplace Kh! Your email verification code is ${code}. It expires in 5 minutes. Do not share this code with anyone.`;
+  await emailService.sendEmail({
+    to: user.email,
+    subject: 'Marketplace Kh email verification code',
+    text: message,
+    html: `<p>${message}</p>`
+  });
+};
+
+const sendLoginOtpEmail = async (user, code) => {
+  const message = `Your Marketplace Kh login verification code is ${code}. It expires in 5 minutes. Do not share this code with anyone.`;
+  await emailService.sendEmail({
+    to: user.email,
+    subject: 'Marketplace Kh login verification code',
+    text: message,
+    html: `<p>${message}</p>`
+  });
+};
+
 const registerUser = async ({ email, password, displayName, phoneNumber, location }) => {
-  const exists = await User.findOne({ email });
+  const normalizedEmail = normalizeIdentifier(email);
+  const exists = await User.findOne({ email: normalizedEmail });
   if (exists) {
     const error = new Error('Email already registered');
     error.statusCode = 409;
@@ -28,17 +51,31 @@ const registerUser = async ({ email, password, displayName, phoneNumber, locatio
   }
 
   const passwordHash = await bcrypt.hash(password, 12);
-  const user = await User.create({ email: normalizeIdentifier(email), passwordHash, displayName, phoneNumber, location, role: 'seller' });
+  const user = await User.create({
+    email: normalizedEmail,
+    passwordHash,
+    displayName,
+    phoneNumber,
+    location,
+    role: 'seller',
+    emailVerified: false
+  });
 
-  const accessToken = createToken(user.id);
-  const refreshToken = createRefreshToken(user.id);
-  user.refreshTokens.push(refreshToken);
+  const now = new Date();
+  const otp = generateOtp();
+  user.emailVerificationHash = await bcrypt.hash(otp, 12);
+  user.emailVerificationExpiresAt = new Date(now.getTime() + 5 * 60 * 1000);
+  user.emailVerificationRequestedAt = now;
+  user.emailVerificationAttempts = 0;
   await user.save();
 
+  await sendEmailVerificationCodeEmail(user, otp);
+
   return {
-    user: { id: user.id, email: user.email, displayName: user.displayName, role: user.role, verified: user.verified },
-    accessToken,
-    refreshToken
+    requiresEmailVerification: true,
+    identifier: user.email,
+    expiresIn: 300,
+    resendCooldownSeconds: 60
   };
 };
 
@@ -59,6 +96,12 @@ const loginUser = async (identifier, password) => {
   if (!user || !user.isActive) {
     const error = new Error('Invalid credentials');
     error.statusCode = 401;
+    throw error;
+  }
+
+  if (!user.emailVerified) {
+    const error = new Error('Email not verified. Please verify your email before logging in.');
+    error.statusCode = 403;
     throw error;
   }
 
@@ -140,7 +183,7 @@ const verifyLoginOtp = async (identifier, code) => {
   await user.save();
 
   return {
-    user: { id: user.id, email: user.email, displayName: user.displayName, role: user.role, verified: user.verified },
+    user: { id: user.id, email: user.email, displayName: user.displayName, role: user.role, verified: user.verified, emailVerified: user.emailVerified },
     accessToken,
     refreshToken
   };
@@ -168,7 +211,7 @@ const resendLoginOtp = async (identifier) => {
     throw error;
   }
 
-  const otp = generateLoginOtp();
+  const otp = generateOtp();
   user.loginOtpHash = await bcrypt.hash(otp, 12);
   user.loginOtpExpiresAt = new Date(now.getTime() + 5 * 60 * 1000);
   user.loginOtpRequestedAt = now;
@@ -176,6 +219,92 @@ const resendLoginOtp = async (identifier) => {
   await user.save();
 
   await sendLoginOtpEmail(user, otp);
+
+  return {
+    expiresIn: 300,
+    resendCooldownSeconds: 60
+  };
+};
+
+const verifyEmail = async (identifier, code) => {
+  const user = await findUserByIdentifier(identifier);
+  if (!user || !user.isActive) {
+    const error = new Error('Invalid verification request');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  if (user.emailVerified) {
+    return { verified: true };
+  }
+
+  if (!user.emailVerificationHash || !user.emailVerificationExpiresAt || new Date() > user.emailVerificationExpiresAt) {
+    user.emailVerificationHash = undefined;
+    user.emailVerificationExpiresAt = undefined;
+    user.emailVerificationRequestedAt = undefined;
+    user.emailVerificationAttempts = 0;
+    await user.save();
+
+    const error = new Error('Verification code expired. Please request a new code.');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  if (user.emailVerificationAttempts >= 5) {
+    const error = new Error('Too many invalid attempts. Please request a new code.');
+    error.statusCode = 429;
+    throw error;
+  }
+
+  const validOtp = await bcrypt.compare(code, user.emailVerificationHash);
+  if (!validOtp) {
+    user.emailVerificationAttempts = (user.emailVerificationAttempts || 0) + 1;
+    await user.save();
+    const error = new Error('Invalid verification code');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  user.emailVerified = true;
+  user.emailVerificationHash = undefined;
+  user.emailVerificationExpiresAt = undefined;
+  user.emailVerificationRequestedAt = undefined;
+  user.emailVerificationAttempts = 0;
+  await user.save();
+
+  return { verified: true };
+};
+
+const resendEmailVerification = async (identifier) => {
+  const user = await findUserByIdentifier(identifier);
+  if (!user || !user.isActive) {
+    const error = new Error('Invalid verification request');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  if (user.emailVerified) {
+    const error = new Error('Email is already verified.');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const now = new Date();
+  if (user.emailVerificationRequestedAt && now.getTime() - user.emailVerificationRequestedAt.getTime() < 60 * 1000) {
+    const wait = 60 - Math.floor((now.getTime() - user.emailVerificationRequestedAt.getTime()) / 1000);
+    const error = new Error(`Please wait ${wait} seconds before resending the code.`);
+    error.statusCode = 429;
+    throw error;
+  }
+
+  const otp = generateOtp();
+  user.emailVerificationHash = await bcrypt.hash(otp, 12);
+  user.emailVerificationExpiresAt = new Date(now.getTime() + 5 * 60 * 1000);
+  user.emailVerificationRequestedAt = now;
+  user.emailVerificationAttempts = 0;
+  await user.save();
+
+  await sendEmailVerificationCodeEmail(user, otp);
 
   return {
     expiresIn: 300,

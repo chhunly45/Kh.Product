@@ -4,6 +4,7 @@ export interface RegisterPayload {
   displayName: string;
   email: string;
   password: string;
+  phoneNumber?: string;
 }
 
 export interface LoginPayload {
@@ -16,6 +17,8 @@ export interface AuthResponse {
     id: string;
     email: string;
     displayName: string;
+    role?: string;
+    emailVerified?: boolean;
   };
   authToken: string;
   refreshToken: string;
@@ -27,8 +30,23 @@ export interface LoginOtpResponse {
   resendCooldownSeconds: number;
 }
 
-export const register = async (payload: RegisterPayload): Promise<AuthResponse> => {
+export interface EmailVerificationResponse {
+  requiresEmailVerification: boolean;
+  identifier: string;
+  expiresIn: number;
+  resendCooldownSeconds: number;
+}
+
+export interface EmailVerifiedResult {
+  verified: boolean;
+}
+
+export const register = async (payload: RegisterPayload): Promise<AuthResponse | EmailVerificationResponse> => {
   const response = await api.post('/auth/register', payload);
+  if (response.data.success && response.data.data && 'requiresEmailVerification' in response.data.data) {
+    return response.data.data;
+  }
+
   if (response.data.success && response.data.data) {
     const token = response.data.data.accessToken;
     const refreshToken = response.data.data.refreshToken;
@@ -37,6 +55,7 @@ export const register = async (payload: RegisterPayload): Promise<AuthResponse> 
     if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
     if (user) localStorage.setItem('user', JSON.stringify(user));
   }
+
   return response.data.data;
 };
 
@@ -72,6 +91,16 @@ export const verifyLoginOtp = async (payload: { identifier: string; code: string
 
 export const resendLoginOtp = async (payload: { identifier: string }): Promise<LoginOtpResponse> => {
   const response = await api.post('/auth/login/resend', payload);
+  return response.data.data;
+};
+
+export const verifyEmailCode = async (payload: { identifier: string; code: string }): Promise<EmailVerifiedResult> => {
+  const response = await api.post('/auth/register/verify', payload);
+  return response.data.data;
+};
+
+export const resendEmailVerificationCode = async (payload: { identifier: string }): Promise<EmailVerificationResponse> => {
+  const response = await api.post('/auth/register/verify/resend', payload);
   return response.data.data;
 };
 

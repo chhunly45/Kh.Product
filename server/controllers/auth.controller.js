@@ -40,6 +40,26 @@ const resendLoginOtp = async (req, res, next) => {
   }
 };
 
+const verifyEmail = async (req, res, next) => {
+  try {
+    const { identifier, code } = req.body;
+    const result = await authService.verifyEmail(identifier, code);
+    res.json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const resendEmailVerification = async (req, res, next) => {
+  try {
+    const { identifier } = req.body;
+    const result = await authService.resendEmailVerification(identifier);
+    res.json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const refreshToken = async (req, res, next) => {
   try {
     const { refreshToken } = req.body;
@@ -90,6 +110,10 @@ const requestVerification = async (req, res, next) => {
 module.exports = {
   register,
   login,
+  verifyLoginOtp,
+  resendLoginOtp,
+  verifyEmail,
+  resendEmailVerification,
   refreshToken,
   logout,
   getProfile,

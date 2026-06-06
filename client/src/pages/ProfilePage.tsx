@@ -94,6 +94,11 @@ const ProfilePage = () => {
                 <div className="flex items-center gap-2">
                   <h1 className="text-3xl sm:text-4xl font-bold">{profile?.displayName || 'Seller Name'}</h1>
                   {profile?.verified && <Shield className="w-6 h-6 text-green-400" />}
+                  {profile?.emailVerified && (
+                    <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">
+                      Email verified
+                    </span>
+                  )}
                 </div>
                 <p className="text-sky-200 mt-1">{username}</p>
                 {profile?.location && (

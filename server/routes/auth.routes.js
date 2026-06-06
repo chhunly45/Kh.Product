@@ -38,6 +38,21 @@ router.post(
   authController.resendLoginOtp
 );
 
+router.post(
+  '/register/verify',
+  body('identifier').notEmpty().withMessage('Email or phone is required'),
+  body('code').isLength({ min: 6, max: 6 }).withMessage('Verification code must be 6 digits'),
+  validate,
+  authController.verifyEmail
+);
+
+router.post(
+  '/register/verify/resend',
+  body('identifier').notEmpty().withMessage('Email or phone is required'),
+  validate,
+  authController.resendEmailVerification
+);
+
 router.post('/refresh', authController.refreshToken);
 router.post('/logout', authMiddleware, authController.logout);
 router.get('/me', authMiddleware, authController.getProfile);

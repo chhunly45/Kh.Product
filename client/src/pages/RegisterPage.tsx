@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { register } from '../services/auth.api';
+import { useAuth } from '../hooks/useAuth';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
+  const { register } = useAuth();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
+    email: '',
     phone: '',
     password: '',
     confirmPassword: ''
@@ -35,8 +37,8 @@ const RegisterPage = () => {
         setLoading(false);
         return;
       }
-      if (!phone.trim()) {
-        setError('Phone number is required');
+      if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+        setError('Valid email address is required');
         setLoading(false);
         return;
       }
@@ -53,13 +55,17 @@ const RegisterPage = () => {
 
       const payload = {
         displayName: `${firstName.trim()} ${lastName.trim()}`,
-        email: `${phone.replace(/\D/g, '') || 'user'}@marketplace.kh`,
+        email: formData.email.trim(),
         phoneNumber: phone,
         password
       };
 
-      await register(payload);
-      navigate('/dashboard');
+      const result = await register(payload);
+      if (result && 'requiresEmailVerification' in result && result.requiresEmailVerification) {
+        navigate(`/verify-email?identifier=${encodeURIComponent(result.identifier)}`);
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || err.message || 'Registration failed. Please try again.';
       setError(errorMessage);
@@ -110,6 +116,19 @@ const RegisterPage = () => {
               />
             </label>
           </div>
+
+          <label className="block">
+            <span className="text-sm font-medium text-slate-700">Email address</span>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="you@example.com"
+              className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+              disabled={loading}
+            />
+          </label>
 
           <label className="block">
             <span className="text-sm font-medium text-slate-700">Phone Number</span>

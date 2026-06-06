@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { login, verifyLoginOtp, resendLoginOtp } from '../services/auth.api';
+import { resendLoginOtp } from '../services/auth.api';
+import { useAuth } from '../hooks/useAuth';
 
 const LoginPage = () => {
+  const { login, verifyLoginOtp } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     emailOrPhone: '',
@@ -48,10 +50,6 @@ const LoginPage = () => {
     return `${normalized.replace(/\D/g, '') || 'user'}@marketplace.kh`;
   };
 
-  const dispatchAuthChanged = () => {
-    window.dispatchEvent(new Event('authChanged'));
-  };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
@@ -82,7 +80,6 @@ const LoginPage = () => {
         return;
       }
 
-      dispatchAuthChanged();
       navigate('/dashboard');
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || err.message || 'Login failed. Please try again.';
@@ -105,7 +102,6 @@ const LoginPage = () => {
       }
 
       await verifyLoginOtp({ identifier, code: otpCode.trim() });
-      dispatchAuthChanged();
       navigate('/dashboard');
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || err.message || 'Verification failed. Please try again.';
@@ -148,7 +144,15 @@ const LoginPage = () => {
       )}
       {error && (
         <div className="mt-6 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-          {error}
+          <p>{error}</p>
+          {error.includes('Email not verified') && (
+            <p className="mt-2 text-sm text-red-700">
+              <a
+                href={`/verify-email?identifier=${encodeURIComponent(buildIdentifier(formData.emailOrPhone))}`}
+                className="font-semibold underline"
+              >Verify your email</a>
+            </p>
+          )}
         </div>
       )}
 
