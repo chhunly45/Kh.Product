@@ -26,6 +26,16 @@ export const getProducts = async (filters: Record<string, any> = {}) => {
   return response.data.data;
 };
 
+export const updateProduct = async (productId: string, payload: Record<string, any>) => {
+  const response = await api.put(`/products/${productId}`, payload);
+  return response.data.data;
+};
+
+export const deleteProduct = async (productId: string) => {
+  const response = await api.delete(`/products/${productId}`);
+  return response.data;
+};
+
 export const getProductById = async (productId: string) => {
   const response = await api.get(`/products/${productId}`);
   return response.data.data;
