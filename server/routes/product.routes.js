@@ -16,6 +16,7 @@ router.get('/',
   query('province').optional().trim().isString(),
   query('condition').optional().isIn(['new', 'used', 'refurbished']),
   query('datePosted').optional().isIn(['24h', '7d', '30d', '90d']),
+  query('sort').optional().isIn(['newest', 'priceAsc', 'priceDesc']),
   validate,
   productController.listProducts
 );

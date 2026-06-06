@@ -10,6 +10,7 @@ interface SearchBarProps {
     category?: string;
     province?: string;
     condition?: string;
+    sort?: string;
     minPrice?: string;
     maxPrice?: string;
     datePosted?: string;
@@ -35,12 +36,19 @@ const SearchBar = ({ initialFilters }: SearchBarProps) => {
   const [category, setCategory] = useState(initialFilters?.category || '');
   const [province, setProvince] = useState(initialFilters?.province || '');
   const [condition, setCondition] = useState(initialFilters?.condition || '');
+  const [sort, setSort] = useState(initialFilters?.sort || '');
   const [minPrice, setMinPrice] = useState(initialFilters?.minPrice || '');
   const [maxPrice, setMaxPrice] = useState(initialFilters?.maxPrice || '');
   const [datePosted, setDatePosted] = useState(initialFilters?.datePosted || '');
   const [showAdvanced, setShowAdvanced] = useState(false);
   interface CategoryItem { _id: string; name: string; labelKh?: string }
   const [categories, setCategories] = useState<CategoryItem[]>([]);
+
+  const sortOptions = [
+    { value: 'newest', label: 'Newest first' },
+    { value: 'priceAsc', label: 'Price low to high' },
+    { value: 'priceDesc', label: 'Price high to low' }
+  ];
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -49,6 +57,7 @@ const SearchBar = ({ initialFilters }: SearchBarProps) => {
     setCategory(initialFilters?.category || '');
     setProvince(initialFilters?.province || '');
     setCondition(initialFilters?.condition || '');
+    setSort(initialFilters?.sort || '');
     setMinPrice(initialFilters?.minPrice || '');
     setMaxPrice(initialFilters?.maxPrice || '');
     setDatePosted(initialFilters?.datePosted || '');
@@ -81,6 +90,7 @@ const SearchBar = ({ initialFilters }: SearchBarProps) => {
     if (category) params.append('category', category);
     if (province) params.append('province', province);
     if (condition) params.append('condition', condition);
+    if (sort) params.append('sort', sort);
     if (minPrice) params.append('minPrice', minPrice);
     if (maxPrice) params.append('maxPrice', maxPrice);
     if (datePosted) params.append('datePosted', datePosted);
@@ -174,6 +184,22 @@ const SearchBar = ({ initialFilters }: SearchBarProps) => {
               <option value="new">New</option>
               <option value="used">Used</option>
               <option value="refurbished">Refurbished</option>
+            </select>
+          </label>
+
+          <label className="space-y-2">
+            <span className="text-sm font-medium text-slate-700">Sort by</span>
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value)}
+              className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+            >
+              <option value="">Default sort</option>
+              {sortOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
             </select>
           </label>
 
