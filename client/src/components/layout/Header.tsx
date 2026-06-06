@@ -4,7 +4,7 @@ import { ShoppingBag, UploadCloud, LogIn, User, Globe, Search, ChevronDown, MapP
 import api from '../../services/api';
 import { getFavoritesCount } from '../../services/favorites.api';
 import { getNotificationsCount } from '../../services/notification.api';
-import { logout } from '../../services/auth.api';
+import { useAuth } from '../../hooks/useAuth';
 
 interface CategoryItem {
   _id: string;
@@ -19,7 +19,7 @@ const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [favoriteCount, setFavoriteCount] = useState(0);
   const [notificationCount, setNotificationCount] = useState(0);
-  const [user, setUser] = useState<{ displayName?: string } | null>(null);
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -54,32 +54,15 @@ const Header = () => {
       }
     };
 
-    const updateAuthState = () => {
-      const token = localStorage.getItem('authToken');
-      const rawUser = localStorage.getItem('user');
-      if (token && rawUser) {
-        try {
-          setUser(JSON.parse(rawUser));
-        } catch (error) {
-          setUser(null);
-        }
-      } else {
-        setUser(null);
-      }
-    };
-
     fetchCategories();
-    fetchFavoriteCount();
-    fetchNotificationsCount();
-    updateAuthState();
-    window.addEventListener('storage', updateAuthState);
-    window.addEventListener('authChanged', updateAuthState);
-
-    return () => {
-      window.removeEventListener('storage', updateAuthState);
-      window.removeEventListener('authChanged', updateAuthState);
-    };
-  }, []);
+    if (user) {
+      fetchFavoriteCount();
+      fetchNotificationsCount();
+    } else {
+      setFavoriteCount(0);
+      setNotificationCount(0);
+    }
+  }, [user]);
 
   const handleSearch = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -210,7 +193,6 @@ const Header = () => {
                       localStorage.removeItem('refreshToken');
                       localStorage.removeItem('user');
                     }
-                    setUser(null);
                     navigate('/');
                   }}
                   className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
@@ -303,7 +285,6 @@ const Header = () => {
                       localStorage.removeItem('refreshToken');
                       localStorage.removeItem('user');
                     }
-                    setUser(null);
                     setMobileMenuOpen(false);
                     navigate('/');
                   }}

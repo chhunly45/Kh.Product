@@ -41,6 +41,11 @@ export interface EmailVerifiedResult {
   verified: boolean;
 }
 
+export interface PasswordResetRequestResponse {
+  expiresIn: number;
+  resendCooldownSeconds: number;
+}
+
 export const register = async (payload: RegisterPayload): Promise<AuthResponse | EmailVerificationResponse> => {
   const response = await api.post('/auth/register', payload);
   if (response.data.success && response.data.data && 'requiresEmailVerification' in response.data.data) {
@@ -104,12 +109,37 @@ export const resendEmailVerificationCode = async (payload: { identifier: string 
   return response.data.data;
 };
 
+export const requestPasswordReset = async (payload: { identifier: string }): Promise<PasswordResetRequestResponse> => {
+  const response = await api.post('/auth/password-reset/request', payload);
+  return response.data.data;
+};
+
+export const verifyPasswordResetOtp = async (payload: { identifier: string; code: string }): Promise<{ valid: boolean }> => {
+  const response = await api.post('/auth/password-reset/verify', payload);
+  return response.data.data;
+};
+
+export const resetPassword = async (payload: { identifier: string; code: string; password: string }): Promise<{ success: boolean }> => {
+  const response = await api.post('/auth/password-reset/confirm', payload);
+  return response.data.data;
+};
+
+export const resendPasswordResetCode = async (payload: { identifier: string }): Promise<PasswordResetRequestResponse> => {
+  const response = await api.post('/auth/password-reset/resend', payload);
+  return response.data.data;
+};
+
 export const logout = async (): Promise<void> => {
   const refreshToken = localStorage.getItem('refreshToken');
   await api.post('/auth/logout', { refreshToken });
   localStorage.removeItem('authToken');
   localStorage.removeItem('refreshToken');
   localStorage.removeItem('user');
+};
+
+export const changePassword = async (payload: { currentPassword: string; newPassword: string }) => {
+  const response = await api.post('/auth/change-password', payload);
+  return response.data.data;
 };
 
 export const getProfile = async () => {

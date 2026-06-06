@@ -79,17 +79,15 @@ const registerUser = async ({ email, password, displayName, phoneNumber, locatio
   };
 };
 
-const sendLoginOtpEmail = async (user, code) => {
-  const message = `Your Marketplace Kh verification code is ${code}. It expires in 5 minutes. Do not share this code with anyone.`;
+const sendPasswordResetOtpEmail = async (user, code) => {
+  const message = `Your Marketplace Kh password reset code is ${code}. It expires in 5 minutes. Do not share this code with anyone.`;
   await emailService.sendEmail({
     to: user.email,
-    subject: 'Marketplace Kh login verification code',
+    subject: 'Marketplace Kh password reset code',
     text: message,
     html: `<p>${message}</p>`
   });
 };
-
-const generateLoginOtp = () => String(Math.floor(100000 + Math.random() * 900000));
 
 const loginUser = async (identifier, password) => {
   const user = await findUserByIdentifier(identifier);
@@ -312,6 +310,153 @@ const resendEmailVerification = async (identifier) => {
   };
 };
 
+const requestPasswordReset = async (identifier) => {
+  const user = await findUserByIdentifier(identifier);
+  if (!user || !user.isActive) {
+    const error = new Error('Invalid password reset request');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  const now = new Date();
+  if (user.passwordResetRequestedAt && now.getTime() - user.passwordResetRequestedAt.getTime() < 60 * 1000) {
+    const wait = 60 - Math.floor((now.getTime() - user.passwordResetRequestedAt.getTime()) / 1000);
+    const error = new Error(`Please wait ${wait} seconds before requesting another password reset.`);
+    error.statusCode = 429;
+    throw error;
+  }
+
+  const otp = generateOtp();
+  user.passwordResetOtpHash = await bcrypt.hash(otp, 12);
+  user.passwordResetOtpExpiresAt = new Date(now.getTime() + 5 * 60 * 1000);
+  user.passwordResetRequestedAt = now;
+  user.passwordResetAttempts = 0;
+  await user.save();
+
+  await sendPasswordResetOtpEmail(user, otp);
+
+  return {
+    expiresIn: 300,
+    resendCooldownSeconds: 60
+  };
+};
+
+const verifyPasswordResetOtp = async (identifier, code) => {
+  const user = await findUserByIdentifier(identifier);
+  if (!user || !user.isActive) {
+    const error = new Error('Invalid password reset request');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  if (!user.passwordResetOtpHash || !user.passwordResetOtpExpiresAt || new Date() > user.passwordResetOtpExpiresAt) {
+    user.passwordResetOtpHash = undefined;
+    user.passwordResetOtpExpiresAt = undefined;
+    user.passwordResetRequestedAt = undefined;
+    user.passwordResetAttempts = 0;
+    await user.save();
+
+    const error = new Error('Reset code expired. Please request a new code.');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  if (user.passwordResetAttempts >= 5) {
+    const error = new Error('Too many invalid attempts. Please request a new code.');
+    error.statusCode = 429;
+    throw error;
+  }
+
+  const validOtp = await bcrypt.compare(code, user.passwordResetOtpHash);
+  if (!validOtp) {
+    user.passwordResetAttempts = (user.passwordResetAttempts || 0) + 1;
+    await user.save();
+    const error = new Error('Invalid reset code');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  return { valid: true };
+};
+
+const resetPassword = async (identifier, code, newPassword) => {
+  const user = await findUserByIdentifier(identifier);
+  if (!user || !user.isActive) {
+    const error = new Error('Invalid password reset request');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  if (!user.passwordResetOtpHash || !user.passwordResetOtpExpiresAt || new Date() > user.passwordResetOtpExpiresAt) {
+    user.passwordResetOtpHash = undefined;
+    user.passwordResetOtpExpiresAt = undefined;
+    user.passwordResetRequestedAt = undefined;
+    user.passwordResetAttempts = 0;
+    await user.save();
+
+    const error = new Error('Reset code expired. Please request a new code.');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  if (user.passwordResetAttempts >= 5) {
+    const error = new Error('Too many invalid attempts. Please request a new code.');
+    error.statusCode = 429;
+    throw error;
+  }
+
+  const validOtp = await bcrypt.compare(code, user.passwordResetOtpHash);
+  if (!validOtp) {
+    user.passwordResetAttempts = (user.passwordResetAttempts || 0) + 1;
+    await user.save();
+    const error = new Error('Invalid reset code');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  const passwordHash = await bcrypt.hash(newPassword, 12);
+  user.passwordHash = passwordHash;
+  user.passwordResetOtpHash = undefined;
+  user.passwordResetOtpExpiresAt = undefined;
+  user.passwordResetRequestedAt = undefined;
+  user.passwordResetAttempts = 0;
+  user.refreshTokens = [];
+  await user.save();
+
+  return { success: true };
+};
+
+const resendPasswordResetOtp = async (identifier) => {
+  const user = await findUserByIdentifier(identifier);
+  if (!user || !user.isActive) {
+    const error = new Error('Invalid password reset request');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  const now = new Date();
+  if (user.passwordResetRequestedAt && now.getTime() - user.passwordResetRequestedAt.getTime() < 60 * 1000) {
+    const wait = 60 - Math.floor((now.getTime() - user.passwordResetRequestedAt.getTime()) / 1000);
+    const error = new Error(`Please wait ${wait} seconds before resending the code.`);
+    error.statusCode = 429;
+    throw error;
+  }
+
+  const otp = generateOtp();
+  user.passwordResetOtpHash = await bcrypt.hash(otp, 12);
+  user.passwordResetOtpExpiresAt = new Date(now.getTime() + 5 * 60 * 1000);
+  user.passwordResetRequestedAt = now;
+  user.passwordResetAttempts = 0;
+  await user.save();
+
+  await sendPasswordResetOtpEmail(user, otp);
+
+  return {
+    expiresIn: 300,
+    resendCooldownSeconds: 60
+  };
+};
+
 const refreshToken = async (token) => {
   if (!token) {
     const error = new Error('Refresh token is required');
@@ -394,13 +539,40 @@ const requestVerification = async (userId, details) => {
   return user;
 };
 
+const changePassword = async (userId, currentPassword, newPassword) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    const error = new Error('User not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const valid = await bcrypt.compare(currentPassword, user.passwordHash);
+  if (!valid) {
+    const error = new Error('Current password is incorrect');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  user.passwordHash = await bcrypt.hash(newPassword, 12);
+  await user.save();
+
+  return { success: true };
+};
+
 module.exports = {
   registerUser,
   loginUser,
   verifyLoginOtp,
   resendLoginOtp,
+  requestPasswordReset,
+  verifyPasswordResetOtp,
+  resetPassword,
+  resendPasswordResetOtp,
   refreshToken,
   logoutUser,
   updateProfile,
   requestVerification
+  ,
+  changePassword
 };

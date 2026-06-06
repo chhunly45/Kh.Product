@@ -60,6 +60,46 @@ const resendEmailVerification = async (req, res, next) => {
   }
 };
 
+const requestPasswordReset = async (req, res, next) => {
+  try {
+    const { identifier } = req.body;
+    const result = await authService.requestPasswordReset(identifier);
+    res.json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const verifyPasswordResetOtp = async (req, res, next) => {
+  try {
+    const { identifier, code } = req.body;
+    const result = await authService.verifyPasswordResetOtp(identifier, code);
+    res.json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const resetPassword = async (req, res, next) => {
+  try {
+    const { identifier, code, password } = req.body;
+    const result = await authService.resetPassword(identifier, code, password);
+    res.json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const resendPasswordResetOtp = async (req, res, next) => {
+  try {
+    const { identifier } = req.body;
+    const result = await authService.resendPasswordResetOtp(identifier);
+    res.json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const refreshToken = async (req, res, next) => {
   try {
     const { refreshToken } = req.body;
@@ -98,6 +138,16 @@ const updateProfile = async (req, res, next) => {
   }
 };
 
+const changePassword = async (req, res, next) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const result = await authService.changePassword(req.user.id, currentPassword, newPassword);
+    res.json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const requestVerification = async (req, res, next) => {
   try {
     const user = await authService.requestVerification(req.user.id, req.body.details);
@@ -114,9 +164,14 @@ module.exports = {
   resendLoginOtp,
   verifyEmail,
   resendEmailVerification,
+  requestPasswordReset,
+  verifyPasswordResetOtp,
+  resetPassword,
+  resendPasswordResetOtp,
   refreshToken,
   logout,
   getProfile,
   updateProfile,
+  changePassword,
   requestVerification
 };

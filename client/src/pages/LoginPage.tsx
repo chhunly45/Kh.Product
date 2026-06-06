@@ -226,9 +226,14 @@ const LoginPage = () => {
         </form>
       )}
 
-      <p className="mt-6 text-center text-sm text-slate-500">
-        New to Marketplace Kh? <Link to="/register" className="font-semibold text-sky-600 hover:text-sky-700">Create account</Link>
-      </p>
+      <div className="mt-6 flex flex-col items-center gap-3 text-center text-sm text-slate-500">
+        <Link to="/forgot-password" className="font-semibold text-sky-600 hover:text-sky-700">
+          Forgot password?
+        </Link>
+        <p>
+          New to Marketplace Kh? <Link to="/register" className="font-semibold text-sky-600 hover:text-sky-700">Create account</Link>
+        </p>
+      </div>
     </div>
   );
 };
