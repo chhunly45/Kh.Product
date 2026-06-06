@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { Phone, MessageCircle, ShieldCheck, ArrowUpRight, AlertTriangle, MapPin, CalendarDays, Heart } from 'lucide-react';
 import { getProductById, getProducts } from '../services/product.api';
 import { checkFavorite, addFavorite, removeFavorite } from '../services/favorites.api';
+import SellerContactCard from '../components/marketplace/SellerContactCard';
 import SEO from '../components/SEO';
 import ProductCard from '../components/marketplace/ProductCard';
 
@@ -246,26 +247,18 @@ const ProductDetailPage = () => {
                   )}
                 </div>
 
-                <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                  {emailLink && (
-                    <a href={emailLink} className="inline-flex items-center justify-center gap-2 rounded-3xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white hover:bg-slate-800 transition">
-                      <MessageCircle className="w-4 h-4" /> Email seller
-                    </a>
-                  )}
-                  {sellerPhone && (
-                    <a href={`tel:${sellerPhone}`} className="inline-flex items-center justify-center gap-2 rounded-3xl bg-sky-600 px-4 py-3 text-sm font-semibold text-white hover:bg-sky-700 transition">
-                      <Phone className="w-4 h-4" /> Call seller
-                    </a>
-                  )}
-                  {whatsappLink && (
-                    <a href={whatsappLink} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-3xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white hover:bg-emerald-700 transition">
-                      <ArrowUpRight className="w-4 h-4" /> WhatsApp
-                    </a>
-                  )}
+                <div className="mt-6 space-y-4">
+                  <SellerContactCard 
+                    sellerName={product.seller?.displayName}
+                    sellerPhone={sellerPhone}
+                    sellerEmail={product.seller?.email}
+                    telegramHandle={product.seller?.telegramHandle}
+                  />
+                  
                   <button
                     type="button"
                     onClick={() => setReportOpen(!reportOpen)}
-                    className="inline-flex items-center justify-center gap-2 rounded-3xl border border-rose-300 bg-white px-4 py-3 text-sm font-semibold text-rose-600 hover:bg-rose-50 transition"
+                    className="w-full inline-flex items-center justify-center gap-2 rounded-3xl border border-rose-300 bg-white px-4 py-3 text-sm font-semibold text-rose-600 hover:bg-rose-50 transition"
                   >
                     <AlertTriangle className="w-4 h-4" /> Report listing
                   </button>
