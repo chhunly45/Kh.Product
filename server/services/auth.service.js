@@ -506,6 +506,20 @@ const updateProfile = async (userId, updates) => {
     if (updates[key] !== undefined) acc[key] = updates[key];
     return acc;
   }, {});
+  // If client submitted a data URL for profileImageUrl, upload to Cloudinary
+  if (sanitized.profileImageUrl && typeof sanitized.profileImageUrl === 'string' && sanitized.profileImageUrl.startsWith('data:')) {
+    try {
+      const cloudinary = require('../config/cloudinary');
+      const uploadResult = await cloudinary.uploader.upload(sanitized.profileImageUrl, { folder: `${require('../config').cloudinary.folder}/profiles` });
+      if (uploadResult && uploadResult.secure_url) {
+        sanitized.profileImageUrl = uploadResult.secure_url;
+      }
+    } catch (err) {
+      // if upload fails, remove the profileImageUrl from update to avoid storing large base64
+      delete sanitized.profileImageUrl;
+    }
+  }
+
   const user = await User.findByIdAndUpdate(userId, sanitized, { new: true, runValidators: true }).select('-passwordHash -refreshTokens');
   return user;
 };

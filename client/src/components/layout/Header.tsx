@@ -178,10 +178,14 @@ const Header = () => {
               <>
                 <Link
                   to="/dashboard"
-                  className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+                  className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
                 >
-                  <User className="w-4 h-4" />
-                  {user.displayName ? user.displayName.split(' ')[0] : 'Account'}
+                  {user.profileImageUrl ? (
+                    <img src={user.profileImageUrl} alt="avatar" className="w-6 h-6 rounded-full object-cover" />
+                  ) : (
+                    <User className="w-4 h-4" />
+                  )}
+                  <span>{user.displayName ? user.displayName.split(' ')[0] : 'Account'}</span>
                 </Link>
                 <button
                   type="button"
