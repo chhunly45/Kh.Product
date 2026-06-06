@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
 const { User } = require('../models');
+const notificationService = require('./notification.service');
 
 const createToken = (userId) => jwt.sign({ userId }, config.jwtSecret, { expiresIn: config.jwtExpiresIn, algorithm: 'HS256' });
 const createRefreshToken = (userId) => jwt.sign({ userId }, config.jwtSecret, { expiresIn: config.refreshTokenExpiresIn, algorithm: 'HS256' });
@@ -110,10 +111,40 @@ const updateProfile = async (userId, updates) => {
   return user;
 };
 
+const requestVerification = async (userId, details) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    const error = new Error('User not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  if (user.verified) {
+    const error = new Error('Seller is already verified');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  user.verificationStatus = 'pending';
+  user.verificationRequestedAt = new Date();
+  user.verificationMessage = details || '';
+  await user.save();
+
+  await notificationService.addNotification(user._id, {
+    type: 'verification',
+    title: 'Verification request submitted',
+    message: 'Your seller verification request has been sent for review.',
+    link: '/profile'
+  });
+
+  return user;
+};
+
 module.exports = {
   registerUser,
   loginUser,
   refreshToken,
   logoutUser,
-  updateProfile
+  updateProfile,
+  requestVerification
 };

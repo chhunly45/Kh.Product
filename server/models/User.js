@@ -11,9 +11,22 @@ const UserSchema = new Schema({
   bio: { type: String, trim: true },
   location: { type: String, trim: true },
   verified: { type: Boolean, default: false },
+  verificationStatus: { type: String, enum: ['none', 'pending', 'approved', 'rejected'], default: 'none' },
+  verificationRequestedAt: { type: Date },
+  verificationMessage: { type: String, trim: true },
   isActive: { type: Boolean, default: true },
   lastLoginAt: { type: Date },
   refreshTokens: [{ type: String }],
+  notifications: [
+    {
+      type: { type: String, default: 'info' },
+      title: { type: String, required: true, trim: true },
+      message: { type: String, default: '', trim: true },
+      link: { type: String, trim: true },
+      read: { type: Boolean, default: false },
+      createdAt: { type: Date, default: Date.now }
+    }
+  ],
   preferences: {
     language: { type: String, default: 'km' },
     notifications: { type: Boolean, default: true }

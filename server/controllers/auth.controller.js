@@ -58,11 +58,21 @@ const updateProfile = async (req, res, next) => {
   }
 };
 
+const requestVerification = async (req, res, next) => {
+  try {
+    const user = await authService.requestVerification(req.user.id, req.body.details);
+    res.status(201).json({ success: true, data: user });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   register,
   login,
   refreshToken,
   logout,
   getProfile,
-  updateProfile
+  updateProfile,
+  requestVerification
 };

@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react';
-import { getProfile } from '../services/auth.api';
+import { getProfile, requestVerification } from '../services/auth.api';
 import { getProducts } from '../services/product.api';
 import ProductCard from '../components/marketplace/ProductCard';
-import { MapPin, Mail, Phone, Shield, TrendingUp, Star, MessageSquare } from 'lucide-react';
+import { MapPin, Mail, Phone, Shield, TrendingUp, Star, MessageSquare, CalendarDays } from 'lucide-react';
 
 const ProfilePage = () => {
   const [profile, setProfile] = useState<any>(null);
   const [products, setProducts] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState<'manage' | 'overview'>('manage');
   const [loading, setLoading] = useState(false);
+  const [verificationMessage, setVerificationMessage] = useState('');
+  const [isRequestingVerification, setIsRequestingVerification] = useState(false);
+  const [statusMessage, setStatusMessage] = useState('');
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -35,6 +38,23 @@ const ProfilePage = () => {
     };
     loadProfile();
   }, []);
+
+  const requestVerificationHandler = async () => {
+    if (!profile?.id) return;
+    setIsRequestingVerification(true);
+    setStatusMessage('Submitting verification request...');
+    try {
+      const user = await requestVerification(verificationMessage.trim());
+      setProfile(user);
+      localStorage.setItem('user', JSON.stringify(user));
+      setStatusMessage('Your verification request is now pending review.');
+      setVerificationMessage('');
+    } catch (error) {
+      setStatusMessage('Unable to submit verification request. Please try again later.');
+    } finally {
+      setIsRequestingVerification(false);
+    }
+  };
 
   const username = profile?.displayName ? `@${profile.displayName.toLowerCase().replace(/\s+/g, '')}` : '@seller';
   const coverImage = 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=1650&q=80';
@@ -73,13 +93,19 @@ const ProfilePage = () => {
               <div className="text-white flex-1">
                 <div className="flex items-center gap-2">
                   <h1 className="text-3xl sm:text-4xl font-bold">{profile?.displayName || 'Seller Name'}</h1>
-                  <Shield className="w-6 h-6 text-green-400" />
+                  {profile?.verified && <Shield className="w-6 h-6 text-green-400" />}
                 </div>
                 <p className="text-sky-200 mt-1">{username}</p>
                 {profile?.location && (
                   <div className="flex items-center gap-1 mt-2 text-sky-100">
                     <MapPin className="w-4 h-4" />
                     <span>{profile.location}</span>
+                  </div>
+                )}
+                {profile?.createdAt && (
+                  <div className="flex items-center gap-1 mt-2 text-sky-100">
+                    <CalendarDays className="w-4 h-4" />
+                    <span>Joined {new Date(profile.createdAt).toLocaleDateString()}</span>
                   </div>
                 )}
               </div>
@@ -166,7 +192,37 @@ const ProfilePage = () => {
             <div className="rounded-2xl bg-white p-6 shadow-lg border border-slate-200">
               <p className="text-sm font-bold uppercase tracking-widest text-green-600">Trust & Safety</p>
               
-              <div className="mt-4 space-y-3">
+              <div className="mt-4 space-y-4">
+                <div className="rounded-3xl bg-slate-50 p-4">
+                  <p className="text-sm font-semibold text-slate-700">Verification status</p>
+                  <p className="mt-2 text-sm text-slate-600">
+                    {profile?.verified ? 'Verified seller' : profile?.verificationStatus === 'pending' ? 'Verification pending review' : profile?.verificationStatus === 'rejected' ? 'Verification request rejected' : 'Not verified yet'}
+                  </p>
+                </div>
+                {profile?.role === 'seller' && !profile?.verified && (
+                  <div className="rounded-3xl bg-slate-50 p-4">
+                    <p className="text-sm font-semibold text-slate-700">Seller verification</p>
+                    <p className="mt-2 text-sm text-slate-600">Submit documents and details to get the verified badge.</p>
+                    <textarea
+                      value={verificationMessage}
+                      onChange={(event) => setVerificationMessage(event.target.value)}
+                      rows={3}
+                      placeholder="Tell us why your account should be verified"
+                      className="mt-3 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                    />
+                    <button
+                      type="button"
+                      onClick={requestVerificationHandler}
+                      disabled={isRequestingVerification || profile?.verificationStatus === 'pending'}
+                      className="mt-4 w-full rounded-3xl bg-sky-600 px-4 py-3 text-sm font-semibold text-white hover:bg-sky-700 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 transition"
+                    >
+                      {profile?.verificationStatus === 'pending' ? 'Verification pending' : 'Request verification'}
+                    </button>
+                    {statusMessage && (
+                      <p className="mt-3 text-sm text-slate-600">{statusMessage}</p>
+                    )}
+                  </div>
+                )}
                 <div className="flex items-center gap-2">
                   <Shield className="w-5 h-5 text-green-500" />
                   <span className="text-sm text-slate-700">Verified Seller</span>

@@ -64,6 +64,11 @@ export const updateProfile = async (payload: Record<string, any>) => {
   return response.data.data;
 };
 
+export const requestVerification = async (details?: string) => {
+  const response = await api.post('/auth/verification-request', { details });
+  return response.data.data;
+};
+
 export const refreshAuthToken = async (): Promise<AuthResponse> => {
   const refreshToken = localStorage.getItem('refreshToken');
   const response = await api.post('/auth/refresh', { refreshToken });

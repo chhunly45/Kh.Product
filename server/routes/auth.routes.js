@@ -27,5 +27,6 @@ router.post('/refresh', authController.refreshToken);
 router.post('/logout', authMiddleware, authController.logout);
 router.get('/me', authMiddleware, authController.getProfile);
 router.put('/me', authMiddleware, authController.updateProfile);
+router.post('/verification-request', authMiddleware, body('details').optional().trim().isString(), validate, authController.requestVerification);
 
 module.exports = router;
