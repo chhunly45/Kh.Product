@@ -17,10 +17,25 @@ router.post(
 
 router.post(
   '/login',
-  body('email').isEmail().withMessage('Valid email is required'),
+  body('identifier').notEmpty().withMessage('Email or phone is required'),
   body('password').notEmpty().withMessage('Password is required'),
   validate,
   authController.login
+);
+
+router.post(
+  '/login/verify',
+  body('identifier').notEmpty().withMessage('Email or phone is required'),
+  body('code').isLength({ min: 6, max: 6 }).withMessage('Verification code must be 6 digits'),
+  validate,
+  authController.verifyLoginOtp
+);
+
+router.post(
+  '/login/resend',
+  body('identifier').notEmpty().withMessage('Email or phone is required'),
+  validate,
+  authController.resendLoginOtp
 );
 
 router.post('/refresh', authController.refreshToken);

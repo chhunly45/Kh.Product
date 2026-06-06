@@ -3,9 +3,21 @@ const jwt = require('jsonwebtoken');
 const config = require('../config');
 const { User } = require('../models');
 const notificationService = require('./notification.service');
+const emailService = require('./email.service');
 
 const createToken = (userId) => jwt.sign({ userId }, config.jwtSecret, { expiresIn: config.jwtExpiresIn, algorithm: 'HS256' });
 const createRefreshToken = (userId) => jwt.sign({ userId }, config.jwtSecret, { expiresIn: config.refreshTokenExpiresIn, algorithm: 'HS256' });
+
+const normalizeIdentifier = (identifier) => identifier?.toString().trim().toLowerCase();
+const findUserByIdentifier = async (identifier) => {
+  if (!identifier) return null;
+  const normalized = normalizeIdentifier(identifier);
+  if (normalized.includes('@')) {
+    return User.findOne({ email: normalized });
+  }
+  const phone = normalized.replace(/\D/g, '');
+  return User.findOne({ phoneNumber: phone });
+};
 
 const registerUser = async ({ email, password, displayName, phoneNumber, location }) => {
   const exists = await User.findOne({ email });
@@ -16,7 +28,7 @@ const registerUser = async ({ email, password, displayName, phoneNumber, locatio
   }
 
   const passwordHash = await bcrypt.hash(password, 12);
-  const user = await User.create({ email, passwordHash, displayName, phoneNumber, location, role: 'seller' });
+  const user = await User.create({ email: normalizeIdentifier(email), passwordHash, displayName, phoneNumber, location, role: 'seller' });
 
   const accessToken = createToken(user.id);
   const refreshToken = createRefreshToken(user.id);
@@ -30,8 +42,20 @@ const registerUser = async ({ email, password, displayName, phoneNumber, locatio
   };
 };
 
-const loginUser = async (email, password) => {
-  const user = await User.findOne({ email });
+const sendLoginOtpEmail = async (user, code) => {
+  const message = `Your Marketplace Kh verification code is ${code}. It expires in 5 minutes. Do not share this code with anyone.`;
+  await emailService.sendEmail({
+    to: user.email,
+    subject: 'Marketplace Kh login verification code',
+    text: message,
+    html: `<p>${message}</p>`
+  });
+};
+
+const generateLoginOtp = () => String(Math.floor(100000 + Math.random() * 900000));
+
+const loginUser = async (identifier, password) => {
+  const user = await findUserByIdentifier(identifier);
   if (!user || !user.isActive) {
     const error = new Error('Invalid credentials');
     error.statusCode = 401;
@@ -45,6 +69,70 @@ const loginUser = async (email, password) => {
     throw error;
   }
 
+  const now = new Date();
+  if (user.loginOtpRequestedAt && now.getTime() - user.loginOtpRequestedAt.getTime() < 60 * 1000) {
+    const wait = 60 - Math.floor((now.getTime() - user.loginOtpRequestedAt.getTime()) / 1000);
+    const error = new Error(`Please wait ${wait} seconds before requesting another verification code.`);
+    error.statusCode = 429;
+    throw error;
+  }
+
+  const otp = generateLoginOtp();
+  user.loginOtpHash = await bcrypt.hash(otp, 12);
+  user.loginOtpExpiresAt = new Date(now.getTime() + 5 * 60 * 1000);
+  user.loginOtpRequestedAt = now;
+  user.loginOtpAttempts = 0;
+  await user.save();
+
+  await sendLoginOtpEmail(user, otp);
+
+  return {
+    requiresOtp: true,
+    expiresIn: 300,
+    resendCooldownSeconds: 60
+  };
+};
+
+const verifyLoginOtp = async (identifier, code) => {
+  const user = await findUserByIdentifier(identifier);
+  if (!user || !user.isActive) {
+    const error = new Error('Invalid verification request');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  if (!user.loginOtpHash || !user.loginOtpExpiresAt || new Date() > user.loginOtpExpiresAt) {
+    user.loginOtpHash = undefined;
+    user.loginOtpExpiresAt = undefined;
+    user.loginOtpRequestedAt = undefined;
+    user.loginOtpAttempts = 0;
+    await user.save();
+
+    const error = new Error('Verification code expired. Please request a new code.');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  if (user.loginOtpAttempts >= 5) {
+    const error = new Error('Too many invalid attempts. Please request a new code.');
+    error.statusCode = 429;
+    throw error;
+  }
+
+  const validOtp = await bcrypt.compare(code, user.loginOtpHash);
+  if (!validOtp) {
+    user.loginOtpAttempts = (user.loginOtpAttempts || 0) + 1;
+    await user.save();
+    const error = new Error('Invalid verification code');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  user.loginOtpHash = undefined;
+  user.loginOtpExpiresAt = undefined;
+  user.loginOtpRequestedAt = undefined;
+  user.loginOtpAttempts = 0;
+
   const accessToken = createToken(user.id);
   const refreshToken = createRefreshToken(user.id);
   user.refreshTokens.push(refreshToken);
@@ -55,6 +143,43 @@ const loginUser = async (email, password) => {
     user: { id: user.id, email: user.email, displayName: user.displayName, role: user.role, verified: user.verified },
     accessToken,
     refreshToken
+  };
+};
+
+const resendLoginOtp = async (identifier) => {
+  const user = await findUserByIdentifier(identifier);
+  if (!user || !user.isActive) {
+    const error = new Error('Invalid verification request');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  const now = new Date();
+  if (user.loginOtpRequestedAt && now.getTime() - user.loginOtpRequestedAt.getTime() < 60 * 1000) {
+    const wait = 60 - Math.floor((now.getTime() - user.loginOtpRequestedAt.getTime()) / 1000);
+    const error = new Error(`Please wait ${wait} seconds before resending the code.`);
+    error.statusCode = 429;
+    throw error;
+  }
+
+  if (!user.loginOtpHash || !user.loginOtpExpiresAt) {
+    const error = new Error('No pending verification request found. Please login again.');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const otp = generateLoginOtp();
+  user.loginOtpHash = await bcrypt.hash(otp, 12);
+  user.loginOtpExpiresAt = new Date(now.getTime() + 5 * 60 * 1000);
+  user.loginOtpRequestedAt = now;
+  user.loginOtpAttempts = 0;
+  await user.save();
+
+  await sendLoginOtpEmail(user, otp);
+
+  return {
+    expiresIn: 300,
+    resendCooldownSeconds: 60
   };
 };
 
@@ -143,6 +268,8 @@ const requestVerification = async (userId, details) => {
 module.exports = {
   registerUser,
   loginUser,
+  verifyLoginOtp,
+  resendLoginOtp,
   refreshToken,
   logoutUser,
   updateProfile,

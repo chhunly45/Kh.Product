@@ -15,6 +15,12 @@ module.exports = {
   rateLimitMax: Number(process.env.RATE_LIMIT_MAX) || 100,
   authRateLimitWindowMs: Number(process.env.AUTH_RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
   authRateLimitMax: Number(process.env.AUTH_RATE_LIMIT_MAX) || 10,
+  emailHost: process.env.EMAIL_HOST || '',
+  emailPort: Number(process.env.EMAIL_PORT) || 587,
+  emailSecure: process.env.EMAIL_SECURE === 'true',
+  emailUser: process.env.EMAIL_USER || '',
+  emailPass: process.env.EMAIL_PASS || '',
+  emailFrom: process.env.EMAIL_FROM || 'no-reply@marketplace-kh.com',
   uploadDir: path.resolve(process.cwd(), process.env.UPLOAD_DIR || 'uploads'),
   nodeEnv: process.env.NODE_ENV || 'development',
   cloudinary: {

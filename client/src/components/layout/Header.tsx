@@ -1,9 +1,10 @@
 import { useEffect, useState, FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingBag, UploadCloud, LogIn, User, Globe, Search, ChevronDown, MapPin, Menu, X, Heart, Bell } from 'lucide-react';
+import { ShoppingBag, UploadCloud, LogIn, User, Globe, Search, ChevronDown, MapPin, Menu, X, Heart, Bell, LogOut } from 'lucide-react';
 import api from '../../services/api';
 import { getFavoritesCount } from '../../services/favorites.api';
 import { getNotificationsCount } from '../../services/notification.api';
+import { logout } from '../../services/auth.api';
 
 interface CategoryItem {
   _id: string;
@@ -18,6 +19,7 @@ const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [favoriteCount, setFavoriteCount] = useState(0);
   const [notificationCount, setNotificationCount] = useState(0);
+  const [user, setUser] = useState<{ displayName?: string } | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -52,9 +54,31 @@ const Header = () => {
       }
     };
 
+    const updateAuthState = () => {
+      const token = localStorage.getItem('authToken');
+      const rawUser = localStorage.getItem('user');
+      if (token && rawUser) {
+        try {
+          setUser(JSON.parse(rawUser));
+        } catch (error) {
+          setUser(null);
+        }
+      } else {
+        setUser(null);
+      }
+    };
+
     fetchCategories();
     fetchFavoriteCount();
     fetchNotificationsCount();
+    updateAuthState();
+    window.addEventListener('storage', updateAuthState);
+    window.addEventListener('authChanged', updateAuthState);
+
+    return () => {
+      window.removeEventListener('storage', updateAuthState);
+      window.removeEventListener('authChanged', updateAuthState);
+    };
   }, []);
 
   const handleSearch = (event: FormEvent<HTMLFormElement>) => {
@@ -167,20 +191,52 @@ const Header = () => {
               <Heart className="w-4 h-4" />
               Favorites ({favoriteCount})
             </Link>
-            <Link
-              to="/login"
-              className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
-            >
-              <LogIn className="w-4 h-4" />
-              Login
-            </Link>
-            <Link
-              to="/register"
-              className="inline-flex items-center gap-2 rounded-lg bg-sky-500 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-600 transition"
-            >
-              <User className="w-4 h-4" />
-              Register
-            </Link>
+            {user ? (
+              <>
+                <Link
+                  to="/dashboard"
+                  className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+                >
+                  <User className="w-4 h-4" />
+                  {user.displayName ? user.displayName.split(' ')[0] : 'Account'}
+                </Link>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      await logout();
+                    } catch {
+                      localStorage.removeItem('authToken');
+                      localStorage.removeItem('refreshToken');
+                      localStorage.removeItem('user');
+                    }
+                    setUser(null);
+                    navigate('/');
+                  }}
+                  className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+                >
+                  <LogIn className="w-4 h-4" />
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  className="inline-flex items-center gap-2 rounded-lg bg-sky-500 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-600 transition"
+                >
+                  <User className="w-4 h-4" />
+                  Register
+                </Link>
+              </>
+            )}
           </div>
         </div>
 
@@ -228,13 +284,52 @@ const Header = () => {
               <UploadCloud className="w-4 h-4 inline mr-2" />
               Sell
             </Link>
-            <Link
-              to="/login"
-              className="block rounded-lg border border-slate-300 bg-white px-4 py-2 text-center text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Login
-            </Link>
+            {user ? (
+              <>
+                <Link
+                  to="/dashboard"
+                  className="block rounded-lg border border-slate-300 bg-white px-4 py-2 text-center text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {user.displayName ? `Hi, ${user.displayName.split(' ')[0]}` : 'Dashboard'}
+                </Link>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      await logout();
+                    } catch {
+                      localStorage.removeItem('authToken');
+                      localStorage.removeItem('refreshToken');
+                      localStorage.removeItem('user');
+                    }
+                    setUser(null);
+                    setMobileMenuOpen(false);
+                    navigate('/');
+                  }}
+                  className="block w-full rounded-lg border border-slate-300 bg-white px-4 py-2 text-center text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="block rounded-lg border border-slate-300 bg-white px-4 py-2 text-center text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  className="block rounded-lg bg-sky-500 px-4 py-2 text-center text-sm font-semibold text-white hover:bg-sky-600 transition"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Register
+                </Link>
+              </>
+            )}
             <Link
               to="/notifications"
               className="block rounded-lg border border-slate-300 bg-white px-4 py-2 text-center text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
@@ -248,13 +343,6 @@ const Header = () => {
               onClick={() => setMobileMenuOpen(false)}
             >
               Favorites ({favoriteCount})
-            </Link>
-            <Link
-              to="/register"
-              className="block rounded-lg bg-sky-500 px-4 py-2 text-center text-sm font-semibold text-white hover:bg-sky-600 transition"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Register
             </Link>
           </div>
         )}

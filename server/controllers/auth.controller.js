@@ -12,8 +12,28 @@ const register = async (req, res, next) => {
 
 const login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
-    const result = await authService.loginUser(email, password);
+    const { identifier, password } = req.body;
+    const result = await authService.loginUser(identifier, password);
+    res.json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const verifyLoginOtp = async (req, res, next) => {
+  try {
+    const { identifier, code } = req.body;
+    const result = await authService.verifyLoginOtp(identifier, code);
+    res.json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const resendLoginOtp = async (req, res, next) => {
+  try {
+    const { identifier } = req.body;
+    const result = await authService.resendLoginOtp(identifier);
     res.json({ success: true, data: result });
   } catch (error) {
     next(error);

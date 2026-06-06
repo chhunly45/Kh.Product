@@ -7,7 +7,7 @@ export interface RegisterPayload {
 }
 
 export interface LoginPayload {
-  email: string;
+  identifier: string;
   password: string;
 }
 
@@ -19,6 +19,12 @@ export interface AuthResponse {
   };
   authToken: string;
   refreshToken: string;
+}
+
+export interface LoginOtpResponse {
+  requiresOtp: boolean;
+  expiresIn: number;
+  resendCooldownSeconds: number;
 }
 
 export const register = async (payload: RegisterPayload): Promise<AuthResponse> => {
@@ -34,8 +40,12 @@ export const register = async (payload: RegisterPayload): Promise<AuthResponse> 
   return response.data.data;
 };
 
-export const login = async (payload: LoginPayload): Promise<AuthResponse> => {
+export const login = async (payload: LoginPayload): Promise<AuthResponse | LoginOtpResponse> => {
   const response = await api.post('/auth/login', payload);
+  if (response.data.success && response.data.data && 'requiresOtp' in response.data.data) {
+    return response.data.data;
+  }
+
   if (response.data.success && response.data.data) {
     const token = response.data.data.accessToken;
     const refreshToken = response.data.data.refreshToken;
@@ -47,11 +57,30 @@ export const login = async (payload: LoginPayload): Promise<AuthResponse> => {
   return response.data.data;
 };
 
+export const verifyLoginOtp = async (payload: { identifier: string; code: string }): Promise<AuthResponse> => {
+  const response = await api.post('/auth/login/verify', payload);
+  if (response.data.success && response.data.data) {
+    const token = response.data.data.accessToken;
+    const refreshToken = response.data.data.refreshToken;
+    const user = response.data.data.user;
+    if (token) localStorage.setItem('authToken', token);
+    if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
+    if (user) localStorage.setItem('user', JSON.stringify(user));
+  }
+  return response.data.data;
+};
+
+export const resendLoginOtp = async (payload: { identifier: string }): Promise<LoginOtpResponse> => {
+  const response = await api.post('/auth/login/resend', payload);
+  return response.data.data;
+};
+
 export const logout = async (): Promise<void> => {
   const refreshToken = localStorage.getItem('refreshToken');
   await api.post('/auth/logout', { refreshToken });
   localStorage.removeItem('authToken');
   localStorage.removeItem('refreshToken');
+  localStorage.removeItem('user');
 };
 
 export const getProfile = async () => {
