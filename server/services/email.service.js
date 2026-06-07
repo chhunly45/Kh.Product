@@ -20,7 +20,8 @@ const createTransporter = async () => {
       auth: {
         user: config.emailUser,
         pass: config.emailPass
-      }
+      },
+      family: 4
     });
   }
 
