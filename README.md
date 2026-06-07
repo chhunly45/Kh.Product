@@ -1,93 +1,291 @@
-# Marketplace-Kh
+# Marketplace Kh
 
-A marketplace application with separate frontend, backend, and database modules.
+Marketplace Kh is a Cambodian local classifieds platform built with a React frontend and an Express/MongoDB backend. The repository is organized into two main application modules:
 
-# KH-Product
+- `client/` — frontend application powered by Vite, React, TypeScript, Tailwind, and Axios.
+- `server/` — backend API powered by Express, MongoDB, Cloudinary, authentication, and CSRF protection.
 
-A marketplace application with separate frontend, backend, and database modules.
+## Features
 
-## Deployment
+- User registration, login, password reset, and profile management
+- Product listing creation, editing, deletion, and search filters
+- Category management with admin and moderator controls
+- Favorites and notification handling for signed-in users
+- Chat and messaging between buyers and sellers
+- Report submission for products or users
+- Image uploads via Cloudinary
+- Admin dashboard endpoints for user, product, and report moderation
+- CSRF protection, rate limiting, and security middleware for production readiness
 
-Below are copy-paste friendly steps and example env values to deploy the project (backend, frontend) and provision a MongoDB Atlas cluster.
+## Local setup
 
-1) MongoDB Atlas (choose a free or paid tier)
+1. Clone the repository:
 
-- Create a new cluster in MongoDB Atlas.
-- Create a database user with a strong password.
-- In Network Access, allow access from your deployment platform (or `0.0.0.0/0` for quick testing).
-- Get the connection string and replace `<user>`, `<password>`, and `<cluster>` in the examples below.
-
-Example `MONGO_URI`:
-
+```bash
+git clone https://github.com/chhunly45/Kh.Product.git
+cd Kh.Product
 ```
-mongodb+srv://<user>:<password>@<cluster>.mongodb.net/marketplace-kh?retryWrites=true&w=majority
-```
 
-2) Backend (Render or Railway)
-
-- Use the `server/` folder as the service root. The server expects environment variables listed in `server/.env.production.example`.
-- Local quick test:
+2. Install backend dependencies:
 
 ```bash
 cd server
-cp .env.production.example .env
-# edit .env to set MONGO_URI, JWT_SECRET, CLIENT_ORIGIN
 npm install
-npm run dev   # or: npm start for production
 ```
 
-- Recommended backend env variables (set in Render/Railway UI):
+3. Install frontend dependencies:
 
-```
-PORT=4000
-MONGO_URI=<mongo_connection_string>
-CLIENT_ORIGIN=https://<your-vercel-domain>
-JWT_SECRET=<your_jwt_secret>
-JWT_EXPIRES_IN=1h
-REFRESH_TOKEN_EXPIRES_IN=7d
-RATE_LIMIT_WINDOW_MS=900000
-RATE_LIMIT_MAX=100
-AUTH_RATE_LIMIT_WINDOW_MS=900000
-AUTH_RATE_LIMIT_MAX=10
-UPLOAD_DIR=uploads
-NODE_ENV=production
+```bash
+cd ../client
+npm install
 ```
 
-Render quick notes:
-- You can add a `render.yaml` (included at repo root) and create a Web Service that points to the `server` folder.
-- Build: `npm install` (inside `server`), Start: `npm start`.
+4. Create backend environment variables:
 
-Railway quick notes:
-- Create a new project -> Deploy from GitHub -> select `server` folder.
-- Add the same environment variables in Railway's dashboard.
-
-3) Frontend (Vercel)
-
-- Create a new Vercel project connecting your GitHub repo.
-- Set the project root to `client` (if Vercel asks for a root).
-- Build command: `npm run build`
-- Output directory: `dist`
-- Environment variable (Vercel project settings):
-
-```
-VITE_API_BASE_URL=https://<your-backend-domain>/api
+```bash
+cd ../server
+copy .env.production.example .env
 ```
 
-- Note: `client/src/services/api.ts` uses `import.meta.env.VITE_API_BASE_URL` and `withCredentials: true`.
-	Ensure `CLIENT_ORIGIN` on the server matches your Vercel domain, and enable CORS to allow credentials.
+Then edit `server/.env` with your local values.
 
-4) Smoke tests / verification
+5. Start the backend server:
 
-- After deployment set `VITE_API_BASE_URL` and `CLIENT_ORIGIN` correctly.
-- Visit the Vercel URL and verify pages load and API calls succeed (use browser devtools network tab to check cookie and CORS headers).
+```bash
+npm run dev
+```
 
-5) If you want me to generate platform-specific env JSON or copy/paste entries for Render / Railway / Vercel, tell me which provider and I will produce them ready to paste.
+6. Start the frontend app:
 
-- `client` — frontend application
-- `server` — backend application
-- `database` — schema, migrations, and seed data
-- `docs` — project documentation
+```bash
+cd ../client
+npm run dev
+```
 
-## Getting started
+7. Open the Vite frontend URL shown in the terminal.
 
-Add your frontend, backend, and database implementations in the appropriate folders.
+## Environment variables
+
+### Backend (`server`)
+
+Required variables:
+
+- `PORT` — backend port (example: `4000`)
+- `MONGODB_URI` — MongoDB connection string
+- `JWT_SECRET` — secret used to sign JWT tokens
+- `JWT_EXPIRES_IN` — access token lifetime (example: `1h`)
+- `REFRESH_TOKEN_EXPIRES_IN` — refresh token lifetime (example: `7d`)
+- `CLIENT_URL` or `CLIENT_ORIGIN` — frontend origin allowed by CORS
+- `CLOUDINARY_CLOUD_NAME` — Cloudinary cloud name
+- `CLOUDINARY_API_KEY` — Cloudinary API key
+- `CLOUDINARY_API_SECRET` — Cloudinary API secret
+
+Optional variables:
+
+- `RATE_LIMIT_WINDOW_MS` — rate limit window in milliseconds
+- `RATE_LIMIT_MAX` — maximum requests per window
+- `AUTH_RATE_LIMIT_WINDOW_MS` — auth rate limit window in milliseconds
+- `AUTH_RATE_LIMIT_MAX` — auth request limit per window
+- `UPLOAD_DIR` — local upload directory (default: `uploads`)
+- `NODE_ENV` — runtime environment (`development` or `production`)
+- `CLOUDINARY_FOLDER` — Cloudinary upload folder (default: `marketplace`)
+- `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_SECURE`, `EMAIL_USER`, `EMAIL_PASS`, `EMAIL_FROM` — email configuration
+
+### Frontend (`client`)
+
+Required environment variable:
+
+- `VITE_API_BASE_URL` — backend API base URL, e.g. `https://your-backend.example.com/api`
+
+## Render deployment
+
+Render is configured via `render.yaml` at the repository root.
+
+1. Connect your GitHub repository to Render.
+2. Create a new Web Service for the backend.
+3. Set the service root to `server`.
+4. Use the build command:
+
+```bash
+npm install
+```
+
+5. Use the start command:
+
+```bash
+npm start
+```
+
+6. Add the required environment variables in Render, including:
+
+- `MONGODB_URI`
+- `JWT_SECRET`
+- `CLIENT_URL`
+- `CLOUDINARY_CLOUD_NAME`
+- `CLOUDINARY_API_KEY`
+- `CLOUDINARY_API_SECRET`
+- `NODE_ENV=production`
+
+7. Deploy the service.
+
+8. Point the frontend `VITE_API_BASE_URL` to the rendered backend URL and ensure `CLIENT_URL` matches the frontend origin.
+
+## Vercel deployment
+
+1. Create a new Vercel project and connect your repository.
+2. Set the project root to `client`.
+3. Configure the install command:
+
+```bash
+npm install && npm --prefix client install
+```
+
+4. Configure the build command:
+
+```bash
+npm --prefix client run build
+```
+
+5. Configure the output directory:
+
+```bash
+client/dist
+```
+
+6. Add the following environment variable in Vercel project settings:
+
+- `VITE_API_BASE_URL` — e.g. `https://your-backend.vercel.app/api`
+
+7. Deploy the frontend.
+
+8. Update backend `CLIENT_URL` to the Vercel frontend URL and allow that origin in CORS.
+
+## Cloudinary setup
+
+1. Create a Cloudinary account at https://cloudinary.com.
+2. Copy your Cloud name, API key, and API secret.
+3. Add the values to backend environment variables:
+
+- `CLOUDINARY_CLOUD_NAME`
+- `CLOUDINARY_API_KEY`
+- `CLOUDINARY_API_SECRET`
+- `CLOUDINARY_FOLDER` (optional)
+
+4. Backend uploads use Cloudinary and will print configuration status during startup.
+
+## MongoDB setup
+
+1. Create a cluster in MongoDB Atlas or run a local MongoDB instance.
+2. Create a database user and whitelist your application host.
+3. Use the connection string format:
+
+```bash
+mongodb+srv://<user>:<password>@<cluster>.mongodb.net/marketplace-kh?retryWrites=true&w=majority
+```
+
+4. Set `MONGODB_URI` in `server/.env` or your deployment platform.
+
+## Running integration tests
+
+Integration tests run from the backend package and use an in-memory MongoDB server.
+
+```bash
+cd server
+npm run test:integration
+```
+
+This script:
+
+- starts an in-memory MongoDB instance
+- boots the Express app
+- runs auth and profile flows against `/api`
+- validates login OTP, password change, profile updates, and verification requests
+
+## API overview
+
+The server exposes the API under `/api`.
+
+### Auth
+
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `POST /api/auth/login/verify`
+- `POST /api/auth/login/resend`
+- `POST /api/auth/register/verify`
+- `POST /api/auth/register/verify/resend`
+- `POST /api/auth/password-reset/request`
+- `POST /api/auth/password-reset/verify`
+- `POST /api/auth/password-reset/confirm`
+- `POST /api/auth/password-reset/resend`
+- `POST /api/auth/refresh`
+- `POST /api/auth/logout`
+- `GET /api/auth/me`
+- `PUT /api/auth/me`
+- `POST /api/auth/change-password`
+- `POST /api/auth/verification-request`
+
+### Categories
+
+- `GET /api/categories`
+- `GET /api/categories/:id`
+- `POST /api/categories` (admin/moderator)
+- `PUT /api/categories/:id` (admin/moderator)
+- `DELETE /api/categories/:id` (admin)
+
+### Products
+
+- `GET /api/products`
+- `GET /api/products/:id`
+- `POST /api/products` (authenticated)
+- `PUT /api/products/:id` (authenticated)
+- `DELETE /api/products/:id` (authenticated)
+
+### Favorites
+
+- `GET /api/favorites`
+- `GET /api/favorites/count`
+- `GET /api/favorites/check/:productId`
+- `POST /api/favorites/:productId`
+- `DELETE /api/favorites/:productId`
+
+### Uploads
+
+- `POST /api/upload` (authenticated)
+- `DELETE /api/upload/:id` (authenticated)
+
+### Chats
+
+- `GET /api/chats` (authenticated)
+- `GET /api/chats/:id` (authenticated)
+- `POST /api/chats` (authenticated)
+- `POST /api/chats/:id/messages` (authenticated)
+- `PATCH /api/chats/:id/read` (authenticated)
+
+### Reports
+
+- `POST /api/reports` (authenticated)
+- `GET /api/reports/me` (authenticated)
+
+### Notifications
+
+- `GET /api/notifications` (authenticated)
+- `GET /api/notifications/count` (authenticated)
+- `PATCH /api/notifications/:id/read` (authenticated)
+
+### Admin
+
+- `GET /api/admin/overview` (admin/moderator)
+- `GET /api/admin/users` (admin/moderator)
+- `PATCH /api/admin/users/:id/status` (admin/moderator)
+- `GET /api/admin/products` (admin/moderator)
+- `PATCH /api/admin/products/:id/status` (admin/moderator)
+- `GET /api/admin/reports` (admin/moderator)
+- `PATCH /api/admin/reports/:id` (admin/moderator)
+
+---
+
+## Notes
+
+- Frontend development runs from `client/` and builds to `client/dist`.
+- Backend development runs from `server/` and listens on the configured `PORT`.
+- Make sure `CLIENT_URL`/`CLIENT_ORIGIN` and `VITE_API_BASE_URL` are aligned in deployment.
