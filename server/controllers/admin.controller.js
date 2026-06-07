@@ -1,4 +1,6 @@
 const adminService = require('../services/admin.service');
+const emailService = require('../services/email.service');
+const config = require('../config');
 
 const getOverview = async (req, res, next) => {
   try {
@@ -63,6 +65,52 @@ const updateReportStatus = async (req, res, next) => {
   }
 };
 
+const sendTestEmail = async (req, res, next) => {
+  try {
+    // Only allow in development environment or explicitly enabled
+    if (config.nodeEnv === 'production' && process.env.ENABLE_EMAIL_TEST !== 'true') {
+      const error = new Error('Test email endpoint is disabled in production');
+      error.statusCode = 403;
+      throw error;
+    }
+
+    const { to } = req.body;
+    if (!to) {
+      const error = new Error('Email address required in request body: { to: "email@example.com" }');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(to)) {
+      const error = new Error('Invalid email address format');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    console.log(`[EMAIL] Test email initiated by admin ${req.user.id} for recipient: ${emailService.maskEmail(to)}`);
+
+    await emailService.sendEmail({
+      to,
+      subject: 'Marketplace Kh - Test Email',
+      text: 'This is a test email from your Marketplace Kh backend. If you received this, email delivery is working correctly.',
+      html: '<p>This is a test email from your Marketplace Kh backend.</p><p>If you received this, email delivery is working correctly.</p>'
+    });
+
+    res.json({
+      success: true,
+      message: 'Test email sent successfully',
+      data: {
+        recipient: emailService.maskEmail(to),
+        sentAt: new Date().toISOString()
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getOverview,
   listUsers,
@@ -70,5 +118,6 @@ module.exports = {
   listProducts,
   updateProductStatus,
   listReports,
-  updateReportStatus
+  updateReportStatus,
+  sendTestEmail
 };
