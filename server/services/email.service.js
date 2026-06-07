@@ -1,15 +1,9 @@
-const nodemailer = require('nodemailer');
 const fs = require('fs/promises');
 const path = require('path');
+const { Resend } = require('resend');
 const config = require('../config');
 
-const hasProviderConfig = Boolean(
-  config.emailHost &&
-  config.emailPort &&
-  config.emailUser &&
-  config.emailPass &&
-  config.emailFrom
-);
+const hasResendConfig = Boolean(config.resendApiKey && config.emailFrom);
 
 /**
  * Mask email for safe logging - keeps first char and domain, hides middle
@@ -19,48 +13,6 @@ const maskEmail = (email) => {
   const [localPart, domain] = email.split('@');
   if (!domain) return email;
   return `${localPart[0]}${'*'.repeat(Math.max(3, localPart.length - 2))}@${domain}`;
-};
-
-/**
- * Log SMTP configuration safely (never logs password)
- */
-const logSmtpConfig = () => {
-  if (hasProviderConfig) {
-    console.log('[EMAIL] SMTP Configuration:', {
-      host: config.emailHost,
-      port: config.emailPort,
-      secure: config.emailSecure,
-      userPresent: Boolean(config.emailUser),
-      from: config.emailFrom
-    });
-  } else {
-    console.log('[EMAIL] Using development transport (no SMTP configured)');
-  }
-};
-
-const createTransporter = async () => {
-  if (hasProviderConfig) {
-    logSmtpConfig();
-    return nodemailer.createTransport({
-      host: config.emailHost,
-      port: config.emailPort,
-      secure: config.emailSecure,
-      auth: {
-        user: config.emailUser,
-        pass: config.emailPass
-      },
-      family: 4
-    });
-  }
-
-  if (config.nodeEnv !== 'production') {
-    console.log('[EMAIL] Using development transport (jsonTransport)');
-    return nodemailer.createTransport({
-      jsonTransport: true
-    });
-  }
-
-  throw new Error('Email provider is not configured in production.');
 };
 
 const saveDevEmail = async (to, subject, text, html) => {
@@ -77,40 +29,58 @@ const saveDevEmail = async (to, subject, text, html) => {
   await fs.writeFile(filePath, content, 'utf8');
 };
 
+const createResendClient = () => {
+  if (!hasResendConfig) {
+    return null;
+  }
+
+  return new Resend(config.resendApiKey);
+};
+
 const sendEmail = async ({ to, subject, text, html }) => {
   try {
-    const transporter = await createTransporter();
-    const info = await transporter.sendMail({
-      from: config.emailFrom,
-      to,
-      subject,
-      text,
-      html
-    });
+    if (hasResendConfig) {
+      const resend = createResendClient();
+      const response = await resend.emails.send({
+        from: config.emailFrom,
+        to,
+        subject,
+        text,
+        html
+      });
 
-    // Log successful send with masked email
-    console.log('[EMAIL] Send success:', {
-      recipient: maskEmail(to),
-      subject,
-      messageId: info.messageId,
-      response: info.response
-    });
+      console.log('[EMAIL] Resend send success:', {
+        recipient: maskEmail(to),
+        subject,
+        messageId: response.id,
+        status: response.status || 'sent'
+      });
 
-    if (!hasProviderConfig && config.nodeEnv !== 'production') {
-      await saveDevEmail(to, subject, text, html);
+      return response;
     }
 
-    return info;
+    if (config.nodeEnv !== 'production') {
+      await saveDevEmail(to, subject, text, html);
+      console.log('[EMAIL] Development email saved:', {
+        recipient: maskEmail(to),
+        subject
+      });
+      return {
+        provider: 'dev',
+        to,
+        subject
+      };
+    }
+
+    throw new Error('Resend API key is required in production email delivery.');
   } catch (error) {
-    // Log error with full details for diagnostics
-    console.error('[EMAIL] Send failed:', {
+    console.error('[EMAIL] Resend email send failed:', {
       recipient: maskEmail(to),
       subject,
-      errorCode: error.code,
+      errorName: error.name,
       errorMessage: error.message,
-      errorCommand: error.command,
-      errorResponse: error.response,
-      hasProvider: hasProviderConfig,
+      errorCode: error.code,
+      resendResponse: error.response ? error.response.body || error.response : undefined,
       nodeEnv: config.nodeEnv
     });
     throw error;

@@ -20,6 +20,7 @@ module.exports = {
   emailSecure: process.env.EMAIL_SECURE === 'true',
   emailUser: process.env.EMAIL_USER || '',
   emailPass: process.env.EMAIL_PASS || '',
+  resendApiKey: process.env.RESEND_API_KEY || '',
   emailFrom: process.env.EMAIL_FROM || 'no-reply@marketplace-kh.com',
   uploadDir: path.resolve(process.cwd(), process.env.UPLOAD_DIR || 'uploads'),
   nodeEnv: process.env.NODE_ENV || 'development',

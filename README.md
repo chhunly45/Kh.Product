@@ -89,7 +89,8 @@ Optional variables:
 - `UPLOAD_DIR` — local upload directory (default: `uploads`)
 - `NODE_ENV` — runtime environment (`development` or `production`)
 - `CLOUDINARY_FOLDER` — Cloudinary upload folder (default: `marketplace`)
-- `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_SECURE`, `EMAIL_USER`, `EMAIL_PASS`, `EMAIL_FROM` — email configuration
+- `RESEND_API_KEY` — Resend API key for production email delivery
+- `EMAIL_FROM` — sender email address for transactional emails
 
 ### Frontend (`client`)
 
