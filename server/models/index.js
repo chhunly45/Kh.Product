@@ -7,6 +7,7 @@ const Message = require('./Message');
 const Favorite = require('./Favorite');
 const Report = require('./Report');
 const Admin = require('./Admin');
+const Banner = require('./Banner');
 
 module.exports = {
   User,
@@ -18,4 +19,5 @@ module.exports = {
   Favorite,
   Report,
   Admin
+  , Banner
 };

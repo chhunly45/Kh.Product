@@ -13,6 +13,7 @@ import FavoritesPage from '../pages/FavoritesPage';
 import ChatPage from '../pages/ChatPage';
 import DashboardPage from '../pages/DashboardPage';
 import AdminDashboardPage from '../pages/AdminDashboardPage';
+import AdminBannersPage from '../pages/AdminBannersPage';
 import NotificationsPage from '../pages/NotificationsPage';
 import NotFoundPage from '../pages/NotFoundPage';
 
@@ -34,6 +35,7 @@ const AppRoutes = () => (
     <Route path="/chat" element={<ChatPage />} />
     <Route path="/dashboard" element={<DashboardPage />} />
     <Route path="/admin" element={<AdminDashboardPage />} />
+    <Route path="/admin/banners" element={<AdminBannersPage />} />
     <Route path="*" element={<NotFoundPage />} />
   </Routes>
 );

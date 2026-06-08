@@ -11,7 +11,7 @@ router.post(
   '/',
   authMiddleware,
   upload.array('images', 6),
-  body('productId').isMongoId().withMessage('Product ID is required'),
+  body('productId').optional().isMongoId().withMessage('Product ID must be a valid id'),
   validate,
   uploadController.uploadImages
 );
