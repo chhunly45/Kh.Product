@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import SearchBar from '../components/marketplace/SearchBar';
+import TopAdBanner from '../components/marketplace/TopAdBanner';
 import ProductCard from '../components/marketplace/ProductCard';
 import { getProducts } from '../services/product.api';
 import { getFavoriteIds, addFavorite, removeFavorite } from '../services/favorites.api';
@@ -72,6 +73,9 @@ const ProductListPage = () => {
             <SearchBar initialFilters={currentFilters} />
           </div>
         </section>
+
+        {/* Top Advertising Banner */}
+        <TopAdBanner />
 
         <section className="space-y-6">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">

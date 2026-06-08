@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import SearchBar from '../components/marketplace/SearchBar';
+import TopAdBanner from '../components/marketplace/TopAdBanner';
 import CategoriesGrid from '../components/marketplace/CategoriesGrid';
 import FeaturedSection from '../components/marketplace/FeaturedSection';
 import SEO from '../components/SEO';
@@ -155,6 +156,9 @@ const HomePage = () => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 -mt-6 relative z-10">
         <SearchBar />
       </section>
+
+      {/* Top Advertising Banner */}
+      <TopAdBanner />
 
       {/* Browse By Category */}
       <section className="py-12 sm:py-16 bg-white">
