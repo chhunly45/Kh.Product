@@ -73,10 +73,50 @@ const deleteBanner = async (req, res, next) => {
   }
 };
 
+const uploadImage = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      const error = new Error('No image was uploaded');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const uploadStream = (fileBuffer, options) => {
+      return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(options, (error, result) => {
+          if (error) return reject(error);
+          resolve(result);
+        });
+        stream.end(fileBuffer);
+      });
+    };
+
+    const result = await uploadStream(req.file.buffer, {
+      folder: 'marketplace/banners',
+      resource_type: 'image',
+      transformation: [
+        { quality: 'auto' },
+        { fetch_format: 'auto' }
+      ]
+    });
+
+    const data = {
+      secureUrl: result.secure_url || result.url,
+      url: result.url,
+      publicId: result.public_id
+    };
+
+    res.status(201).json({ success: true, data });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getActiveBanners,
   listBanners,
   createBanner,
   updateBanner,
-  deleteBanner
+  deleteBanner,
+  uploadImage
 };

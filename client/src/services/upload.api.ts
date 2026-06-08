@@ -10,3 +10,14 @@ export const uploadImages = async (files: File[]) => {
   });
   return response.data.data;
 };
+
+export const uploadBannerImage = async (file: File) => {
+  const formData = new FormData();
+  formData.append('image', file);
+  const response = await api.post('/banners/upload', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+  return response.data.data;
+};

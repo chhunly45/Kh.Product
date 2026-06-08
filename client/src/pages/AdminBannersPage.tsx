@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { listBanners, createBanner, updateBanner, deleteBanner } from '../services/banner.api';
-import { uploadImages } from '../services/upload.api';
+import { uploadBannerImage } from '../services/upload.api';
 
 const AdminBannersPage = () => {
   const { user } = useAuth();
@@ -36,8 +36,8 @@ const AdminBannersPage = () => {
 
   const handleUpload = async (file: File) => {
     try {
-      const uploaded = await uploadImages([file]);
-      return uploaded?.[0];
+      const uploaded = await uploadBannerImage(file);
+      return uploaded;
     } catch (err: any) {
       console.error('Image upload failed', err);
       throw new Error(err?.response?.data?.message || 'Image upload failed');

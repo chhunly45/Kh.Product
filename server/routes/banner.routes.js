@@ -3,6 +3,7 @@ const { body, param, query } = require('express-validator');
 const bannerController = require('../controllers/banner.controller');
 const authMiddleware = require('../middleware/auth.middleware');
 const roleMiddleware = require('../middleware/role.middleware');
+const upload = require('../middleware/upload.middleware');
 const validate = require('../middleware/validation.middleware');
 
 const router = express.Router();
@@ -26,6 +27,8 @@ router.post('/',
   validate,
   bannerController.createBanner
 );
+
+router.post('/upload', upload.single('image'), bannerController.uploadImage);
 
 router.patch('/:id', param('id').isMongoId(), validate, bannerController.updateBanner);
 
