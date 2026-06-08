@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { listBanners, createBanner, updateBanner, deleteBanner } from '../services/banner.api';
-import api from '../services/api';
+import { uploadImages } from '../services/upload.api';
 
 const AdminBannersPage = () => {
   const { user } = useAuth();
@@ -35,12 +35,13 @@ const AdminBannersPage = () => {
   };
 
   const handleUpload = async (file: File) => {
-    const fd = new FormData();
-    fd.append('images', file);
-    // optional productId not provided
-    const token = localStorage.getItem('authToken');
-    const res = await api.post('/upload', fd, { headers: { Authorization: `Bearer ${token}` } });
-    return res.data.data?.[0];
+    try {
+      const uploaded = await uploadImages([file]);
+      return uploaded?.[0];
+    } catch (err: any) {
+      console.error('Image upload failed', err);
+      throw new Error(err?.response?.data?.message || 'Image upload failed');
+    }
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -58,10 +59,15 @@ const AdminBannersPage = () => {
 
     const file = (form.querySelector('input[name="image"]') as HTMLInputElement).files?.[0];
     if (file) {
-      const uploaded = await handleUpload(file as File);
-      if (uploaded) {
-        payload.imageUrl = uploaded.secureUrl || uploaded.url;
-        payload.imagePublicId = uploaded.publicId;
+      try {
+        const uploaded = await handleUpload(file as File);
+        if (uploaded) {
+          payload.imageUrl = uploaded.secureUrl || uploaded.url;
+          payload.imagePublicId = uploaded.publicId;
+        }
+      } catch (err: any) {
+        alert(err?.message || 'Failed to upload image.');
+        return;
       }
     }
 
