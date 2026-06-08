@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Phone, MessageCircle, ShieldCheck, ArrowUpRight, AlertTriangle, MapPin, CalendarDays, Heart } from 'lucide-react';
 import { getProductById, getProducts, updateProduct, deleteProduct } from '../services/product.api';
 import { getProfile } from '../services/auth.api';
@@ -22,6 +22,20 @@ const ProductDetailPage = () => {
   const [reportMessage, setReportMessage] = useState('');
   const [reportSuccess, setReportSuccess] = useState('');
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const navigate = useNavigate();
+
+  const getUserId = (user: any) => user?._id || user?.id || user?.userId;
+  const getProductSellerId = (product: any) => product?.seller?._id || product?.seller?.id || product?.seller;
+
+  const isOwner = useMemo(() => {
+    const currentUserId = getUserId(currentUser);
+    const sellerId = getProductSellerId(product);
+    const emailMatch = currentUser?.email && product?.seller?.email && currentUser.email.toLowerCase() === product.seller.email.toLowerCase();
+    return (
+      Boolean(currentUserId && sellerId && String(currentUserId) === String(sellerId)) ||
+      Boolean(emailMatch)
+    );
+  }, [currentUser, product]);
 
   useEffect(() => {
     const loadProduct = async () => {
@@ -273,11 +287,11 @@ const ProductDetailPage = () => {
                     telegramHandle={product.seller?.telegramHandle}
                   />
                   {/* Owner controls */}
-                  {currentUser && (currentUser.id === product.seller?._id || ['admin','moderator'].includes(currentUser.role)) && (
+                  {isOwner && (
                     <div className="mt-4 grid gap-3 sm:grid-cols-3">
                       <button
                         type="button"
-                        onClick={() => window.location.assign(`/post-product?id=${product._id}`)}
+                        onClick={() => navigate(`/post-product?id=${product._id}`)}
                         className="inline-flex w-full items-center justify-center gap-2 rounded-3xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
                       >
                         Edit Product
@@ -288,8 +302,7 @@ const ProductDetailPage = () => {
                           if (!window.confirm('Are you sure you want to delete this product?')) return;
                           try {
                             await deleteProduct(product._id);
-                            alert('Product deleted');
-                            window.location.href = '/products';
+                            navigate('/dashboard');
                           } catch (err) {
                             alert('Unable to delete product.');
                           }
