@@ -70,13 +70,25 @@ const DashboardPage = () => {
             <h1 className="text-3xl font-semibold text-slate-900">Seller dashboard</h1>
             <p className="mt-2 text-sm text-slate-500">Manage your active listings, update status, and keep track of your products.</p>
           </div>
-          <button
-            type="button"
-            onClick={() => navigate('/post-product')}
-            className="inline-flex items-center gap-2 rounded-full bg-sky-600 px-5 py-3 text-sm font-semibold text-white hover:bg-sky-700 transition"
-          >
-            <PlusCircle className="w-4 h-4" /> Post new listing
-          </button>
+          <div className="flex items-center gap-3">
+            {user?.role === 'admin' && (
+              <button
+                type="button"
+                onClick={() => navigate('/admin/banners')}
+                className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-50 transition"
+              >
+                Manage Banners
+              </button>
+            )}
+
+            <button
+              type="button"
+              onClick={() => navigate('/post-product')}
+              className="inline-flex items-center gap-2 rounded-full bg-sky-600 px-5 py-3 text-sm font-semibold text-white hover:bg-sky-700 transition"
+            >
+              <PlusCircle className="w-4 h-4" /> Post new listing
+            </button>
+          </div>
         </div>
       </header>
 
