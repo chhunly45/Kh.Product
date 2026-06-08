@@ -185,11 +185,14 @@ const PostProductPage = () => {
 
         <div className="grid gap-6 lg:grid-cols-2">
           <label className="block">
-            <span className="text-sm font-medium text-slate-700">Price</span>
+            <span className="text-sm font-medium text-slate-700">Price (USD)</span>
             <input
               type="number"
+              step="0.01"
+              min="0"
               value={price}
               onChange={(event) => setPrice(event.target.value)}
+              placeholder="Enter price in USD"
               className={`mt-2 w-full rounded-3xl border px-4 py-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 ${errors.price ? 'border-rose-400 bg-rose-50' : 'border-slate-200 bg-slate-50'}`}
             />
             {errors.price && <p className="mt-2 text-sm text-rose-600">{errors.price}</p>}

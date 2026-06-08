@@ -5,6 +5,7 @@ import { getProductById, getProducts, updateProduct, deleteProduct } from '../se
 import { getProfile } from '../services/auth.api';
 import { checkFavorite, addFavorite, removeFavorite } from '../services/favorites.api';
 import { createReport } from '../services/report.api';
+import { formatPriceKHR, formatPriceUSD } from '../utils/price';
 import SellerContactCard from '../components/marketplace/SellerContactCard';
 import SEO from '../components/SEO';
 import ProductCard from '../components/marketplace/ProductCard';
@@ -76,10 +77,10 @@ const ProductDetailPage = () => {
   }, [product, id]);
 
   const formatPrice = (price: number | string) => {
-    if (typeof price === 'number') {
-      return `KHR ${price.toLocaleString()}`;
-    }
-    return price;
+    return {
+      usd: formatPriceUSD(price),
+      khr: formatPriceKHR(price)
+    };
   };
 
   const safelyPhone = (value?: string) => {
@@ -137,7 +138,7 @@ const ProductDetailPage = () => {
           offers: {
             '@type': 'Offer',
             url: window.location.href,
-            priceCurrency: 'KHR',
+            priceCurrency: 'USD',
             price: product.price,
             availability: product.status === 'published' ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock'
           }
@@ -183,7 +184,8 @@ const ProductDetailPage = () => {
             </div>
             <div className="flex flex-col items-start gap-2 rounded-3xl bg-slate-100 px-5 py-4 text-left sm:text-right">
               <span className="text-sm text-slate-500">Price</span>
-              <span className="text-3xl font-semibold text-sky-600">{formatPrice(product.price)}</span>
+              <span className="text-3xl font-semibold text-sky-600">{formatPrice(product.price).usd}</span>
+              <span className="text-sm text-slate-500">{formatPrice(product.price).khr}</span>
               <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-slate-700">
                 {product.status === 'sold' ? 'Sold' : 'Available'}
               </span>
@@ -430,7 +432,7 @@ const ProductDetailPage = () => {
                   key={item._id}
                   id={item._id}
                   title={item.title}
-                  price={formatPrice(item.price)}
+                  price={item.price}
                   location={item.location || 'Unknown'}
                   category={item.category?.labelKh || item.category?.name || 'General'}
                   imageUrl={item.images?.[0]?.secureUrl || item.images?.[0]?.url || ''}

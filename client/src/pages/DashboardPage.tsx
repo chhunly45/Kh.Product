@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getProfile } from '../services/auth.api';
 import { getProducts, updateProduct, deleteProduct } from '../services/product.api';
 import { Edit3, Trash2, CheckCircle, PlusCircle, Eye, TrendingUp } from 'lucide-react';
+import { formatPriceKHR, formatPriceUSD } from '../utils/price';
 
 const DashboardPage = () => {
   const [products, setProducts] = useState<any[]>([]);
@@ -176,7 +177,7 @@ const DashboardPage = () => {
                     <div className="mt-2 flex flex-wrap gap-3 text-sm text-slate-600">
                       <span>{product.category?.labelKh || product.category?.name || 'General'}</span>
                       <span>{product.location || 'Unknown location'}</span>
-                      <span>{formatPrice(product.price)}</span>
+                      <span>{formatPriceUSD(product.price)} {formatPriceKHR(product.price)}</span>
                     </div>
                   </div>
                   <div className="flex flex-wrap items-center gap-3">
@@ -222,13 +223,6 @@ const DashboardPage = () => {
       </section>
     </div>
   );
-};
-
-const formatPrice = (price: number | string) => {
-  if (typeof price === 'number') {
-    return `KHR ${price.toLocaleString()}`;
-  }
-  return typeof price === 'string' ? `KHR ${Number(price).toLocaleString()}` : 'KHR 0';
 };
 
 export default DashboardPage;

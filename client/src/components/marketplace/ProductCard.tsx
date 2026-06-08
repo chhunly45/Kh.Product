@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useEffect, useState, MouseEvent } from 'react';
 import { MapPin, Heart } from 'lucide-react';
+import { formatPriceKHR, formatPriceUSD } from '../../utils/price';
 
 interface ProductCardProps {
   title: string;
@@ -22,12 +23,14 @@ const ProductCard = ({ title, price, location, category, id, imageUrl, isFavorit
   const fallback = 'https://via.placeholder.com/600x400.png?text=No+Image';
   const src = imageUrl || fallback;
   
-  const formatPrice = (p: string | number): string => {
-    if (typeof p === 'number') {
-      return `₨${p.toLocaleString()}`;
-    }
-    return p;
+  const formatPrice = (p: string | number): { usd: string; khr: string } => {
+    return {
+      usd: formatPriceUSD(p),
+      khr: formatPriceKHR(p)
+    };
   };
+
+  const priceText = formatPrice(price);
 
   return (
     <Link to={`/products/${id}`} className="group block overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:shadow-xl hover:border-sky-200">
@@ -93,9 +96,14 @@ const ProductCard = ({ title, price, location, category, id, imageUrl, isFavorit
 
         {/* Price & CTA */}
         <div className="mt-4 flex items-end justify-between gap-3">
-          <span className="text-lg font-bold text-sky-600">
-            {formatPrice(price)}
-          </span>
+          <div>
+            <span className="text-lg font-bold text-sky-600 block">
+              {priceText.usd}
+            </span>
+            <span className="text-xs text-slate-500">
+              {priceText.khr}
+            </span>
+          </div>
           <span className="rounded-full bg-sky-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-sky-600 group-hover:bg-sky-100 transition">
             View
           </span>

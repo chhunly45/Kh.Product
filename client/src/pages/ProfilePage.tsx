@@ -3,6 +3,7 @@ import { getProfile, requestVerification } from '../services/auth.api';
 import { getProducts } from '../services/product.api';
 import ProductCard from '../components/marketplace/ProductCard';
 import { MapPin, Mail, Phone, Shield, TrendingUp, Star, MessageSquare, CalendarDays } from 'lucide-react';
+import { formatPriceKHR, formatPriceUSD } from '../utils/price';
 
 const ProfilePage = () => {
   const [profile, setProfile] = useState<any>(null);
@@ -274,7 +275,7 @@ const ProfilePage = () => {
                             <div className="flex-1 min-w-0">
                               <h3 className="text-sm font-semibold text-slate-900 truncate">{product.title}</h3>
                               <p className="text-xs text-slate-500">{product.category?.labelKh || product.category?.name || 'General'}</p>
-                              <p className="text-sm text-slate-700 mt-2">{typeof product.price === 'number' ? `₨${product.price.toLocaleString()}` : product.price}</p>
+                              <p className="text-sm text-slate-700 mt-2">{formatPriceUSD(product.price)} {formatPriceKHR(product.price)}</p>
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
