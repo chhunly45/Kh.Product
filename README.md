@@ -55,7 +55,13 @@ Then edit `server/.env` with your local values.
 npm run dev
 ```
 
-6. Start the frontend app:
+7. From the repository root, promote a user to admin by email:
+
+```bash
+npm run make:admin -- user@example.com
+```
+
+8. Start the frontend app:
 
 ```bash
 cd ../client
