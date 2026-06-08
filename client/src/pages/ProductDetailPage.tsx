@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Phone, MessageCircle, ShieldCheck, ArrowUpRight, AlertTriangle, MapPin, CalendarDays, Heart } from 'lucide-react';
-import { getProductById, getProducts } from '../services/product.api';
+import { getProductById, getProducts, updateProduct, deleteProduct } from '../services/product.api';
+import { getProfile } from '../services/auth.api';
 import { checkFavorite, addFavorite, removeFavorite } from '../services/favorites.api';
 import { createReport } from '../services/report.api';
 import SellerContactCard from '../components/marketplace/SellerContactCard';
@@ -20,6 +21,7 @@ const ProductDetailPage = () => {
   const [reportReason, setReportReason] = useState<'scam' | 'fake_product' | 'duplicate_listing' | 'wrong_category' | 'other' | ''>('');
   const [reportMessage, setReportMessage] = useState('');
   const [reportSuccess, setReportSuccess] = useState('');
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
   useEffect(() => {
     const loadProduct = async () => {
@@ -32,6 +34,12 @@ const ProductDetailPage = () => {
         const favorite = await checkFavorite(id);
         setIsFavorite(Boolean(favorite));
         setStatus('');
+        try {
+          const profile = await getProfile();
+          setCurrentUser(profile);
+        } catch (err) {
+          setCurrentUser(null);
+        }
       } catch (error) {
         setStatus('Unable to load product.');
       }
@@ -264,6 +272,51 @@ const ProductDetailPage = () => {
                     sellerEmail={product.seller?.email}
                     telegramHandle={product.seller?.telegramHandle}
                   />
+                  {/* Owner controls */}
+                  {currentUser && (currentUser.id === product.seller?._id || ['admin','moderator'].includes(currentUser.role)) && (
+                    <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                      <button
+                        type="button"
+                        onClick={() => window.location.assign(`/post-product?id=${product._id}`)}
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-3xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+                      >
+                        Edit Product
+                      </button>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          if (!window.confirm('Are you sure you want to delete this product?')) return;
+                          try {
+                            await deleteProduct(product._id);
+                            alert('Product deleted');
+                            window.location.href = '/products';
+                          } catch (err) {
+                            alert('Unable to delete product.');
+                          }
+                        }}
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-3xl border border-rose-300 bg-white px-4 py-3 text-sm font-semibold text-rose-600 hover:bg-rose-50 transition"
+                      >
+                        Delete Product
+                      </button>
+                      {product.status !== 'sold' && (
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            try {
+                              await updateProduct(product._id, { status: 'sold' });
+                              setStatus('Product marked as sold.');
+                              setProduct({ ...product, status: 'sold' });
+                            } catch (err) {
+                              setStatus('Could not update product status.');
+                            }
+                          }}
+                          className="inline-flex w-full items-center justify-center gap-2 rounded-3xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white hover:bg-slate-800 transition"
+                        >
+                          Mark as Sold
+                        </button>
+                      )}
+                    </div>
+                  )}
                   
                   <div className="grid gap-3 sm:grid-cols-2">
                     <button
