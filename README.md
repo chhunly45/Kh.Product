@@ -56,7 +56,14 @@ npm run dev
 ```
 
 7. From the repository root, promote a user to admin by email:
+PowerShell:
 
+```powershell
+$env:MONGODB_URI="mongodb+srv://<user>:<password>@cluster.mongodb.net/konpuk?retryWrites=true&w=majority"
+npm run make:admin -- user@example.com
+```
+
+Or create `server/.env` with `MONGODB_URI` and run:
 ```bash
 npm run make:admin -- user@example.com
 ```

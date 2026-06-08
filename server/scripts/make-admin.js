@@ -1,6 +1,8 @@
-require('dotenv').config();
-const connectDatabase = require('../config/database');
+const path = require('path');
+const mongoose = require('mongoose');
 const { User } = require('../models');
+
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
 const normalizeEmail = (email) => {
   if (!email || typeof email !== 'string') return '';
@@ -9,6 +11,24 @@ const normalizeEmail = (email) => {
 
 const printUsage = () => {
   console.log('Usage: npm run make:admin -- user@example.com');
+};
+
+const connectDatabase = async () => {
+  const mongoUri = process.env.MONGODB_URI;
+  if (!mongoUri) {
+    console.error('MONGODB_URI is required. Set it before running make:admin.');
+    process.exit(1);
+  }
+
+  try {
+    await mongoose.connect(mongoUri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    });
+  } catch (error) {
+    console.error('MongoDB connection failed:', error.message);
+    process.exit(1);
+  }
 };
 
 const run = async () => {
