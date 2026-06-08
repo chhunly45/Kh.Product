@@ -15,7 +15,7 @@ const Footer = () => {
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center">
                 <ShoppingBag className="w-5 h-5 text-white" />
               </div>
-              <span className="text-lg font-bold text-white">Khmer24</span>
+              <span className="text-lg font-bold text-white">Konpuk</span>
             </div>
             <p className="text-sm text-slate-400 mb-4">
               Cambodia's #1 online marketplace for buying and selling products locally.
@@ -76,7 +76,7 @@ const Footer = () => {
               </li>
               <li className="flex items-center gap-2 text-sm">
                 <Mail className="w-4 h-4 text-sky-400 flex-shrink-0" />
-                <span className="text-slate-400">support@khmer24.com</span>
+                <span className="text-slate-400">support@konpuk.com</span>
               </li>
               <li className="flex items-start gap-2 text-sm">
                 <MapPin className="w-4 h-4 text-sky-400 flex-shrink-0 mt-0.5" />
@@ -91,7 +91,7 @@ const Footer = () => {
 
         {/* Bottom Footer */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm text-slate-400">
-          <p>© {currentYear} Khmer24. All rights reserved. Made for Cambodia. 🇰🇭</p>
+          <p>© {currentYear} Konpuk. All rights reserved. Made for Cambodia. 🇰🇭</p>
           <div className="flex flex-wrap gap-4 sm:justify-end">
             <a href="#" className="hover:text-sky-400 transition">Privacy</a>
             <a href="#" className="hover:text-sky-400 transition">Terms</a>

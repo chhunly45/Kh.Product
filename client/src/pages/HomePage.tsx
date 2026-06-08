@@ -46,9 +46,9 @@ const HomePage = () => {
     <div className="bg-gradient-to-b from-slate-50 to-white">
       <SEO
         title="Cambodia's local marketplace"
-        description="Find and sell local products across Cambodia with Marketplace Kh. Secure messaging, easy listings, and a trusted community."
-        url="https://marketplace-kh.com/"
-        image="https://via.placeholder.com/1200x630.png?text=Marketplace+Kh"
+        description="Find and sell local products across Cambodia with Konpuk. Secure messaging, easy listings, and a trusted community."
+        url="https://konpuk.com/"
+        image="https://via.placeholder.com/1200x630.png?text=Konpuk"
       />
 
       {/* Hero Banner Section - Large & Impressive */}
@@ -231,7 +231,7 @@ const HomePage = () => {
       {/* Why Choose Us Section */}
       <section className="py-12 sm:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-12 text-center">Why Choose Khmer24?</h2>
+          <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-12 text-center">Why Choose Konpuk?</h2>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
             {/* Feature 1 */}
@@ -276,7 +276,7 @@ const HomePage = () => {
       {/* CTA Section */}
       <section className="py-12 sm:py-16 bg-gradient-to-r from-sky-500 to-blue-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white space-y-6">
-          <h2 className="text-3xl sm:text-4xl font-bold">Ready to Join Khmer24?</h2>
+          <h2 className="text-3xl sm:text-4xl font-bold">Ready to Join Konpuk?</h2>
           <p className="text-lg text-sky-100 max-w-2xl mx-auto">Start buying and selling with Cambodia's most trusted community today.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <Link

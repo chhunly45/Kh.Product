@@ -93,9 +93,9 @@ const sendTestEmail = async (req, res, next) => {
 
     await emailService.sendEmail({
       to,
-      subject: 'Marketplace Kh - Test Email',
-      text: 'This is a test email from your Marketplace Kh backend. If you received this, email delivery is working correctly.',
-      html: '<p>This is a test email from your Marketplace Kh backend.</p><p>If you received this, email delivery is working correctly.</p>'
+      subject: 'Konpuk - Test Email',
+      text: 'This is a test email from your Konpuk backend. If you received this, email delivery is working correctly.',
+      html: '<p>This is a test email from your Konpuk backend.</p><p>If you received this, email delivery is working correctly.</p>'
     });
 
     res.json({

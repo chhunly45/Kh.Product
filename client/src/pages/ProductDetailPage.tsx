@@ -110,7 +110,7 @@ const ProductDetailPage = () => {
           sku: product._id,
           brand: {
             '@type': 'Brand',
-            name: product.category?.labelKh || product.category?.name || 'Marketplace Kh'
+            name: product.category?.labelKh || product.category?.name || 'Konpuk'
           },
           offers: {
             '@type': 'Offer',

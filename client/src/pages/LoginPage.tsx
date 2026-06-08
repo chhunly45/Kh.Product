@@ -231,7 +231,7 @@ const LoginPage = () => {
           Forgot password?
         </Link>
         <p>
-          New to Marketplace Kh? <Link to="/register" className="font-semibold text-sky-600 hover:text-sky-700">Create account</Link>
+          New to Konpuk? <Link to="/register" className="font-semibold text-sky-600 hover:text-sky-700">Create account</Link>
         </p>
       </div>
     </div>

@@ -22,20 +22,20 @@ const findUserByIdentifier = async (identifier) => {
 const generateOtp = () => String(Math.floor(100000 + Math.random() * 900000));
 
 const sendEmailVerificationCodeEmail = async (user, code) => {
-  const message = `Welcome to Marketplace Kh! Your email verification code is ${code}. It expires in 5 minutes. Do not share this code with anyone.`;
+  const message = `Welcome to Konpuk! Your email verification code is ${code}. It expires in 5 minutes. Do not share this code with anyone.`;
   await emailService.sendEmail({
     to: user.email,
-    subject: 'Marketplace Kh email verification code',
+    subject: 'Konpuk email verification code',
     text: message,
     html: `<p>${message}</p>`
   });
 };
 
 const sendLoginOtpEmail = async (user, code) => {
-  const message = `Your Marketplace Kh login verification code is ${code}. It expires in 5 minutes. Do not share this code with anyone.`;
+  const message = `Your Konpuk login verification code is ${code}. It expires in 5 minutes. Do not share this code with anyone.`;
   await emailService.sendEmail({
     to: user.email,
-    subject: 'Marketplace Kh login verification code',
+    subject: 'Konpuk login verification code',
     text: message,
     html: `<p>${message}</p>`
   });
@@ -80,10 +80,10 @@ const registerUser = async ({ email, password, displayName, phoneNumber, locatio
 };
 
 const sendPasswordResetOtpEmail = async (user, code) => {
-  const message = `Your Marketplace Kh password reset code is ${code}. It expires in 5 minutes. Do not share this code with anyone.`;
+  const message = `Your Konpuk password reset code is ${code}. It expires in 5 minutes. Do not share this code with anyone.`;
   await emailService.sendEmail({
     to: user.email,
-    subject: 'Marketplace Kh password reset code',
+    subject: 'Konpuk password reset code',
     text: message,
     html: `<p>${message}</p>`
   });

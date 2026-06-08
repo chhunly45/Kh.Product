@@ -5,7 +5,7 @@ const getViteEnv = (key: string, fallback: string) => {
   return value || fallback;
 };
 
-const defaultSiteUrl = getViteEnv('VITE_SITE_URL', 'https://marketplace-kh.com');
+const defaultSiteUrl = getViteEnv('VITE_SITE_URL', 'https://konpuk.com');
 const defaultImage = `${defaultSiteUrl}/og-image.png`;
 
 interface SEOProps {
@@ -56,7 +56,7 @@ const insertStructuredData = (structuredData: Record<string, any>) => {
 
 const SEO = ({ title, description, url, image, type = 'website', structuredData }: SEOProps) => {
   useEffect(() => {
-    const pageTitle = title ? `${title} | Marketplace Kh` : 'Marketplace Kh';
+    const pageTitle = title ? `${title} | Konpuk` : 'Konpuk';
     document.title = pageTitle;
 
     setMeta('meta[name="description"]', 'name', description || 'Cambodian marketplace for buyers and sellers.');
@@ -76,12 +76,12 @@ const SEO = ({ title, description, url, image, type = 'website', structuredData 
     const siteJsonLd = structuredData || {
       '@context': 'https://schema.org',
       '@type': 'WebSite',
-      name: 'Marketplace Kh',
+      name: 'Konpuk',
       url: url || defaultSiteUrl,
       description: description || 'Cambodian marketplace for buyers and sellers.',
       publisher: {
         '@type': 'Organization',
-        name: 'Marketplace Kh',
+        name: 'Konpuk',
         url: defaultSiteUrl
       }
     };

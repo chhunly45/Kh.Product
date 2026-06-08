@@ -10,13 +10,13 @@ services:
     startCommand: npm start
     envVars:
       - key: MONGODB_URI
-        value: "mongodb+srv://username:password@cluster.mongodb.net/marketplace-kh?retryWrites=true&w=majority"
+        value: "mongodb+srv://username:password@cluster.mongodb.net/konpuk?retryWrites=true&w=majority"
         sync: false
       - key: JWT_SECRET
         value: "your-secret-key-here"
         sync: false
       - key: CLIENT_URL
-        value: "https://kh-product.vercel.app"
+        value: "https://konpuk.com"
         sync: false
       - key: CLOUDINARY_CLOUD_NAME
         value: "your-cloud-name"

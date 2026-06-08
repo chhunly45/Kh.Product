@@ -1,8 +1,8 @@
-# Marketplace-Kh PRD
+# Konpuk PRD
 
 ## 1. Overview
 
-Marketplace-Kh is a Cambodian online marketplace website inspired by Khmer24. The platform allows buyers and sellers to interact through listings, messaging, and user-managed profiles. It supports localized categories, search and filtering, mobile-responsive design, and administrative control for moderation and analytics.
+Konpuk is a Cambodian online marketplace website inspired by Khmer24. The platform allows buyers and sellers to interact through listings, messaging, and user-managed profiles. It supports localized categories, search and filtering, mobile-responsive design, and administrative control for moderation and analytics.
 
 ### Goals
 
@@ -25,7 +25,7 @@ Marketplace-Kh is a Cambodian online marketplace website inspired by Khmer24. Th
 
 ### 2.1 Architecture Overview
 
-Marketplace-Kh uses a modular web architecture with three main layers:
+Konpuk uses a modular web architecture with three main layers:
 
 - `Client` – a responsive frontend application built with React.js or Vue.js, providing search, browsing, posting, chat, and account management.
 - `Server` – a RESTful API built with Node.js/Express, NestJS, or similar, handling authentication, listings, user actions, chat, and admin workflows.
@@ -352,7 +352,7 @@ Additional services:
 ### Recommended repository layout
 
 ```
-Marketplace-Kh/
+Konpuk/
 ├── client/
 │   ├── public/
 │   │   ├── index.html

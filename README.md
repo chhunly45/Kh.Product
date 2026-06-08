@@ -1,6 +1,6 @@
-# Marketplace Kh
+# Konpuk
 
-Marketplace Kh is a Cambodian local classifieds platform built with a React frontend and an Express/MongoDB backend. The repository is organized into two main application modules:
+Konpuk is a Cambodian local classifieds platform built with a React frontend and an Express/MongoDB backend. The repository is organized into two main application modules:
 
 - `client/` — frontend application powered by Vite, React, TypeScript, Tailwind, and Axios.
 - `server/` — backend API powered by Express, MongoDB, Cloudinary, authentication, and CSRF protection.
@@ -181,7 +181,7 @@ client/dist
 3. Use the connection string format:
 
 ```bash
-mongodb+srv://<user>:<password>@<cluster>.mongodb.net/marketplace-kh?retryWrites=true&w=majority
+mongodb+srv://<user>:<password>@<cluster>.mongodb.net/konpuk?retryWrites=true&w=majority
 ```
 
 4. Set `MONGODB_URI` in `server/.env` or your deployment platform.

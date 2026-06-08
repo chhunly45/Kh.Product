@@ -18,7 +18,7 @@ import NotFoundPage from '../pages/NotFoundPage';
 
 const AppRoutes = () => (
   <Routes>
-    {/* Root route renders the new Khmer24 homepage component */}
+    {/* Root route renders the new Konpuk homepage component */}
     <Route path="/" element={<HomePage />} />
     <Route path="/login" element={<LoginPage />} />
     <Route path="/forgot-password" element={<ForgotPasswordPage />} />
