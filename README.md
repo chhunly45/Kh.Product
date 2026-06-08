@@ -127,6 +127,11 @@ npm start
 - `CLOUDINARY_API_SECRET`
 - `NODE_ENV=production`
 
+Important Render notes:
+- Set `CLIENT_URL` (or `CLIENT_ORIGIN` / `FRONTEND_URL`) to `https://konpuk.com`.
+- The backend already allows `https://konpuk.com` and `https://www.konpuk.com` by default.
+- If your frontend runs at `https://kh-product.vercel.app` during preview, set `CLIENT_URL` accordingly.
+
 7. Deploy the service.
 
 8. Point the frontend `VITE_API_BASE_URL` to the rendered backend URL and ensure `CLIENT_URL` matches the frontend origin.
@@ -156,6 +161,11 @@ client/dist
 6. Add the following environment variable in Vercel project settings:
 
 - `VITE_API_BASE_URL` — e.g. `https://your-backend.vercel.app/api`
+
+Important Vercel notes:
+- Set `VITE_API_BASE_URL` to your backend URL (for example the Render service URL) including the `/api` path, e.g. `https://your-backend.example.com/api`.
+- Ensure your backend `CLIENT_URL` on Render is set to `https://konpuk.com` so CORS and CSRF cookies work when the site is live.
+- During testing you can also point `VITE_API_BASE_URL` to `https://kh-product-1.onrender.com/api` (existing Render preview).
 
 7. Deploy the frontend.
 
