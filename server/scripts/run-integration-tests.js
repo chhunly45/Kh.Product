@@ -147,6 +147,152 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
     }
     console.log('[integration] verification request succeeded');
 
+    // 5) Banner permission tests
+    console.log('[integration] testing banner permissions');
+
+    // Create an admin user for testing
+    const adminPassword = 'AdminPass123!';
+    const adminPasswordHash = await bcrypt.hash(adminPassword, 12);
+    const admin = await User.create({
+      email: 'admin@example.com',
+      passwordHash: adminPasswordHash,
+      displayName: 'Admin User',
+      role: 'admin',
+      emailVerified: true
+    });
+    console.log('[integration] created admin user');
+
+    // Get admin token
+    const adminLoginResp = await axios.post(`${base}/auth/login`, { identifier: 'admin@example.com', password: adminPassword }, { headers: defaultHeaders });
+    const adminOtpResp = adminLoginResp.data.data;
+    if (!adminOtpResp.requiresOtp) throw new Error('Admin login did not request OTP');
+
+    // Wait for admin OTP
+    let adminOtp = null;
+    for (let i = 0; i < 20; i++) {
+      if (fs.existsSync(devDir)) {
+        const files = fs.readdirSync(devDir).filter((f) => f.startsWith('email-')).sort();
+        if (files.length > 1) { // Should have 2 emails now
+          const latest = files[files.length - 1];
+          const content = fs.readFileSync(path.join(devDir, latest), 'utf8');
+          const m = content.match(/code is (\d{6})|code: (\d{6})|(verification code is (\d{6}))/i);
+          if (m) adminOtp = (m[1] || m[2] || m[4]).toString();
+          break;
+        }
+      }
+      await wait(250);
+    }
+    if (!adminOtp) throw new Error('Admin OTP email not found');
+
+    // Verify admin login
+    const adminVerifyResp = await axios.post(`${base}/auth/login/verify`, { identifier: 'admin@example.com', code: adminOtp }, { headers: defaultHeaders });
+    const adminToken = adminVerifyResp.data.data.accessToken;
+    console.log('[integration] admin login succeeded, token obtained');
+
+    // Test 5a: Public user cannot create banner
+    console.log('[integration] testing: non-admin user cannot create banner');
+    try {
+      await axios.post(`${base}/banners`, 
+        { title: 'Test Banner', subtitle: 'Test', enabled: true },
+        { headers: { Authorization: `Bearer ${token}`, ...defaultHeaders } }
+      );
+      throw new Error('Non-admin user should not be able to create banner');
+    } catch (e) {
+      if (e.response?.status === 403) {
+        console.log('[integration] ✓ non-admin user correctly denied banner creation');
+      } else {
+        throw e;
+      }
+    }
+
+    // Test 5b: Admin can create banner
+    console.log('[integration] testing: admin user can create banner');
+    const bannerResp = await axios.post(`${base}/banners`,
+      { title: 'Test Banner', subtitle: 'Test Subtitle', enabled: true },
+      { headers: { Authorization: `Bearer ${adminToken}`, ...defaultHeaders } }
+    );
+    if (!bannerResp.data.data || !bannerResp.data.data._id) {
+      throw new Error('Admin banner creation failed');
+    }
+    const bannerId = bannerResp.data.data._id;
+    console.log('[integration] ✓ admin user created banner:', bannerId);
+
+    // Test 5c: Non-admin user cannot update banner
+    console.log('[integration] testing: non-admin user cannot update banner');
+    try {
+      await axios.patch(`${base}/banners/${bannerId}`,
+        { title: 'Updated Banner' },
+        { headers: { Authorization: `Bearer ${token}`, ...defaultHeaders } }
+      );
+      throw new Error('Non-admin user should not be able to update banner');
+    } catch (e) {
+      if (e.response?.status === 403) {
+        console.log('[integration] ✓ non-admin user correctly denied banner update');
+      } else {
+        throw e;
+      }
+    }
+
+    // Test 5d: Admin can update banner
+    console.log('[integration] testing: admin user can update banner');
+    const bannerUpdateResp = await axios.patch(`${base}/banners/${bannerId}`,
+      { title: 'Updated Banner Title' },
+      { headers: { Authorization: `Bearer ${adminToken}`, ...defaultHeaders } }
+    );
+    if (bannerUpdateResp.data.data.title !== 'Updated Banner Title') {
+      throw new Error('Admin banner update failed');
+    }
+    console.log('[integration] ✓ admin user updated banner');
+
+    // Test 5e: Non-admin user cannot delete banner
+    console.log('[integration] testing: non-admin user cannot delete banner');
+    try {
+      await axios.delete(`${base}/banners/${bannerId}`,
+        { headers: { Authorization: `Bearer ${token}`, ...defaultHeaders } }
+      );
+      throw new Error('Non-admin user should not be able to delete banner');
+    } catch (e) {
+      if (e.response?.status === 403) {
+        console.log('[integration] ✓ non-admin user correctly denied banner deletion');
+      } else {
+        throw e;
+      }
+    }
+
+    // Test 5f: Unauthenticated user cannot create banner
+    console.log('[integration] testing: unauthenticated user cannot create banner');
+    try {
+      await axios.post(`${base}/banners`,
+        { title: 'Test Banner', subtitle: 'Test' },
+        { headers: defaultHeaders }
+      );
+      throw new Error('Unauthenticated user should not be able to create banner');
+    } catch (e) {
+      if (e.response?.status === 401 || e.response?.status === 403) {
+        console.log('[integration] ✓ unauthenticated user correctly denied banner creation');
+      } else {
+        throw e;
+      }
+    }
+
+    // Test 5g: Public user can fetch active banners
+    console.log('[integration] testing: public user can fetch active banners');
+    const activeBannersResp = await axios.get(`${base}/banners/active`);
+    if (!Array.isArray(activeBannersResp.data.data)) {
+      throw new Error('Failed to fetch active banners');
+    }
+    console.log('[integration] ✓ public user can fetch active banners, count:', activeBannersResp.data.data.length);
+
+    // Test 5h: Admin can delete banner
+    console.log('[integration] testing: admin user can delete banner');
+    const bannerDeleteResp = await axios.delete(`${base}/banners/${bannerId}`,
+      { headers: { Authorization: `Bearer ${adminToken}`, ...defaultHeaders } }
+    );
+    if (!bannerDeleteResp.data.success) {
+      throw new Error('Admin banner deletion failed');
+    }
+    console.log('[integration] ✓ admin user deleted banner');
+
     console.log('[integration] all tests passed');
 
     // Clean up
