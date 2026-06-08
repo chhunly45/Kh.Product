@@ -6,12 +6,18 @@ module.exports = {
   jwtSecret: process.env.JWT_SECRET || 'change_this_secret',
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '1h',
   refreshTokenExpiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN || '7d',
-  clientOrigin: process.env.CLIENT_URL || process.env.CLIENT_ORIGIN || 'http://localhost:5173',
-  allowedOrigins: [
-    'http://localhost:5173',
-    'https://kh-product.vercel.app',
-    'https://konpuk.com'
-  ],
+  clientOrigin: process.env.CLIENT_URL || process.env.CLIENT_ORIGIN || process.env.FRONTEND_URL || process.env.FRONTEND || 'http://localhost:5173',
+  allowedOrigins: (() => {
+    const defaultOrigins = [
+      'http://localhost:5173',
+      'https://kh-product.vercel.app',
+      'https://konpuk.com',
+      'https://www.konpuk.com'
+    ];
+    const envClient = process.env.CLIENT_URL || process.env.CLIENT_ORIGIN || process.env.FRONTEND_URL || process.env.FRONTEND;
+    if (envClient && !defaultOrigins.includes(envClient)) defaultOrigins.push(envClient);
+    return defaultOrigins;
+  })(),
   rateLimitWindowMs: Number(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
   rateLimitMax: Number(process.env.RATE_LIMIT_MAX) || 100,
   authRateLimitWindowMs: Number(process.env.AUTH_RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
