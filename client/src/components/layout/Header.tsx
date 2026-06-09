@@ -176,19 +176,24 @@ const Header = () => {
             </Link>
             {user ? (
               <>
-                <Link
-                  to="/profile"
+                <button
+                  onClick={() => {
+                    console.log('Profile button clicked!');
+                    console.log('Current user:', user);
+                    navigate('/profile');
+                  }}
                   className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition cursor-pointer"
                   title="View your profile"
                   aria-label="Open profile"
+                  type="button"
                 >
                   {user.profileImageUrl ? (
                     <img src={user.profileImageUrl} alt="avatar" className="w-6 h-6 rounded-full object-cover" />
                   ) : (
                     <User className="w-4 h-4" />
                   )}
-                  <span>{user.displayName ? user.displayName.split(' ')[0] : 'Account'}</span>
-                </Link>
+                  <span>{user?.displayName ? user.displayName.split(' ')[0] : 'Account'}</span>
+                </button>
                 <button
                   type="button"
                   onClick={async () => {
@@ -274,15 +279,20 @@ const Header = () => {
             </Link>
             {user ? (
               <>
-                <Link
-                  to="/profile"
+                <button
+                  onClick={() => {
+                    console.log('Mobile Profile button clicked!');
+                    console.log('Current user:', user);
+                    navigate('/profile');
+                    setMobileMenuOpen(false);
+                  }}
                   className="block rounded-lg border border-slate-300 bg-white px-4 py-2 text-center text-sm font-semibold text-slate-700 hover:bg-slate-50 transition cursor-pointer"
                   title="View your profile"
                   aria-label="Open profile"
-                  onClick={() => setMobileMenuOpen(false)}
+                  type="button"
                 >
-                  {user.displayName ? `Hi, ${user.displayName.split(' ')[0]}` : 'Profile'}
-                </Link>
+                  {user?.displayName ? `Hi, ${user.displayName.split(' ')[0]}` : 'Profile'}
+                </button>
                 <button
                   type="button"
                   onClick={async () => {
