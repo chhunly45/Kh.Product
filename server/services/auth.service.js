@@ -225,6 +225,135 @@ const resendLoginOtp = async (identifier) => {
   };
 };
 
+// Normalize Cambodian phone numbers to digits (no +) for storage and lookup
+const normalizePhoneDigits = (phone) => {
+  if (!phone) return null;
+  const digits = phone.toString().replace(/\D/g, '');
+  if (digits.startsWith('0')) {
+    // local format like 012345678 -> remove leading 0 and prefix 855
+    return digits.replace(/^0+/, '855');
+  }
+  if (digits.startsWith('855')) return digits;
+  return digits; // fallback
+};
+
+const requestPhoneOtp = async (phoneNumber) => {
+  if (!phoneNumber) {
+    const error = new Error('Phone number is required');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const digits = normalizePhoneDigits(phoneNumber);
+  if (!digits) {
+    const error = new Error('Invalid phone number');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  let user = await User.findOne({ phoneNumber: digits });
+
+  if (!user) {
+    // Optionally allow registration via phone if configured
+    if (process.env.ALLOW_PHONE_REGISTRATION === 'true') {
+      user = await User.create({ email: `${digits}@phone.local`, passwordHash: await bcrypt.hash(Math.random().toString(36).slice(2), 12), displayName: digits, phoneNumber: digits, emailVerified: false });
+    } else {
+      const error = new Error('Phone number is not registered');
+      error.statusCode = 404;
+      throw error;
+    }
+  }
+
+  const now = new Date();
+  if (user.loginOtpRequestedAt && now.getTime() - user.loginOtpRequestedAt.getTime() < 60 * 1000) {
+    const wait = 60 - Math.floor((now.getTime() - user.loginOtpRequestedAt.getTime()) / 1000);
+    const error = new Error(`Please wait ${wait} seconds before requesting another verification code.`);
+    error.statusCode = 429;
+    throw error;
+  }
+
+  const otp = generateOtp();
+  user.loginOtpHash = await bcrypt.hash(otp, 12);
+  user.loginOtpExpiresAt = new Date(now.getTime() + 5 * 60 * 1000);
+  user.loginOtpRequestedAt = now;
+  user.loginOtpAttempts = 0;
+  await user.save();
+
+  // send via SMS service
+  try {
+    const smsService = require('./sms.service');
+    const display = `+${digits}`.replace(/^\+?/, '+');
+    const message = `Your Konpuk login code is ${otp}. It expires in 5 minutes.`;
+    await smsService.sendSms(display, message);
+  } catch (e) {
+    // swallow send errors but log
+    console.warn('SMS send failed', e && e.message);
+  }
+
+  return { requiresOtp: true, expiresIn: 300, resendCooldownSeconds: 60 };
+};
+
+const verifyPhoneOtp = async (phoneNumber, code) => {
+  const digits = normalizePhoneDigits(phoneNumber);
+  if (!digits) {
+    const error = new Error('Invalid phone number');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const user = await User.findOne({ phoneNumber: digits });
+  if (!user || !user.isActive) {
+    const error = new Error('Invalid verification request');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  if (!user.loginOtpHash || !user.loginOtpExpiresAt || new Date() > user.loginOtpExpiresAt) {
+    user.loginOtpHash = undefined;
+    user.loginOtpExpiresAt = undefined;
+    user.loginOtpRequestedAt = undefined;
+    user.loginOtpAttempts = 0;
+    await user.save();
+
+    const error = new Error('Verification code expired. Please request a new code.');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  if (user.loginOtpAttempts >= 5) {
+    const error = new Error('Too many invalid attempts. Please request a new code.');
+    error.statusCode = 429;
+    throw error;
+  }
+
+  const validOtp = await bcrypt.compare(code, user.loginOtpHash);
+  if (!validOtp) {
+    user.loginOtpAttempts = (user.loginOtpAttempts || 0) + 1;
+    await user.save();
+    const error = new Error('Invalid verification code');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  user.loginOtpHash = undefined;
+  user.loginOtpExpiresAt = undefined;
+  user.loginOtpRequestedAt = undefined;
+  user.loginOtpAttempts = 0;
+
+  const accessToken = createToken(user.id);
+  const refreshToken = createRefreshToken(user.id);
+  user.refreshTokens.push(refreshToken);
+  user.lastLoginAt = new Date();
+  await user.save();
+
+  return {
+    user: { id: user.id, email: user.email, displayName: user.displayName, role: user.role, verified: user.verified, emailVerified: user.emailVerified },
+    accessToken,
+    authToken: accessToken,
+    refreshToken
+  };
+};
+
 const verifyEmail = async (identifier, code) => {
   const user = await findUserByIdentifier(identifier);
   if (!user || !user.isActive) {

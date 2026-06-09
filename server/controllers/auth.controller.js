@@ -70,6 +70,26 @@ const requestPasswordReset = async (req, res, next) => {
   }
 };
 
+const requestPhoneOtp = async (req, res, next) => {
+  try {
+    const { phoneNumber } = req.body;
+    const result = await authService.requestPhoneOtp(phoneNumber);
+    res.json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const verifyPhoneOtp = async (req, res, next) => {
+  try {
+    const { phoneNumber, code } = req.body;
+    const result = await authService.verifyPhoneOtp(phoneNumber, code);
+    res.json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const verifyPasswordResetOtp = async (req, res, next) => {
   try {
     const { identifier, code } = req.body;
@@ -162,6 +182,8 @@ module.exports = {
   login,
   verifyLoginOtp,
   resendLoginOtp,
+  requestPhoneOtp,
+  verifyPhoneOtp,
   verifyEmail,
   resendEmailVerification,
   requestPasswordReset,

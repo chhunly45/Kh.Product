@@ -130,6 +130,24 @@ export const resendPasswordResetCode = async (payload: { identifier: string }): 
   return response.data.data;
 };
 
+export const requestPhoneOtp = async (payload: { phoneNumber: string }) => {
+  const response = await api.post('/auth/phone/request-otp', payload);
+  return response.data.data;
+};
+
+export const verifyPhoneOtp = async (payload: { phoneNumber: string; code: string }): Promise<AuthResponse> => {
+  const response = await api.post('/auth/phone/verify-otp', payload);
+  if (response.data.success && response.data.data) {
+    const token = response.data.data.accessToken || response.data.data.authToken || response.data.data.token;
+    const refreshToken = response.data.data.refreshToken;
+    const user = response.data.data.user;
+    if (token) localStorage.setItem('authToken', token);
+    if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
+    if (user) localStorage.setItem('user', JSON.stringify(user));
+  }
+  return response.data.data;
+};
+
 export const logout = async (): Promise<void> => {
   const refreshToken = localStorage.getItem('refreshToken');
   await api.post('/auth/logout', { refreshToken });

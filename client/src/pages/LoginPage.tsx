@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { resendLoginOtp } from '../services/auth.api';
+import { resendLoginOtp, requestPhoneOtp, verifyPhoneOtp } from '../services/auth.api';
 import { useAuth } from '../hooks/useAuth';
 
 const LoginPage = () => {
@@ -10,6 +10,8 @@ const LoginPage = () => {
     emailOrPhone: '',
     password: ''
   });
+  const [phoneInput, setPhoneInput] = useState('');
+  const [mode, setMode] = useState<'email' | 'phone'>('email');
   const [otpCode, setOtpCode] = useState('');
   const [stage, setStage] = useState<'credentials' | 'otp'>('credentials');
   const [identifier, setIdentifier] = useState('');
@@ -50,6 +52,14 @@ const LoginPage = () => {
     return `${normalized.replace(/\D/g, '') || 'user'}@marketplace.kh`;
   };
 
+  const normalizePhoneDigits = (input: string) => {
+    const digits = input.replace(/\D/g, '');
+    if (!digits) return '';
+    if (digits.startsWith('0')) return digits.replace(/^0+/, '855');
+    if (digits.startsWith('855')) return digits;
+    return digits;
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
@@ -57,30 +67,45 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      if (!formData.emailOrPhone.trim()) {
-        setError('Email or phone is required');
-        return;
-      }
-      if (!formData.password) {
-        setError('Password is required');
-        return;
-      }
+      if (mode === 'email') {
+        if (!formData.emailOrPhone.trim()) {
+          setError('Email or phone is required');
+          return;
+        }
+        if (!formData.password) {
+          setError('Password is required');
+          return;
+        }
 
-      const payload = {
-        identifier: buildIdentifier(formData.emailOrPhone),
-        password: formData.password
-      };
+        const payload = {
+          identifier: buildIdentifier(formData.emailOrPhone),
+          password: formData.password
+        };
 
-      const result = await login(payload as any);
-      if (result && 'requiresOtp' in result && result.requiresOtp) {
+        const result = await login(payload as any);
+        if (result && 'requiresOtp' in result && result.requiresOtp) {
+          setStage('otp');
+          setIdentifier(payload.identifier);
+          setStatus('Enter the verification code sent to your email.');
+          setResendCooldown(result.resendCooldownSeconds || 60);
+          return;
+        }
+
+        navigate('/dashboard');
+      } else {
+        // phone OTP request
+        if (!phoneInput.trim()) {
+          setError('Phone number is required');
+          return;
+        }
+        const digits = normalizePhoneDigits(phoneInput);
+        const resp = await requestPhoneOtp({ phoneNumber: digits });
         setStage('otp');
-        setIdentifier(payload.identifier);
-        setStatus('Enter the verification code sent to your email.');
-        setResendCooldown(result.resendCooldownSeconds || 60);
+        setIdentifier(digits);
+        setStatus('Enter the verification code sent to your phone.');
+        setResendCooldown(resp.resendCooldownSeconds || 60);
         return;
       }
-
-      navigate('/dashboard');
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || err.message || 'Login failed. Please try again.';
       setError(errorMessage);
@@ -100,8 +125,11 @@ const LoginPage = () => {
         setError('Please enter the 6-digit verification code.');
         return;
       }
-
-      await verifyLoginOtp({ identifier, code: otpCode.trim() });
+      if (mode === 'email') {
+        await verifyLoginOtp({ identifier, code: otpCode.trim() });
+      } else {
+        await verifyPhoneOtp({ phoneNumber: identifier, code: otpCode.trim() });
+      }
       navigate('/dashboard');
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || err.message || 'Verification failed. Please try again.';
@@ -156,20 +184,39 @@ const LoginPage = () => {
         </div>
       )}
 
+      <div className="mt-6 flex gap-2">
+        <button type="button" className={`px-4 py-2 rounded-full ${mode === 'email' ? 'bg-sky-600 text-white' : 'bg-white border'}`} onClick={() => setMode('email')}>Email</button>
+        <button type="button" className={`px-4 py-2 rounded-full ${mode === 'phone' ? 'bg-sky-600 text-white' : 'bg-white border'}`} onClick={() => setMode('phone')}>Phone OTP</button>
+      </div>
+
       {stage === 'credentials' ? (
         <form className="mt-10 space-y-6" onSubmit={handleSubmit}>
-          <label className="block">
-            <span className="text-sm font-medium text-slate-700">Email or Phone</span>
-            <input
-              type="text"
-              name="emailOrPhone"
-              value={formData.emailOrPhone}
-              onChange={handleIdentifierChange}
-              placeholder="Email or phone number"
-              className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
-              disabled={loading}
-            />
-          </label>
+          {mode === 'email' ? (
+            <label className="block">
+              <span className="text-sm font-medium text-slate-700">Email or Phone</span>
+              <input
+                type="text"
+                name="emailOrPhone"
+                value={formData.emailOrPhone}
+                onChange={handleIdentifierChange}
+                placeholder="Email or phone number"
+                className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                disabled={loading}
+              />
+            </label>
+          ) : (
+            <label className="block">
+              <span className="text-sm font-medium text-slate-700">Phone number (Cambodia)</span>
+              <input
+                type="text"
+                value={phoneInput}
+                onChange={(e) => setPhoneInput(e.target.value)}
+                placeholder="e.g. 012 345 678"
+                className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                disabled={loading}
+              />
+            </label>
+          )}
 
           <label className="block">
             <span className="text-sm font-medium text-slate-700">Password</span>

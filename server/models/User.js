@@ -4,7 +4,7 @@ const { Schema, model } = mongoose;
 const UserSchema = new Schema({
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
   passwordHash: { type: String, required: true },
-  phoneNumber: { type: String, trim: true },
+  phoneNumber: { type: String, trim: true, unique: true, sparse: true },
   displayName: { type: String, required: true, trim: true },
   role: { type: String, enum: ['user', 'seller', 'admin', 'moderator'], default: 'user' },
   profileImageUrl: { type: String, trim: true },
@@ -53,6 +53,7 @@ const UserSchema = new Schema({
 });
 
 UserSchema.index({ email: 1 });
+UserSchema.index({ phoneNumber: 1 }, { sparse: true });
 UserSchema.index({ displayName: 'text', bio: 'text', location: 'text' });
 
 module.exports = model('User', UserSchema);

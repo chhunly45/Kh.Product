@@ -4,7 +4,20 @@ const authController = require('../controllers/auth.controller');
 const authMiddleware = require('../middleware/auth.middleware');
 const validate = require('../middleware/validation.middleware');
 
+const rateLimit = require('express-rate-limit');
 const router = express.Router();
+
+const phoneOtpLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, message: 'Too many OTP requests, please try again later.' },
+  keyGenerator: (req) => {
+    // use phone number if available, otherwise IP
+    return (req.body && req.body.phoneNumber) ? `phone:${req.body.phoneNumber}` : req.ip;
+  }
+});
 
 router.post(
   '/register',
@@ -36,6 +49,22 @@ router.post(
   body('identifier').notEmpty().withMessage('Email or phone is required'),
   validate,
   authController.resendLoginOtp
+);
+
+router.post(
+  '/phone/request-otp',
+  phoneOtpLimiter,
+  body('phoneNumber').notEmpty().withMessage('Phone number is required'),
+  validate,
+  authController.requestPhoneOtp
+);
+
+router.post(
+  '/phone/verify-otp',
+  body('phoneNumber').notEmpty().withMessage('Phone number is required'),
+  body('code').isLength({ min: 6, max: 6 }).withMessage('Verification code must be 6 digits'),
+  validate,
+  authController.verifyPhoneOtp
 );
 
 router.post(
