@@ -10,6 +10,8 @@ const createRefreshToken = (userId) => jwt.sign({ userId }, config.jwtSecret, { 
 
 const { normalizeCambodiaPhone, phoneSearchVariants } = require('../utils/phone');
 
+const phoneOtpEnabled = (process.env.PHONE_OTP_ENABLED === 'true') && !!process.env.SMS_PROVIDER;
+
 const normalizeIdentifier = (identifier) => identifier?.toString().trim().toLowerCase();
 const findUserByIdentifier = async (identifier) => {
   if (!identifier) return null;
@@ -104,7 +106,9 @@ const loginUser = async (identifier, password) => {
     throw error;
   }
 
-  if (!user.emailVerified) {
+  // Only require email verification when logging in with an email identifier
+  const isEmailLogin = identifier && identifier.toString().includes('@');
+  if (isEmailLogin && !user.emailVerified) {
     const error = new Error('Email not verified. Please verify your email before logging in.');
     error.statusCode = 403;
     throw error;
@@ -235,6 +239,11 @@ const resendLoginOtp = async (identifier) => {
 // Deprecated local helper replaced by shared phone utils
 
 const requestPhoneOtp = async (phoneNumber) => {
+  if (!phoneOtpEnabled) {
+    const error = new Error('Phone OTP is disabled');
+    error.statusCode = 501;
+    throw error;
+  }
   if (!phoneNumber) {
     const error = new Error('Phone number is required');
     error.statusCode = 400;
@@ -292,6 +301,11 @@ const requestPhoneOtp = async (phoneNumber) => {
 };
 
 const resendPhoneOtp = async (phoneNumber) => {
+  if (!phoneOtpEnabled) {
+    const error = new Error('Phone OTP is disabled');
+    error.statusCode = 501;
+    throw error;
+  }
   if (!phoneNumber) {
     const error = new Error('Phone number is required');
     error.statusCode = 400;
@@ -349,6 +363,11 @@ const resendPhoneOtp = async (phoneNumber) => {
 };
 
 const verifyPhoneOtp = async (phoneNumber, code) => {
+  if (!phoneOtpEnabled) {
+    const error = new Error('Phone OTP is disabled');
+    error.statusCode = 501;
+    throw error;
+  }
   const variants = phoneSearchVariants(phoneNumber);
   if (!variants || variants.length === 0) {
     const error = new Error('Invalid phone number');

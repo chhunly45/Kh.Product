@@ -19,6 +19,13 @@ const phoneOtpLimiter = rateLimit({
   }
 });
 
+const phoneOtpEnabled = (process.env.PHONE_OTP_ENABLED === 'true') && !!process.env.SMS_PROVIDER;
+
+const ensurePhoneOtpEnabled = (req, res, next) => {
+  if (!phoneOtpEnabled) return res.status(501).json({ success: false, message: 'Phone OTP is disabled' });
+  next();
+};
+
 router.post(
   '/register',
   body('email').isEmail().withMessage('Valid email is required'),
@@ -54,6 +61,7 @@ router.post(
 router.post(
   '/phone/request-otp',
   phoneOtpLimiter,
+  ensurePhoneOtpEnabled,
   body('phoneNumber').notEmpty().withMessage('Phone number is required'),
   validate,
   authController.requestPhoneOtp
@@ -62,6 +70,7 @@ router.post(
 router.post(
   '/phone/resend-otp',
   phoneOtpLimiter,
+  ensurePhoneOtpEnabled,
   body('phoneNumber').notEmpty().withMessage('Phone number is required'),
   validate,
   authController.resendPhoneOtp
@@ -69,6 +78,7 @@ router.post(
 
 router.post(
   '/phone/verify-otp',
+  ensurePhoneOtpEnabled,
   body('phoneNumber').notEmpty().withMessage('Phone number is required'),
   body('code').isLength({ min: 6, max: 6 }).withMessage('Verification code must be 6 digits'),
   validate,

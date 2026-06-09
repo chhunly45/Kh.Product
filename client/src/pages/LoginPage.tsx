@@ -48,8 +48,10 @@ const LoginPage = () => {
 
   const buildIdentifier = (input: string) => {
     const normalized = input.trim();
+    if (!normalized) return '';
     if (normalized.includes('@')) return normalized.toLowerCase();
-    return `${normalized.replace(/\D/g, '') || 'user'}@marketplace.kh`;
+    // treat as phone identifier and return digits (server will match variants)
+    return normalizePhoneDigits(normalized);
   };
 
   const normalizePhoneDigits = (input: string) => {
