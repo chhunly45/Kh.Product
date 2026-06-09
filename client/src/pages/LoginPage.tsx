@@ -200,18 +200,32 @@ const LoginPage = () => {
       {stage === 'credentials' ? (
         <form className="mt-10 space-y-6" onSubmit={handleSubmit}>
           {mode === 'email' ? (
-            <label className="block">
-              <span className="text-sm font-medium text-slate-700">Email or Phone</span>
-              <input
-                type="text"
-                name="emailOrPhone"
-                value={formData.emailOrPhone}
-                onChange={handleIdentifierChange}
-                placeholder="Email or phone number"
-                className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
-                disabled={loading}
-              />
-            </label>
+            <>
+              <label className="block">
+                <span className="text-sm font-medium text-slate-700">Email or Phone</span>
+                <input
+                  type="text"
+                  name="emailOrPhone"
+                  value={formData.emailOrPhone}
+                  onChange={handleIdentifierChange}
+                  placeholder="Email or phone number"
+                  className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                  disabled={loading}
+                />
+              </label>
+              <label className="block">
+                <span className="text-sm font-medium text-slate-700">Password</span>
+                <input 
+                  type="password" 
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="********" 
+                  className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100" 
+                  disabled={loading}
+                />
+              </label>
+            </>
           ) : (
             <label className="block">
               <span className="text-sm font-medium text-slate-700">Phone number (Cambodia)</span>
@@ -223,21 +237,9 @@ const LoginPage = () => {
                 className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
                 disabled={loading}
               />
+              <p className="mt-2 text-sm text-slate-500">No password is required for phone OTP login.</p>
             </label>
           )}
-
-          <label className="block">
-            <span className="text-sm font-medium text-slate-700">Password</span>
-            <input 
-              type="password" 
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="********" 
-              className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100" 
-              disabled={loading}
-            />
-          </label>
 
           <button 
             type="submit" 
