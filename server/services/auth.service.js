@@ -729,6 +729,8 @@ module.exports = {
   verifyPasswordResetOtp,
   resetPassword,
   resendPasswordResetOtp,
+  requestPhoneOtp,
+  verifyPhoneOtp,
   refreshToken,
   logoutUser,
   updateProfile,
