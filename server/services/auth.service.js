@@ -8,6 +8,8 @@ const emailService = require('./email.service');
 const createToken = (userId) => jwt.sign({ userId }, config.jwtSecret, { expiresIn: config.jwtExpiresIn, algorithm: 'HS256' });
 const createRefreshToken = (userId) => jwt.sign({ userId }, config.jwtSecret, { expiresIn: config.refreshTokenExpiresIn, algorithm: 'HS256' });
 
+const { normalizeCambodiaPhone, phoneSearchVariants } = require('../utils/phone');
+
 const normalizeIdentifier = (identifier) => identifier?.toString().trim().toLowerCase();
 const findUserByIdentifier = async (identifier) => {
   if (!identifier) return null;
@@ -15,8 +17,12 @@ const findUserByIdentifier = async (identifier) => {
   if (normalized.includes('@')) {
     return User.findOne({ email: normalized });
   }
-  const phone = normalized.replace(/\D/g, '');
-  return User.findOne({ phoneNumber: phone });
+
+  // Treat as phone identifier: search by multiple variants for backward compatibility
+  const variants = phoneSearchVariants(identifier);
+  if (variants.length === 0) return null;
+  const or = variants.map((p) => ({ phoneNumber: p }));
+  return User.findOne({ $or: or });
 };
 
 const generateOtp = () => String(Math.floor(100000 + Math.random() * 900000));
@@ -51,11 +57,12 @@ const registerUser = async ({ email, password, displayName, phoneNumber, locatio
   }
 
   const passwordHash = await bcrypt.hash(password, 12);
+  const normalizedPhone = phoneNumber ? normalizeCambodiaPhone(phoneNumber) : undefined;
   const user = await User.create({
     email: normalizedEmail,
     passwordHash,
     displayName,
-    phoneNumber,
+    phoneNumber: normalizedPhone,
     location,
     role: 'seller',
     emailVerified: false
@@ -225,17 +232,7 @@ const resendLoginOtp = async (identifier) => {
   };
 };
 
-// Normalize Cambodian phone numbers to digits (no +) for storage and lookup
-const normalizePhoneDigits = (phone) => {
-  if (!phone) return null;
-  const digits = phone.toString().replace(/\D/g, '');
-  if (digits.startsWith('0')) {
-    // local format like 012345678 -> remove leading 0 and prefix 855
-    return digits.replace(/^0+/, '855');
-  }
-  if (digits.startsWith('855')) return digits;
-  return digits; // fallback
-};
+// Deprecated local helper replaced by shared phone utils
 
 const requestPhoneOtp = async (phoneNumber) => {
   if (!phoneNumber) {
@@ -244,19 +241,20 @@ const requestPhoneOtp = async (phoneNumber) => {
     throw error;
   }
 
-  const digits = normalizePhoneDigits(phoneNumber);
-  if (!digits) {
+  const variants = phoneSearchVariants(phoneNumber);
+  if (!variants || variants.length === 0) {
     const error = new Error('Invalid phone number');
     error.statusCode = 400;
     throw error;
   }
 
-  let user = await User.findOne({ phoneNumber: digits });
+  let user = await User.findOne({ $or: variants.map((p) => ({ phoneNumber: p })) });
 
   if (!user) {
     // Optionally allow registration via phone if configured
     if (process.env.ALLOW_PHONE_REGISTRATION === 'true') {
-      user = await User.create({ email: `${digits}@phone.local`, passwordHash: await bcrypt.hash(Math.random().toString(36).slice(2), 12), displayName: digits, phoneNumber: digits, emailVerified: false });
+      const normalizedStored = normalizeCambodiaPhone(phoneNumber);
+      user = await User.create({ email: `${normalizedStored}@phone.local`, passwordHash: await bcrypt.hash(Math.random().toString(36).slice(2), 12), displayName: normalizedStored, phoneNumber: normalizedStored, emailVerified: false });
     } else {
       const error = new Error('Phone number is not registered');
       error.statusCode = 404;
@@ -294,14 +292,14 @@ const requestPhoneOtp = async (phoneNumber) => {
 };
 
 const verifyPhoneOtp = async (phoneNumber, code) => {
-  const digits = normalizePhoneDigits(phoneNumber);
-  if (!digits) {
+  const variants = phoneSearchVariants(phoneNumber);
+  if (!variants || variants.length === 0) {
     const error = new Error('Invalid phone number');
     error.statusCode = 400;
     throw error;
   }
 
-  const user = await User.findOne({ phoneNumber: digits });
+  const user = await User.findOne({ $or: variants.map((p) => ({ phoneNumber: p })) });
   if (!user || !user.isActive) {
     const error = new Error('Invalid verification request');
     error.statusCode = 401;
@@ -636,6 +634,13 @@ const updateProfile = async (userId, updates) => {
     if (updates[key] !== undefined) acc[key] = updates[key];
     return acc;
   }, {});
+
+  // Normalize phone number when provided
+  if (sanitized.phoneNumber) {
+    const normalizedPhone = normalizeCambodiaPhone(sanitized.phoneNumber);
+    if (normalizedPhone) sanitized.phoneNumber = normalizedPhone;
+    else delete sanitized.phoneNumber;
+  }
 
   const uploadDataUrl = async (value, folder) => {
     if (!value || typeof value !== 'string' || !value.startsWith('data:')) return value;
