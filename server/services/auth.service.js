@@ -198,7 +198,7 @@ const verifyLoginOtp = async (identifier, code) => {
 const resendLoginOtp = async (identifier) => {
   const user = await findUserByIdentifier(identifier);
   if (!user || !user.isActive) {
-    const error = new Error('Invalid verification request');
+    const error = new Error('Email or phone not found in our system');
     error.statusCode = 401;
     throw error;
   }
@@ -291,6 +291,63 @@ const requestPhoneOtp = async (phoneNumber) => {
   return { requiresOtp: true, expiresIn: 300, resendCooldownSeconds: 60 };
 };
 
+const resendPhoneOtp = async (phoneNumber) => {
+  if (!phoneNumber) {
+    const error = new Error('Phone number is required');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const variants = phoneSearchVariants(phoneNumber);
+  if (!variants || variants.length === 0) {
+    const error = new Error('Invalid phone number');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const user = await User.findOne({ $or: variants.map((p) => ({ phoneNumber: p })) });
+  if (!user || !user.isActive) {
+    const error = new Error('Phone number is not registered');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const now = new Date();
+  if (user.loginOtpRequestedAt && now.getTime() - user.loginOtpRequestedAt.getTime() < 60 * 1000) {
+    const wait = 60 - Math.floor((now.getTime() - user.loginOtpRequestedAt.getTime()) / 1000);
+    const error = new Error(`Please wait ${wait} seconds before requesting another code.`);
+    error.statusCode = 429;
+    throw error;
+  }
+
+  if (!user.loginOtpHash || !user.loginOtpExpiresAt) {
+    const error = new Error('No pending verification request. Please request a new code.');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const otp = generateOtp();
+  user.loginOtpHash = await bcrypt.hash(otp, 12);
+  user.loginOtpExpiresAt = new Date(now.getTime() + 5 * 60 * 1000);
+  user.loginOtpRequestedAt = now;
+  user.loginOtpAttempts = 0;
+  await user.save();
+
+  try {
+    const smsService = require('./sms.service');
+    const display = user.phoneNumber;
+    const message = `Your Konpuk login code is ${otp}. It expires in 5 minutes.`;
+    await smsService.sendSms(display, message);
+  } catch (e) {
+    console.warn('SMS send failed', e && e.message);
+  }
+
+  return {
+    expiresIn: 300,
+    resendCooldownSeconds: 60
+  };
+};
+
 const verifyPhoneOtp = async (phoneNumber, code) => {
   const variants = phoneSearchVariants(phoneNumber);
   if (!variants || variants.length === 0) {
@@ -301,7 +358,7 @@ const verifyPhoneOtp = async (phoneNumber, code) => {
 
   const user = await User.findOne({ $or: variants.map((p) => ({ phoneNumber: p })) });
   if (!user || !user.isActive) {
-    const error = new Error('Invalid verification request');
+    const error = new Error('Phone number is not registered or account is inactive');
     error.statusCode = 401;
     throw error;
   }
@@ -404,7 +461,7 @@ const verifyEmail = async (identifier, code) => {
 const resendEmailVerification = async (identifier) => {
   const user = await findUserByIdentifier(identifier);
   if (!user || !user.isActive) {
-    const error = new Error('Invalid verification request');
+    const error = new Error('Email or phone not found in our system');
     error.statusCode = 401;
     throw error;
   }
@@ -735,6 +792,7 @@ module.exports = {
   resetPassword,
   resendPasswordResetOtp,
   requestPhoneOtp,
+  resendPhoneOtp,
   verifyPhoneOtp,
   refreshToken,
   logoutUser,

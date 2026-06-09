@@ -60,6 +60,14 @@ router.post(
 );
 
 router.post(
+  '/phone/resend-otp',
+  phoneOtpLimiter,
+  body('phoneNumber').notEmpty().withMessage('Phone number is required'),
+  validate,
+  authController.resendPhoneOtp
+);
+
+router.post(
   '/phone/verify-otp',
   body('phoneNumber').notEmpty().withMessage('Phone number is required'),
   body('code').isLength({ min: 6, max: 6 }).withMessage('Verification code must be 6 digits'),

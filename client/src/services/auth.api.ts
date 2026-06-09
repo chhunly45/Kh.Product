@@ -135,6 +135,11 @@ export const requestPhoneOtp = async (payload: { phoneNumber: string }) => {
   return response.data.data;
 };
 
+export const resendPhoneOtp = async (payload: { phoneNumber: string }) => {
+  const response = await api.post('/auth/phone/resend-otp', payload);
+  return response.data.data;
+};
+
 export const verifyPhoneOtp = async (payload: { phoneNumber: string; code: string }): Promise<AuthResponse> => {
   const response = await api.post('/auth/phone/verify-otp', payload);
   if (response.data.success && response.data.data) {

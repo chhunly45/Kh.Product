@@ -80,6 +80,16 @@ const requestPhoneOtp = async (req, res, next) => {
   }
 };
 
+const resendPhoneOtp = async (req, res, next) => {
+  try {
+    const { phoneNumber } = req.body;
+    const result = await authService.resendPhoneOtp(phoneNumber);
+    res.json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const verifyPhoneOtp = async (req, res, next) => {
   try {
     const { phoneNumber, code } = req.body;
@@ -183,6 +193,7 @@ module.exports = {
   verifyLoginOtp,
   resendLoginOtp,
   requestPhoneOtp,
+  resendPhoneOtp,
   verifyPhoneOtp,
   verifyEmail,
   resendEmailVerification,

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { resendLoginOtp, requestPhoneOtp, verifyPhoneOtp } from '../services/auth.api';
+import { resendLoginOtp, resendPhoneOtp, requestPhoneOtp, verifyPhoneOtp } from '../services/auth.api';
 import { useAuth } from '../hooks/useAuth';
 
 const LoginPage = () => {
@@ -145,9 +145,17 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      const response = await resendLoginOtp({ identifier: buildIdentifier(formData.emailOrPhone) });
-      setStatus('A fresh code was sent to your email.');
-      setResendCooldown(response.resendCooldownSeconds || 60);
+      if (mode === 'email') {
+        const response = await resendLoginOtp({ identifier: buildIdentifier(formData.emailOrPhone) });
+        setStatus('A fresh code was sent to your email.');
+        setResendCooldown(response.resendCooldownSeconds || 60);
+      } else {
+        // Phone OTP resend
+        const digits = normalizePhoneDigits(phoneInput);
+        const response = await resendPhoneOtp({ phoneNumber: digits });
+        setStatus('A fresh code was sent to your phone.');
+        setResendCooldown(response.resendCooldownSeconds || 60);
+      }
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || err.message || 'Unable to resend verification code.';
       setError(errorMessage);
