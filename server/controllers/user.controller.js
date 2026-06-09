@@ -3,6 +3,13 @@ const Product = require('../models/Product');
 const Favorite = require('../models/Favorite');
 const authService = require('../services/auth.service');
 
+// Cambodian phone validation: +855 followed by 9 digits or 8-9 digits without +
+const validatePhoneNumber = (phone) => {
+  if (!phone) return true; // Optional field
+  const cambodianPhoneRegex = /^(\+855|0)(1|2|8|9|7|6|5|3)\d{7,8}$/;
+  return cambodianPhoneRegex.test(phone.replace(/\s+/g, ''));
+};
+
 const getProfileById = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id).select('-passwordHash -refreshTokens');
@@ -37,9 +44,37 @@ const getProfileById = async (req, res, next) => {
 
 const updateProfile = async (req, res, next) => {
   try {
-    const updates = req.body;
+    const { avatar, coverPhoto, phone, telegram, phoneNumber, coverImage, ...otherUpdates } = req.body;
+
+    // Validate phone number if provided
+    if (phone || phoneNumber) {
+      const phoneToValidate = phone || phoneNumber;
+      if (!validatePhoneNumber(phoneToValidate)) {
+        const error = new Error('Invalid phone number. Please use a valid Cambodian phone number (e.g., +855 12 345 678 or 0123456789)');
+        error.statusCode = 400;
+        throw error;
+      }
+    }
+
+    // Map field names to model schema
+    const updates = {
+      ...otherUpdates,
+      ...(avatar && { avatar }),
+      ...(coverPhoto && { coverImage: coverPhoto }),
+      ...(coverImage && { coverImage }),
+      ...(phone && { phoneNumber: phone }),
+      ...(phoneNumber && { phoneNumber }),
+      ...(telegram && { telegram })
+    };
+
+    // Call service to update profile (handles image uploads to Cloudinary)
     const user = await authService.updateProfile(req.user.id, updates);
-    res.json({ success: true, data: user });
+
+    res.json({
+      success: true,
+      data: user,
+      message: 'Profile updated successfully'
+    });
   } catch (error) {
     next(error);
   }

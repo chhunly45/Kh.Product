@@ -10,7 +10,6 @@ import {
   Phone,
   Shield,
   TrendingUp,
-  Star,
   CalendarDays,
   Link2,
   Globe,
@@ -289,67 +288,43 @@ const ProfilePage = () => {
                 </div>
               </div>
 
-              <div className="mt-6 space-y-4 text-sm text-slate-600">
-                {profile?.bio && <p>{profile.bio}</p>}
-                {profile?.telegram && (
-                  <div className="flex items-center gap-2">
-                    <Link2 className="h-4 w-4 text-slate-400" />
-                    <span>{profile.telegram}</span>
-                  </div>
-                )}
-                {profile?.facebook && (
-                  <div className="flex items-center gap-2">
-                    <Globe className="h-4 w-4 text-slate-400" />
-                    <span>{profile.facebook}</span>
-                  </div>
-                )}
-                {profile?.email && (
-                  <div className="flex items-center gap-2">
-                    <Mail className="h-4 w-4 text-slate-400" />
-                    <span>{profile.email}</span>
-                  </div>
-                )}
-                {profile?.phoneNumber && (
-                  <div className="flex items-center gap-2">
-                    <Phone className="h-4 w-4 text-slate-400" />
-                    <span>{profile.phoneNumber}</span>
-                  </div>
-                )}
-                {profile?.location && (
-                  <div className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4 text-slate-400" />
-                    <span>{profile.location}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Seller stats</p>
-              <div className="mt-5 grid gap-4">
+              <div className="mt-6 grid gap-4 sm:grid-cols-2">
                 <div className="rounded-3xl bg-slate-50 p-4">
-                  <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Total listings</p>
+                  <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Listings</p>
                   <p className="mt-3 text-2xl font-semibold text-slate-900">{stats.totalProducts}</p>
                 </div>
                 <div className="rounded-3xl bg-slate-50 p-4">
-                  <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Total views</p>
+                  <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Views</p>
                   <p className="mt-3 text-2xl font-semibold text-slate-900">{stats.totalViews}</p>
                 </div>
                 <div className="rounded-3xl bg-slate-50 p-4">
-                  <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Saved favorites</p>
+                  <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Favorites</p>
                   <p className="mt-3 text-2xl font-semibold text-slate-900">{stats.favoritesCount}</p>
+                </div>
+                <div className="rounded-3xl bg-slate-50 p-4">
+                  <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Member since</p>
+                  <p className="mt-3 text-2xl font-semibold text-slate-900">{profile?.createdAt ? new Date(profile.createdAt).toLocaleDateString() : '—'}</p>
                 </div>
               </div>
             </div>
 
             <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Verification</p>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Verification</p>
+                {profile?.emailVerified ? (
+                  <span className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                    <Shield className="h-4 w-4" /> Verified
+                  </span>
+                ) : null}
+              </div>
               <div className="mt-4 space-y-3 text-sm text-slate-600">
                 <div className="rounded-3xl bg-slate-50 p-4">
                   <p className="font-semibold text-slate-900">Status</p>
                   <p className="mt-2">
-                    {profile?.verified
-                      ? 'Verified seller'
+                    {profile?.emailVerified
+                      ? 'Email verified'
+                      : profile?.verified
+                      ? 'Seller verified'
                       : profile?.verificationStatus === 'pending'
                       ? 'Verification pending'
                       : profile?.verificationStatus === 'rejected'
@@ -357,14 +332,59 @@ const ProfilePage = () => {
                       : 'Not verified'}
                   </p>
                 </div>
-                <div className="flex items-center gap-2 text-slate-600">
-                  <Shield className="h-5 w-5 text-green-500" />
-                  <span>Secure transactions</span>
+                <div className="flex flex-wrap gap-2 text-slate-600">
+                  <span className="inline-flex items-center gap-2 rounded-3xl bg-slate-50 px-3 py-2">
+                    <Shield className="h-4 w-4 text-green-500" /> Secure transactions
+                  </span>
+                  <span className="inline-flex items-center gap-2 rounded-3xl bg-slate-50 px-3 py-2">
+                    <TrendingUp className="h-4 w-4 text-blue-500" /> Fast response
+                  </span>
                 </div>
-                <div className="flex items-center gap-2 text-slate-600">
-                  <TrendingUp className="h-5 w-5 text-blue-500" />
-                  <span>Fast response</span>
-                </div>
+              </div>
+            </div>
+
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Contact actions</p>
+              <div className="mt-5 grid gap-3">
+                {profile?.phoneNumber ? (
+                  <a
+                    href={`tel:${profile.phoneNumber}`}
+                    className="inline-flex items-center justify-center rounded-3xl bg-sky-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-sky-700"
+                  >
+                    Call seller
+                  </a>
+                ) : null}
+                {profile?.email ? (
+                  <a
+                    href={`mailto:${profile.email}`}
+                    className="inline-flex items-center justify-center rounded-3xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+                  >
+                    Email seller
+                  </a>
+                ) : null}
+                {profile?.telegram ? (
+                  <a
+                    href={profile.telegram.startsWith('http') ? profile.telegram : `https://t.me/${profile.telegram.replace(/^@/, '')}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center justify-center rounded-3xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700"
+                  >
+                    Telegram
+                  </a>
+                ) : null}
+                {profile?.facebook ? (
+                  <a
+                    href={profile.facebook.startsWith('http') ? profile.facebook : profile.facebook.startsWith('facebook.com') ? `https://${profile.facebook}` : `https://www.facebook.com/${profile.facebook.replace(/^\//, '')}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center justify-center rounded-3xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
+                  >
+                    Facebook
+                  </a>
+                ) : null}
+                {!profile?.phoneNumber && !profile?.email && !profile?.telegram && !profile?.facebook ? (
+                  <p className="rounded-3xl bg-slate-50 p-4 text-sm text-slate-500">No direct contact details available yet.</p>
+                ) : null}
               </div>
             </div>
           </aside>
@@ -478,71 +498,7 @@ const ProfilePage = () => {
                   </button>
                 </div>
               </div>
-            ) : (
-              <div className="space-y-6">
-                <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                  <div className="flex items-center justify-between gap-4">
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">About seller</p>
-                      <h2 className="mt-3 text-2xl font-bold text-slate-900">{profile?.displayName || 'Seller profile'}</h2>
-                    </div>
-                    {profile?.verified && (
-                      <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700">
-                        <Shield className="h-4 w-4" /> Verified
-                      </div>
-                    )}
-                  </div>
-                  <p className="mt-6 text-slate-600">{profile?.bio || 'This seller has not added a profile description yet.'}</p>
-                  <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                    <div className="rounded-3xl bg-slate-50 p-5">
-                      <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Location</p>
-                      <p className="mt-3 text-sm text-slate-700">{profile?.location || 'Not provided'}</p>
-                    </div>
-                    <div className="rounded-3xl bg-slate-50 p-5">
-                      <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Contact</p>
-                      <p className="mt-3 text-sm text-slate-700">{profile?.phoneNumber || 'Phone not provided'}</p>
-                      <p className="text-sm text-slate-700">{profile?.telegram || 'Telegram not provided'}</p>
-                      <p className="text-sm text-slate-700">{profile?.facebook || 'Facebook not provided'}</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid gap-6 xl:grid-cols-[1fr_320px]">
-                  <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                    <div className="flex items-center justify-between gap-4">
-                      <div>
-                        <p className="text-xs uppercase tracking-[0.25em] text-slate-500">Top listings</p>
-                        <h3 className="mt-2 text-lg font-bold text-slate-900">Featured products</h3>
-                      </div>
-                      <div className="rounded-3xl bg-sky-50 px-3 py-2 text-xs font-semibold text-sky-700">{products.length} items</div>
-                    </div>
-                    <div className="mt-6 grid gap-4">
-                      {products.slice(0, 3).map((product) => (
-                        <div key={product._id || product.id} className="rounded-3xl bg-slate-50 p-4">
-                          <p className="text-sm font-semibold text-slate-900 truncate">{product.title}</p>
-                          <p className="mt-2 text-sm text-slate-600">{formatPriceUSD(product.price)} {formatPriceKHR(product.price)}</p>
-                        </div>
-                      ))}
-                      {!products.length && <p className="text-sm text-slate-500">No listings available yet.</p>}
-                    </div>
-                  </div>
-
-                  <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                    <p className="text-xs uppercase tracking-[0.25em] text-slate-500">Seller reputation</p>
-                    <div className="mt-5 space-y-4">
-                      <div className="rounded-3xl bg-slate-50 p-4">
-                        <p className="text-sm font-semibold text-slate-900">Positive feedback</p>
-                        <p className="mt-2 text-2xl font-semibold text-slate-900">98%</p>
-                      </div>
-                      <div className="rounded-3xl bg-slate-50 p-4">
-                        <p className="text-sm font-semibold text-slate-900">Response speed</p>
-                        <p className="mt-2 text-2xl font-semibold text-slate-900">24h</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
+            ) : null}
 
             {activeTab === 'products' && !isEditing && (
               <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -585,25 +541,65 @@ const ProfilePage = () => {
             {activeTab === 'about' && !isEditing && (
               <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
                 <h2 className="text-lg font-bold text-slate-900">About this Seller</h2>
-                <div className="mt-6 grid gap-6 lg:grid-cols-2">
+                <div className="mt-6 space-y-6 lg:grid lg:grid-cols-2 lg:items-start lg:gap-6">
                   <div className="space-y-4">
                     <div>
                       <p className="text-sm font-semibold text-slate-600">Biography</p>
                       <p className="mt-3 text-slate-700">{profile?.bio || 'No biography has been added yet.'}</p>
                     </div>
-                    <div>
-                      <p className="text-sm font-semibold text-slate-600">Contact</p>
-                      <div className="mt-3 space-y-2 text-slate-700">
-                        <p>Email: {profile?.email || 'Not available'}</p>
-                        <p>Phone: {profile?.phoneNumber || 'Not available'}</p>
-                        <p>Telegram: {profile?.telegram || 'Not available'}</p>
-                        <p>Facebook: {profile?.facebook || 'Not available'}</p>
-                      </div>
-                    </div>
                   </div>
                   <div className="rounded-3xl bg-slate-50 p-6">
-                    <p className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-500">Customer support</p>
-                    <p className="mt-4 text-slate-600">For faster support, contact this seller through Telegram or Facebook and reference your product inquiry.</p>
+                    <p className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-500">Contact information</p>
+                    <div className="mt-4 space-y-3 text-slate-700">
+                      {profile?.phoneNumber && (
+                        <div className="flex items-center gap-2">
+                          <Phone className="h-4 w-4 text-slate-400" />
+                          <a className="text-slate-700 hover:text-sky-600" href={`tel:${profile.phoneNumber}`}>
+                            {profile.phoneNumber}
+                          </a>
+                        </div>
+                      )}
+                      {profile?.email && (
+                        <div className="flex items-center gap-2">
+                          <Mail className="h-4 w-4 text-slate-400" />
+                          <a className="text-slate-700 hover:text-sky-600" href={`mailto:${profile.email}`}>
+                            {profile.email}
+                          </a>
+                        </div>
+                      )}
+                      {profile?.telegram && (
+                        <div className="flex items-center gap-2">
+                          <Link2 className="h-4 w-4 text-slate-400" />
+                          <a
+                            className="text-slate-700 hover:text-sky-600"
+                            href={profile.telegram.startsWith('http') ? profile.telegram : `https://t.me/${profile.telegram.replace(/^@/, '')}`}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            {profile.telegram}
+                          </a>
+                        </div>
+                      )}
+                      {profile?.facebook && (
+                        <div className="flex items-center gap-2">
+                          <Globe className="h-4 w-4 text-slate-400" />
+                          <a
+                            className="text-slate-700 hover:text-sky-600"
+                            href={profile.facebook.startsWith('http') ? profile.facebook : `https://www.facebook.com/${profile.facebook.replace(/^\//, '')}`}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            {profile.facebook}
+                          </a>
+                        </div>
+                      )}
+                      {profile?.location && (
+                        <div className="flex items-center gap-2">
+                          <MapPin className="h-4 w-4 text-slate-400" />
+                          <span>{profile.location}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
