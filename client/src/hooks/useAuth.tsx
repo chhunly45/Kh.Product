@@ -63,7 +63,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const response = await loginApi(payload);
     if (response && !('requiresOtp' in response)) {
       setUser(response.user);
-      setAuthToken(response.authToken);
+      setAuthToken(response.accessToken || response.authToken || (response as any).token || null);
     }
     return response;
   };
@@ -72,7 +72,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const response = await verifyLoginOtpApi(payload);
     if (response) {
       setUser(response.user);
-      setAuthToken(response.authToken);
+      setAuthToken(response.accessToken || response.authToken || (response as any).token || null);
     }
     return response;
   };
@@ -81,7 +81,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const response = await registerApi(payload);
     if (response && !('requiresEmailVerification' in response)) {
       setUser(response.user);
-      setAuthToken(response.authToken);
+      setAuthToken(response.accessToken || response.authToken || (response as any).token || null);
     }
     return response;
   };

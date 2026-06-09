@@ -3,12 +3,20 @@ const config = require('../config');
 const { User } = require('../models');
 
 const authMiddleware = async (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ success: false, message: 'Authentication required' });
+  const authHeader = req.headers.authorization || req.headers.Authorization;
+  let token = null;
+
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    token = authHeader.split(' ')[1];
   }
 
-  const token = authHeader.split(' ')[1];
+  if (!token && req.cookies) {
+    token = req.cookies.authToken || req.cookies.accessToken || req.cookies.token || req.cookies.jwt || null;
+  }
+
+  if (!token) {
+    return res.status(401).json({ success: false, message: 'Authentication required' });
+  }
 
   try {
     const payload = jwt.verify(token, config.jwtSecret, { algorithms: ['HS256'] });

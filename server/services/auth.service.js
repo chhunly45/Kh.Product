@@ -183,6 +183,7 @@ const verifyLoginOtp = async (identifier, code) => {
   return {
     user: { id: user.id, email: user.email, displayName: user.displayName, role: user.role, verified: user.verified, emailVerified: user.emailVerified },
     accessToken,
+    authToken: accessToken,
     refreshToken
   };
 };
@@ -486,7 +487,7 @@ const refreshToken = async (token) => {
   user.refreshTokens.push(newRefreshToken);
   await user.save();
 
-  return { accessToken, refreshToken: newRefreshToken };
+  return { accessToken, authToken: accessToken, refreshToken: newRefreshToken };
 };
 
 const logoutUser = async (userId, token) => {

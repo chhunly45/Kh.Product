@@ -20,7 +20,8 @@ export interface AuthResponse {
     role?: string;
     emailVerified?: boolean;
   };
-  authToken: string;
+  authToken?: string;
+  accessToken?: string;
   refreshToken: string;
 }
 
@@ -53,7 +54,7 @@ export const register = async (payload: RegisterPayload): Promise<AuthResponse |
   }
 
   if (response.data.success && response.data.data) {
-    const token = response.data.data.accessToken;
+    const token = response.data.data.accessToken || response.data.data.authToken || response.data.data.token;
     const refreshToken = response.data.data.refreshToken;
     const user = response.data.data.user;
     if (token) localStorage.setItem('authToken', token);
@@ -71,7 +72,7 @@ export const login = async (payload: LoginPayload): Promise<AuthResponse | Login
   }
 
   if (response.data.success && response.data.data) {
-    const token = response.data.data.accessToken;
+    const token = response.data.data.accessToken || response.data.data.authToken || response.data.data.token;
     const refreshToken = response.data.data.refreshToken;
     const user = response.data.data.user;
     if (token) localStorage.setItem('authToken', token);
@@ -84,7 +85,7 @@ export const login = async (payload: LoginPayload): Promise<AuthResponse | Login
 export const verifyLoginOtp = async (payload: { identifier: string; code: string }): Promise<AuthResponse> => {
   const response = await api.post('/auth/login/verify', payload);
   if (response.data.success && response.data.data) {
-    const token = response.data.data.accessToken;
+    const token = response.data.data.accessToken || response.data.data.authToken || response.data.data.token;
     const refreshToken = response.data.data.refreshToken;
     const user = response.data.data.user;
     if (token) localStorage.setItem('authToken', token);
