@@ -501,23 +501,37 @@ const logoutUser = async (userId, token) => {
 };
 
 const updateProfile = async (userId, updates) => {
-  const allowed = ['displayName', 'bio', 'location', 'profileImageUrl', 'phoneNumber'];
+  const allowed = ['displayName', 'bio', 'location', 'profileImageUrl', 'phoneNumber', 'avatar', 'coverImage', 'telegram', 'facebook'];
   const sanitized = allowed.reduce((acc, key) => {
     if (updates[key] !== undefined) acc[key] = updates[key];
     return acc;
   }, {});
-  // If client submitted a data URL for profileImageUrl, upload to Cloudinary
-  if (sanitized.profileImageUrl && typeof sanitized.profileImageUrl === 'string' && sanitized.profileImageUrl.startsWith('data:')) {
+
+  const uploadDataUrl = async (value, folder) => {
+    if (!value || typeof value !== 'string' || !value.startsWith('data:')) return value;
     try {
       const cloudinary = require('../config/cloudinary');
-      const uploadResult = await cloudinary.uploader.upload(sanitized.profileImageUrl, { folder: `${require('../config').cloudinary.folder}/profiles` });
-      if (uploadResult && uploadResult.secure_url) {
-        sanitized.profileImageUrl = uploadResult.secure_url;
-      }
+      const uploadResult = await cloudinary.uploader.upload(value, { folder: `${require('../config').cloudinary.folder}/${folder}` });
+      return uploadResult?.secure_url || undefined;
     } catch (err) {
-      // if upload fails, remove the profileImageUrl from update to avoid storing large base64
-      delete sanitized.profileImageUrl;
+      return undefined;
     }
+  };
+
+  if (sanitized.profileImageUrl) {
+    const url = await uploadDataUrl(sanitized.profileImageUrl, 'profiles');
+    if (url) sanitized.profileImageUrl = url;
+    else delete sanitized.profileImageUrl;
+  }
+  if (sanitized.avatar) {
+    const url = await uploadDataUrl(sanitized.avatar, 'profiles/avatars');
+    if (url) sanitized.avatar = url;
+    else delete sanitized.avatar;
+  }
+  if (sanitized.coverImage) {
+    const url = await uploadDataUrl(sanitized.coverImage, 'profiles/covers');
+    if (url) sanitized.coverImage = url;
+    else delete sanitized.coverImage;
   }
 
   const user = await User.findByIdAndUpdate(userId, sanitized, { new: true, runValidators: true }).select('-passwordHash -refreshTokens');

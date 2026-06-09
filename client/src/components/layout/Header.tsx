@@ -177,8 +177,9 @@ const Header = () => {
             {user ? (
               <>
                 <Link
-                  to="/dashboard"
-                  className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+                  to="/profile"
+                  className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition cursor-pointer"
+                  title="View your profile"
                 >
                   {user.profileImageUrl ? (
                     <img src={user.profileImageUrl} alt="avatar" className="w-6 h-6 rounded-full object-cover" />
@@ -273,11 +274,12 @@ const Header = () => {
             {user ? (
               <>
                 <Link
-                  to="/dashboard"
-                  className="block rounded-lg border border-slate-300 bg-white px-4 py-2 text-center text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+                  to="/profile"
+                  className="block rounded-lg border border-slate-300 bg-white px-4 py-2 text-center text-sm font-semibold text-slate-700 hover:bg-slate-50 transition cursor-pointer"
+                  title="View your profile"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  {user.displayName ? `Hi, ${user.displayName.split(' ')[0]}` : 'Dashboard'}
+                  {user.displayName ? `Hi, ${user.displayName.split(' ')[0]}` : 'Profile'}
                 </Link>
                 <button
                   type="button"
