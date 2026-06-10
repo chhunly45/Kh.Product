@@ -50,16 +50,31 @@ const sendLoginOtpEmail = async (user, code) => {
 };
 
 const registerUser = async ({ email, password, displayName, phoneNumber, location }) => {
-  const normalizedEmail = normalizeIdentifier(email);
-  const exists = await User.findOne({ email: normalizedEmail });
-  if (exists) {
-    const error = new Error('Email already registered');
+  const normalizedEmail = email?.trim() ? normalizeIdentifier(email) : undefined;
+  if (normalizedEmail) {
+    const exists = await User.findOne({ email: normalizedEmail });
+    if (exists) {
+      const error = new Error('Email already registered');
+      error.statusCode = 409;
+      throw error;
+    }
+  }
+
+  const normalizedPhone = phoneNumber ? normalizeCambodiaPhone(phoneNumber) : undefined;
+  if (!normalizedPhone) {
+    const error = new Error('Phone number is required');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const existingPhone = await User.findOne({ phoneNumber: normalizedPhone });
+  if (existingPhone) {
+    const error = new Error('Phone number already registered');
     error.statusCode = 409;
     throw error;
   }
 
   const passwordHash = await bcrypt.hash(password, 12);
-  const normalizedPhone = phoneNumber ? normalizeCambodiaPhone(phoneNumber) : undefined;
   const user = await User.create({
     email: normalizedEmail,
     passwordHash,
@@ -67,24 +82,50 @@ const registerUser = async ({ email, password, displayName, phoneNumber, locatio
     phoneNumber: normalizedPhone,
     location,
     role: 'seller',
-    emailVerified: false
+    emailVerified: false,
+    phoneVerified: false,
+    sellerVerificationStatus: normalizedEmail ? 'pending' : 'unverified'
   });
 
-  const now = new Date();
-  const otp = generateOtp();
-  user.emailVerificationHash = await bcrypt.hash(otp, 12);
-  user.emailVerificationExpiresAt = new Date(now.getTime() + 5 * 60 * 1000);
-  user.emailVerificationRequestedAt = now;
-  user.emailVerificationAttempts = 0;
+  if (normalizedEmail) {
+    const now = new Date();
+    const otp = generateOtp();
+    user.emailVerificationHash = await bcrypt.hash(otp, 12);
+    user.emailVerificationExpiresAt = new Date(now.getTime() + 5 * 60 * 1000);
+    user.emailVerificationRequestedAt = now;
+    user.emailVerificationAttempts = 0;
+    await user.save();
+
+    await sendEmailVerificationCodeEmail(user, otp);
+
+    return {
+      requiresEmailVerification: true,
+      identifier: user.email,
+      expiresIn: 300,
+      resendCooldownSeconds: 60
+    };
+  }
+
+  const accessToken = createToken(user.id);
+  const refreshToken = createRefreshToken(user.id);
+  user.refreshTokens.push(refreshToken);
+  user.lastLoginAt = new Date();
   await user.save();
 
-  await sendEmailVerificationCodeEmail(user, otp);
-
   return {
-    requiresEmailVerification: true,
-    identifier: user.email,
-    expiresIn: 300,
-    resendCooldownSeconds: 60
+    user: {
+      id: user.id,
+      email: user.email,
+      displayName: user.displayName,
+      role: user.role,
+      verified: user.verified,
+      emailVerified: user.emailVerified,
+      phoneVerified: user.phoneVerified,
+      sellerVerificationStatus: user.sellerVerificationStatus
+    },
+    accessToken,
+    authToken: accessToken,
+    refreshToken
   };
 };
 
@@ -106,9 +147,8 @@ const loginUser = async (identifier, password) => {
     throw error;
   }
 
-  // Only require email verification when logging in with an email identifier
-  const isEmailLogin = identifier && identifier.toString().includes('@');
-  if (isEmailLogin && !user.emailVerified) {
+  // Require email verification for accounts that have an email address registered.
+  if (user.email && !user.emailVerified) {
     const error = new Error('Email not verified. Please verify your email before logging in.');
     error.statusCode = 403;
     throw error;
@@ -192,7 +232,16 @@ const verifyLoginOtp = async (identifier, code) => {
   await user.save();
 
   return {
-    user: { id: user.id, email: user.email, displayName: user.displayName, role: user.role, verified: user.verified, emailVerified: user.emailVerified },
+    user: {
+      id: user.id,
+      email: user.email,
+      displayName: user.displayName,
+      role: user.role,
+      verified: user.verified,
+      emailVerified: user.emailVerified,
+      phoneVerified: user.phoneVerified,
+      sellerVerificationStatus: user.sellerVerificationStatus
+    },
     accessToken,
     authToken: accessToken,
     refreshToken
@@ -421,7 +470,16 @@ const verifyPhoneOtp = async (phoneNumber, code) => {
   await user.save();
 
   return {
-    user: { id: user.id, email: user.email, displayName: user.displayName, role: user.role, verified: user.verified, emailVerified: user.emailVerified },
+    user: {
+      id: user.id,
+      email: user.email,
+      displayName: user.displayName,
+      role: user.role,
+      verified: user.verified,
+      emailVerified: user.emailVerified,
+      phoneVerified: user.phoneVerified,
+      sellerVerificationStatus: user.sellerVerificationStatus
+    },
     accessToken,
     authToken: accessToken,
     refreshToken

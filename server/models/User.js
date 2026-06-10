@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { Schema, model } = mongoose;
 
 const UserSchema = new Schema({
-  email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+  email: { type: String, unique: true, sparse: true, lowercase: true, trim: true },
   passwordHash: { type: String, required: true },
   phoneNumber: { type: String, trim: true, unique: true, sparse: true },
   displayName: { type: String, required: true, trim: true },
@@ -15,6 +15,8 @@ const UserSchema = new Schema({
   bio: { type: String, trim: true },
   location: { type: String, trim: true },
   emailVerified: { type: Boolean, default: false },
+  phoneVerified: { type: Boolean, default: false },
+  sellerVerificationStatus: { type: String, enum: ['none', 'unverified', 'pending', 'verified', 'rejected'], default: 'none' },
   emailVerificationHash: { type: String, trim: true },
   emailVerificationExpiresAt: { type: Date },
   emailVerificationRequestedAt: { type: Date },

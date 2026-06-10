@@ -28,7 +28,8 @@ const ensurePhoneOtpEnabled = (req, res, next) => {
 
 router.post(
   '/register',
-  body('email').isEmail().withMessage('Valid email is required'),
+  body('email').optional({ checkFalsy: true }).isEmail().withMessage('Valid email is required'),
+  body('phoneNumber').notEmpty().withMessage('Phone number is required'),
   body('password').isLength({ min: 6 }).withMessage('Password must have at least 6 characters'),
   body('displayName').notEmpty().withMessage('Display name is required'),
   validate,

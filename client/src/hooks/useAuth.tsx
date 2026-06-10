@@ -12,8 +12,10 @@ import {
 
 export interface AuthUser {
   id: string;
-  email: string;
+  email?: string;
   displayName: string;
+  phoneVerified?: boolean;
+  sellerVerificationStatus?: string;
   [key: string]: any;
 }
 
@@ -21,7 +23,7 @@ export interface AuthContextType {
   user: AuthUser | null;
   authToken: string | null;
   isAuthenticated: boolean;
-  register: (payload: { displayName: string; email: string; password: string; phoneNumber?: string }) => Promise<AuthResponse | EmailVerificationResponse>;
+  register: (payload: { displayName: string; email?: string; password: string; phoneNumber: string }) => Promise<AuthResponse | EmailVerificationResponse>;
   login: (payload: LoginPayload) => Promise<AuthResponse | LoginOtpResponse>;
   verifyLoginOtp: (payload: { identifier: string; code: string }) => Promise<AuthResponse>;
   logout: () => Promise<void>;
@@ -77,7 +79,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return response;
   };
 
-  const register = async (payload: { displayName: string; email: string; password: string }) => {
+  const register = async (payload: { displayName: string; email?: string; password: string; phoneNumber: string }) => {
     const response = await registerApi(payload);
     if (response && !('requiresEmailVerification' in response)) {
       setUser(response.user);

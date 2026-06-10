@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
+const captchaEnabled = import.meta.env.VITE_CAPTCHA_ENABLED === 'true';
+
 const RegisterPage = () => {
   const navigate = useNavigate();
   const { register } = useAuth();
@@ -31,13 +33,18 @@ const RegisterPage = () => {
     setLoading(true);
 
     try {
-      const { firstName, lastName, phone, password, confirmPassword } = formData;
+      const { firstName, lastName, email, phone, password, confirmPassword } = formData;
       if (!firstName.trim() || !lastName.trim()) {
         setError('First name and last name are required');
         setLoading(false);
         return;
       }
-      if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+      if (!phone.trim()) {
+        setError('Phone number is required');
+        setLoading(false);
+        return;
+      }
+      if (email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
         setError('Valid email address is required');
         setLoading(false);
         return;
@@ -55,10 +62,13 @@ const RegisterPage = () => {
 
       const payload = {
         displayName: `${firstName.trim()} ${lastName.trim()}`,
-        email: formData.email.trim(),
-        phoneNumber: phone,
-        password
-      };
+        phoneNumber: phone.trim(),
+        password,
+        ...(email.trim() ? { email: email.trim() } : {})
+      } as { displayName: string; email?: string; password: string; phoneNumber: string };
+      if (captchaEnabled) {
+        (payload as any).captchaToken = 'placeholder';
+      }
 
       const result = await register(payload);
       if (result && 'requiresEmailVerification' in result && result.requiresEmailVerification) {
@@ -118,7 +128,7 @@ const RegisterPage = () => {
           </div>
 
           <label className="block">
-            <span className="text-sm font-medium text-slate-700">Email address</span>
+            <span className="text-sm font-medium text-slate-700">Email address (optional)</span>
             <input
               type="email"
               name="email"
@@ -128,6 +138,7 @@ const RegisterPage = () => {
               className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
               disabled={loading}
             />
+            <p className="mt-2 text-sm text-slate-500">Optional for rural sellers. Leave blank to register with phone only.</p>
           </label>
 
           <label className="block">
@@ -142,6 +153,11 @@ const RegisterPage = () => {
               disabled={loading}
             />
           </label>
+          {captchaEnabled && (
+            <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
+              CAPTCHA placeholder enabled. Implement CAPTCHA integration here when ready.
+            </div>
+          )}
 
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block">

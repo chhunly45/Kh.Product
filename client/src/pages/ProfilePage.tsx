@@ -283,8 +283,15 @@ const ProfilePage = () => {
                   <p className="text-xs font-semibold uppercase tracking-[0.25em] text-sky-600">Seller profile</p>
                   <h2 className="mt-3 text-xl font-bold text-slate-900">{profile?.displayName || 'Seller'}</h2>
                 </div>
-                <div className="rounded-3xl bg-sky-50 px-3 py-2 text-xs font-semibold text-sky-700">
-                  {profile?.role === 'seller' ? 'Seller' : 'User'}
+                <div className="space-y-2 text-right">
+                  <div className="rounded-3xl bg-sky-50 px-3 py-2 text-xs font-semibold text-sky-700">
+                    {profile?.role === 'seller' ? 'Seller' : 'User'}
+                  </div>
+                  {profile?.sellerVerificationStatus === 'unverified' ? (
+                    <div className="rounded-3xl bg-amber-100 px-3 py-2 text-xs font-semibold text-amber-700">
+                      Unverified Seller
+                    </div>
+                  ) : null}
                 </div>
               </div>
 
@@ -321,7 +328,9 @@ const ProfilePage = () => {
                 <div className="rounded-3xl bg-slate-50 p-4">
                   <p className="font-semibold text-slate-900">Status</p>
                   <p className="mt-2">
-                    {profile?.emailVerified
+                    {profile?.sellerVerificationStatus === 'unverified'
+                      ? 'Unverified seller'
+                      : profile?.emailVerified
                       ? 'Email verified'
                       : profile?.verified
                       ? 'Seller verified'

@@ -2,9 +2,9 @@ import api from './api';
 
 export interface RegisterPayload {
   displayName: string;
-  email: string;
+  email?: string;
   password: string;
-  phoneNumber?: string;
+  phoneNumber: string;
 }
 
 export interface LoginPayload {
@@ -15,10 +15,12 @@ export interface LoginPayload {
 export interface AuthResponse {
   user: {
     id: string;
-    email: string;
+    email?: string;
     displayName: string;
     role?: string;
     emailVerified?: boolean;
+    phoneVerified?: boolean;
+    sellerVerificationStatus?: string;
   };
   authToken?: string;
   accessToken?: string;
