@@ -52,6 +52,18 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
     const fresh = await User.findOne({ email: 'test@example.com' }).lean();
     console.log('[integration] created user emailVerified=', fresh.emailVerified);
 
+    // create phone-password user for login validation
+    const phonePassword = 'PhonePass123!';
+    await User.create({
+      email: 'phone-user@example.com',
+      passwordHash: await bcrypt.hash(phonePassword, 12),
+      displayName: 'Phone User',
+      role: 'user',
+      phoneNumber: '012345678',
+      emailVerified: true
+    });
+    console.log('[integration] created phone login user');
+
     // get CSRF token and cookie
     const csrfResp = await axios.get(`${base}/csrf-token`);
     const csrfToken = csrfResp.data && csrfResp.data.csrfToken;
@@ -61,7 +73,39 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
     const defaultHeaders = { 'X-CSRF-Token': csrfToken, Cookie: setCookie };
 
-    // 1) Login (should trigger OTP)
+    // 1) Login by phone number with password
+    console.log('[integration] testing login by phone number with password');
+    const phoneLoginResp = await axios.post(`${base}/auth/login`, { identifier: '012345678', password: phonePassword }, { headers: defaultHeaders });
+    if (!phoneLoginResp.data || !phoneLoginResp.data.data || !phoneLoginResp.data.data.requiresOtp) {
+      throw new Error('Phone login did not request OTP as expected');
+    }
+    console.log('[integration] phone login requested OTP');
+
+    let phoneOtp = null;
+    const phoneDevDir = path.resolve(process.cwd(), 'dev-emails');
+    for (let i = 0; i < 20; i++) {
+      if (fs.existsSync(phoneDevDir)) {
+        const files = fs.readdirSync(phoneDevDir).filter((f) => f.startsWith('email-')).sort();
+        if (files.length > 0) {
+          const latest = files[files.length - 1];
+          const content = fs.readFileSync(path.join(phoneDevDir, latest), 'utf8');
+          const m = content.match(/code is (\d{6})|code: (\d{6})|(verification code is (\d{6}))/i);
+          if (m) phoneOtp = (m[1] || m[2] || m[4]).toString();
+          break;
+        }
+      }
+      await wait(250);
+    }
+    if (!phoneOtp) throw new Error('Phone login OTP email not found in dev-emails');
+    console.log('[integration] found phone login OTP:', phoneOtp);
+
+    const phoneVerifyResp = await axios.post(`${base}/auth/login/verify`, { identifier: '012345678', code: phoneOtp }, { headers: defaultHeaders });
+    if (!phoneVerifyResp.data || !phoneVerifyResp.data.data || !phoneVerifyResp.data.data.accessToken || !phoneVerifyResp.data.data.user) {
+      throw new Error('Phone login verify did not return accessToken or user');
+    }
+    console.log('[integration] phone login verify succeeded, accessToken returned');
+
+    // 2) Login (should trigger OTP)
     console.log('[integration] testing login (requesting OTP)');
     const loginResp = await axios.post(`${base}/auth/login`, { identifier: 'test@example.com', password }, { headers: defaultHeaders });
     if (!loginResp.data || !loginResp.data.data || !loginResp.data.data.requiresOtp) {

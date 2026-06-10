@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { resendLoginOtp, resendPhoneOtp, requestPhoneOtp, verifyPhoneOtp } from '../services/auth.api';
 import { useAuth } from '../hooks/useAuth';
 
+const phoneOtpEnabled = import.meta.env.VITE_PHONE_OTP_ENABLED === 'true';
+
 const LoginPage = () => {
   const { login, verifyLoginOtp } = useAuth();
   const navigate = useNavigate();
@@ -11,7 +13,7 @@ const LoginPage = () => {
     password: ''
   });
   const [phoneInput, setPhoneInput] = useState('');
-  const [mode, setMode] = useState<'email' | 'phone'>('email');
+  const [mode, setMode] = useState<'credentials' | 'phoneOtp'>('credentials');
   const [otpCode, setOtpCode] = useState('');
   const [stage, setStage] = useState<'credentials' | 'otp'>('credentials');
   const [identifier, setIdentifier] = useState('');
@@ -69,7 +71,7 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      if (mode === 'email') {
+      if (mode === 'credentials') {
         if (!formData.emailOrPhone.trim()) {
           setError('Email or phone is required');
           return;
@@ -127,7 +129,7 @@ const LoginPage = () => {
         setError('Please enter the 6-digit verification code.');
         return;
       }
-      if (mode === 'email') {
+      if (mode === 'credentials') {
         await verifyLoginOtp({ identifier, code: otpCode.trim() });
       } else {
         await verifyPhoneOtp({ phoneNumber: identifier, code: otpCode.trim() });
@@ -147,12 +149,11 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      if (mode === 'email') {
+      if (mode === 'credentials') {
         const response = await resendLoginOtp({ identifier: buildIdentifier(formData.emailOrPhone) });
         setStatus('A fresh code was sent to your email.');
         setResendCooldown(response.resendCooldownSeconds || 60);
       } else {
-        // Phone OTP resend
         const digits = normalizePhoneDigits(phoneInput);
         const response = await resendPhoneOtp({ phoneNumber: digits });
         setStatus('A fresh code was sent to your phone.');
@@ -195,13 +196,15 @@ const LoginPage = () => {
       )}
 
       <div className="mt-6 flex gap-2">
-        <button type="button" className={`px-4 py-2 rounded-full ${mode === 'email' ? 'bg-sky-600 text-white' : 'bg-white border'}`} onClick={() => setMode('email')}>Email</button>
-        <button type="button" className={`px-4 py-2 rounded-full ${mode === 'phone' ? 'bg-sky-600 text-white' : 'bg-white border'}`} onClick={() => setMode('phone')}>Phone OTP</button>
+        <button type="button" className={`px-4 py-2 rounded-full ${mode === 'credentials' ? 'bg-sky-600 text-white' : 'bg-white border'}`} onClick={() => setMode('credentials')}>Email or Phone + Password</button>
+        {phoneOtpEnabled && (
+          <button type="button" className={`px-4 py-2 rounded-full ${mode === 'phoneOtp' ? 'bg-sky-600 text-white' : 'bg-white border'}`} onClick={() => setMode('phoneOtp')}>Phone OTP</button>
+        )}
       </div>
 
       {stage === 'credentials' ? (
         <form className="mt-10 space-y-6" onSubmit={handleSubmit}>
-          {mode === 'email' ? (
+          {mode === 'credentials' ? (
             <>
               <label className="block">
                 <span className="text-sm font-medium text-slate-700">Email or Phone</span>
@@ -248,7 +251,7 @@ const LoginPage = () => {
             className="w-full rounded-3xl bg-sky-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-sky-700 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={loading}
           >
-            {loading ? 'Signing in...' : 'Sign in'}
+            {loading ? (mode === 'credentials' ? 'Signing in...' : 'Requesting OTP...') : (mode === 'credentials' ? 'Sign in' : 'Request OTP')}
           </button>
         </form>
       ) : (
