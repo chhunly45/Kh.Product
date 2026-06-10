@@ -40,6 +40,11 @@ const sendEmailVerificationCodeEmail = async (user, code) => {
 };
 
 const sendLoginOtpEmail = async (user, code) => {
+  if (!user.email) {
+    const error = new Error('Email is not configured for this account.');
+    error.statusCode = 400;
+    throw error;
+  }
   const message = `Your Konpuk login verification code is ${code}. It expires in 5 minutes. Do not share this code with anyone.`;
   await emailService.sendEmail({
     to: user.email,
@@ -47,6 +52,21 @@ const sendLoginOtpEmail = async (user, code) => {
     text: message,
     html: `<p>${message}</p>`
   });
+};
+
+const sendLoginOtpNotification = async (user, code) => {
+  if (user.email) {
+    return sendLoginOtpEmail(user, code);
+  }
+  if (user.phoneNumber && phoneOtpEnabled) {
+    const smsService = require('./sms.service');
+    const message = `Your Konpuk login verification code is ${code}. It expires in 5 minutes. Do not share this code with anyone.`;
+    await smsService.sendSms(user.phoneNumber, message);
+    return;
+  }
+  const error = new Error('No contact method available for login verification.');
+  error.statusCode = 400;
+  throw error;
 };
 
 const registerUser = async ({ email, password, displayName, phoneNumber, location }) => {
@@ -75,17 +95,21 @@ const registerUser = async ({ email, password, displayName, phoneNumber, locatio
   }
 
   const passwordHash = await bcrypt.hash(password, 12);
-  const user = await User.create({
-    email: normalizedEmail,
+  const normalizedDisplayName = displayName?.trim() || normalizedPhone;
+  const userData = {
     passwordHash,
-    displayName,
+    displayName: normalizedDisplayName,
     phoneNumber: normalizedPhone,
     location,
     role: 'seller',
     emailVerified: false,
     phoneVerified: false,
     sellerVerificationStatus: normalizedEmail ? 'pending' : 'unverified'
-  });
+  };
+  if (normalizedEmail) {
+    userData.email = normalizedEmail;
+  }
+  const user = await User.create(userData);
 
   if (normalizedEmail) {
     const now = new Date();
@@ -176,7 +200,7 @@ const loginUser = async (identifier, password) => {
   user.loginOtpAttempts = 0;
   await user.save();
 
-  await sendLoginOtpEmail(user, otp);
+  await sendLoginOtpNotification(user, otp);
 
   return {
     requiresOtp: true,

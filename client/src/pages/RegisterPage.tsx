@@ -60,8 +60,9 @@ const RegisterPage = () => {
         return;
       }
 
+      const displayName = `${firstName.trim()} ${lastName.trim()}`.trim() || phone.trim();
       const payload = {
-        displayName: `${firstName.trim()} ${lastName.trim()}`,
+        displayName,
         phoneNumber: phone.trim(),
         password,
         ...(email.trim() ? { email: email.trim() } : {})

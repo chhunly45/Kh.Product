@@ -10,6 +10,7 @@ const hasResendConfig = Boolean(config.resendApiKey && config.emailFrom);
  * user@example.com -> u***@example.com
  */
 const maskEmail = (email) => {
+  if (!email) return '';
   const [localPart, domain] = email.split('@');
   if (!domain) return email;
   return `${localPart[0]}${'*'.repeat(Math.max(3, localPart.length - 2))}@${domain}`;

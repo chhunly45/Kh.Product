@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { Schema, model } = mongoose;
 
 const UserSchema = new Schema({
-  email: { type: String, unique: true, sparse: true, lowercase: true, trim: true },
+  email: { type: String, lowercase: true, trim: true },
   passwordHash: { type: String, required: true },
   phoneNumber: { type: String, trim: true, unique: true, sparse: true },
   displayName: { type: String, required: true, trim: true },
@@ -54,8 +54,8 @@ const UserSchema = new Schema({
   timestamps: true
 });
 
-UserSchema.index({ email: 1 });
-UserSchema.index({ phoneNumber: 1 }, { sparse: true });
+UserSchema.index({ email: 1 }, { unique: true, sparse: true });
+UserSchema.index({ phoneNumber: 1 }, { unique: true, sparse: true });
 UserSchema.index({ displayName: 'text', bio: 'text', location: 'text' });
 
 module.exports = model('User', UserSchema);

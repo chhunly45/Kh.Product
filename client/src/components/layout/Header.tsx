@@ -192,7 +192,7 @@ const Header = () => {
                   ) : (
                     <User className="w-4 h-4" />
                   )}
-                  <span>{user?.displayName ? user.displayName.split(' ')[0] : 'Account'}</span>
+                  <span>{user?.displayName?.split(' ')[0] || user?.phoneNumber || 'Account'}</span>
                 </button>
                 <button
                   type="button"
@@ -291,7 +291,7 @@ const Header = () => {
                   aria-label="Open profile"
                   type="button"
                 >
-                  {user?.displayName ? `Hi, ${user.displayName.split(' ')[0]}` : 'Profile'}
+                  {user?.displayName ? `Hi, ${user.displayName.split(' ')[0]}` : user?.phoneNumber ? `Hi, ${user.phoneNumber}` : 'Profile'}
                 </button>
                 <button
                   type="button"

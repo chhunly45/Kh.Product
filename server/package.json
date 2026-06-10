@@ -8,6 +8,7 @@
     "dev": "nodemon server.js",
     "make:admin": "node scripts/make-admin.js",
     "repair:text-index": "node scripts/repair-product-text-index.js",
+    "fix:email-index": "node scripts/fix-email-index.js",
     "test:integration": "node scripts/run-integration-tests.js"
   },
   "dependencies": {
