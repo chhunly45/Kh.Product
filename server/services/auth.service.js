@@ -184,28 +184,27 @@ const loginUser = async (identifier, password) => {
     error.statusCode = 401;
     throw error;
   }
-
-  const now = new Date();
-  if (user.loginOtpRequestedAt && now.getTime() - user.loginOtpRequestedAt.getTime() < 60 * 1000) {
-    const wait = 60 - Math.floor((now.getTime() - user.loginOtpRequestedAt.getTime()) / 1000);
-    const error = new Error(`Please wait ${wait} seconds before requesting another verification code.`);
-    error.statusCode = 429;
-    throw error;
-  }
-
-  const otp = generateOtp();
-  user.loginOtpHash = await bcrypt.hash(otp, 12);
-  user.loginOtpExpiresAt = new Date(now.getTime() + 5 * 60 * 1000);
-  user.loginOtpRequestedAt = now;
-  user.loginOtpAttempts = 0;
+  // Successful password login: create session tokens immediately.
+  const accessToken = createToken(user.id);
+  const refreshToken = createRefreshToken(user.id);
+  user.refreshTokens.push(refreshToken);
+  user.lastLoginAt = new Date();
   await user.save();
 
-  await sendLoginOtpNotification(user, otp);
-
   return {
-    requiresOtp: true,
-    expiresIn: 300,
-    resendCooldownSeconds: 60
+    user: {
+      id: user.id,
+      email: user.email,
+      displayName: user.displayName,
+      role: user.role,
+      verified: user.verified,
+      emailVerified: user.emailVerified,
+      phoneVerified: user.phoneVerified,
+      sellerVerificationStatus: user.sellerVerificationStatus
+    },
+    accessToken,
+    authToken: accessToken,
+    refreshToken
   };
 };
 
