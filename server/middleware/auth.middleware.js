@@ -6,8 +6,14 @@ const authMiddleware = async (req, res, next) => {
   const authHeader = req.headers.authorization || req.headers.Authorization;
   let token = null;
 
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    token = authHeader.split(' ')[1];
+  if (typeof authHeader === 'string') {
+    const headerValue = authHeader.trim();
+    const parts = headerValue.split(' ').filter(Boolean);
+    if (parts.length > 1 && parts[0].toLowerCase() === 'bearer') {
+      token = parts.slice(1).join(' ').trim();
+    } else if (parts.length === 1) {
+      token = parts[0];
+    }
   }
 
   if (!token && req.cookies) {

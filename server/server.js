@@ -35,7 +35,18 @@ const io = new Server(server, {
 
 io.use(async (socket, next) => {
   try {
-    const token = socket.handshake.auth?.token || socket.handshake.headers?.authorization?.split(' ')[1];
+    let token = socket.handshake.auth?.token;
+    const authHeader = socket.handshake.headers?.authorization;
+    if (!token && typeof authHeader === 'string') {
+      const headerValue = authHeader.trim();
+      const parts = headerValue.split(' ').filter(Boolean);
+      if (parts.length > 1 && parts[0].toLowerCase() === 'bearer') {
+        token = parts.slice(1).join(' ').trim();
+      } else if (parts.length === 1) {
+        token = parts[0];
+      }
+    }
+
     if (!token) {
       return next(new Error('Authentication required'));
     }

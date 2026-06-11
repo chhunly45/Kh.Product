@@ -6,6 +6,7 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const { User } = require('../models');
 
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -145,6 +146,26 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
     if (!authData || !authData.accessToken) throw new Error('Login verify did not return tokens');
     const token = authData.accessToken;
     console.log('[integration] login verify succeeded, token obtained');
+
+    // Additional debug/logging requested: verify token payload and user lookup
+    try {
+      const payload = jwt.verify(token, require('../config').jwtSecret, { algorithms: ['HS256'] });
+      console.log('[integration] token payload:', payload);
+      const foundUser = await User.findById(payload.userId).lean();
+      console.log('[integration] user lookup result:', foundUser ? `found user ${foundUser._id} ${foundUser.email || ''}` : 'user not found');
+    } catch (e) {
+      console.error('[integration] token verify failed:', e.message);
+    }
+
+    // Explicitly call GET /auth/me to check response
+    try {
+      const meResp = await axios.get(`${base}/auth/me`, { headers: { Authorization: `Bearer ${token}`, ...defaultHeaders } });
+      console.log('[integration] GET /auth/me status:', meResp.status);
+      console.log('[integration] GET /auth/me body:', meResp.data && typeof meResp.data === 'object' ? JSON.stringify(meResp.data) : meResp.data);
+    } catch (e) {
+      console.error('[integration] GET /auth/me failed status:', e.response?.status);
+      console.error('[integration] GET /auth/me body:', e.response?.data);
+    }
 
     // 2) Change password
     console.log('[integration] testing change-password');
