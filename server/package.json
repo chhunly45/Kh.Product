@@ -10,6 +10,7 @@
     "repair:text-index": "node scripts/repair-product-text-index.js",
     "fix:email-index": "node scripts/fix-email-index.js",
     "test:integration": "node scripts/run-integration-tests.js"
+    ,"test:seller": "node scripts/run-seller-verification-tests.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
