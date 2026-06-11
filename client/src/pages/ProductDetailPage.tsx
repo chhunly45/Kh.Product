@@ -115,6 +115,7 @@ const ProductDetailPage = () => {
   const whatsappLink = sellerPhone ? `https://wa.me/${sellerPhone.replace(/^\+/, '')}` : null;
   const emailLink = product.seller?.email ? `mailto:${product.seller.email}?subject=Question%20about%20${encodeURIComponent(product.title)}` : null;
   const sellerJoined = product.seller?.createdAt ? new Date(product.seller.createdAt).toLocaleDateString() : null;
+  const sellerVerificationStatus = product.seller?.sellerVerificationStatus || (product.seller?.verified ? 'verified' : 'unverified');
 
   return (
     <>
@@ -252,18 +253,23 @@ const ProductDetailPage = () => {
               <div className="rounded-[2rem] bg-white p-6 shadow-sm">
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <p className="text-sm uppercase tracking-[0.35em] text-slate-500">Seller information</p>
-                    <h3 className="mt-3 text-xl font-semibold text-slate-900">{product.seller?.displayName || 'Seller'}</h3>
-                        {product.seller?.sellerVerificationStatus === 'verified' && (
-                          <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-sm text-emerald-700">
-                            <ShieldCheck className="w-4 h-4" /> Verified seller ✓
-                          </div>
-                        )}
-                        {product.seller?.sellerVerificationStatus === 'unverified' && (
-                          <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-amber-100 px-3 py-1 text-sm text-amber-700">
-                            Unverified Seller
-                          </div>
-                        )}
+                    <div className="flex flex-wrap items-center gap-3">
+                      <div>
+                        <p className="text-sm uppercase tracking-[0.35em] text-slate-500">Seller information</p>
+                        <h3 className="mt-3 text-xl font-semibold text-slate-900 inline-flex items-center gap-2">
+                          {product.seller?.displayName || 'Seller'}
+                        </h3>
+                      </div>
+                      {sellerVerificationStatus === 'verified' ? (
+                        <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-sm text-emerald-700">
+                          <ShieldCheck className="w-4 h-4" /> ✓ Verified Seller
+                        </div>
+                      ) : sellerVerificationStatus === 'unverified' ? (
+                        <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-amber-100 px-3 py-1 text-sm text-amber-700">
+                          Unverified Seller
+                        </div>
+                      ) : null}
+                    </div>
                   </div>
                   <div className="h-16 w-16 overflow-hidden rounded-3xl bg-slate-100">
                     {product.seller?.profileImageUrl ? (
