@@ -10,7 +10,7 @@ export const getAdminUsers = async (params: Record<string, any> = {}) => {
   return response.data.data;
 };
 
-export const updateAdminUserStatus = async (userId: string, updates: { isActive?: boolean; role?: string; verified?: boolean; verificationStatus?: string }) => {
+export const updateAdminUserStatus = async (userId: string, updates: { isActive?: boolean; role?: string; verified?: boolean; verificationStatus?: string; sellerVerificationStatus?: string }) => {
   const response = await api.patch(`/admin/users/${userId}/status`, updates);
   return response.data.data;
 };

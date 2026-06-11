@@ -16,7 +16,7 @@ const UserSchema = new Schema({
   location: { type: String, trim: true },
   emailVerified: { type: Boolean, default: false },
   phoneVerified: { type: Boolean, default: false },
-  sellerVerificationStatus: { type: String, enum: ['none', 'unverified', 'pending', 'verified', 'rejected'], default: 'none' },
+  sellerVerificationStatus: { type: String, enum: ['unverified', 'verified', 'rejected'], default: 'unverified' },
   emailVerificationHash: { type: String, trim: true },
   emailVerificationExpiresAt: { type: Date },
   emailVerificationRequestedAt: { type: Date },

@@ -287,7 +287,11 @@ const ProfilePage = () => {
                   <div className="rounded-3xl bg-sky-50 px-3 py-2 text-xs font-semibold text-sky-700">
                     {profile?.role === 'seller' ? 'Seller' : 'User'}
                   </div>
-                  {profile?.sellerVerificationStatus === 'unverified' ? (
+                  {profile?.sellerVerificationStatus === 'verified' ? (
+                    <div className="rounded-3xl bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700">
+                      Verified Seller ✓
+                    </div>
+                  ) : profile?.sellerVerificationStatus === 'unverified' ? (
                     <div className="rounded-3xl bg-amber-100 px-3 py-2 text-xs font-semibold text-amber-700">
                       Unverified Seller
                     </div>
@@ -536,6 +540,7 @@ const ProfilePage = () => {
                         location={product.location}
                         category={product.category?.labelKh || product.category?.name}
                         imageUrl={product.images?.[0]?.secureUrl || product.images?.[0]?.url}
+                        seller={product.seller}
                       />
                     ))
                   ) : (

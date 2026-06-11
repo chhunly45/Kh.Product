@@ -254,11 +254,16 @@ const ProductDetailPage = () => {
                   <div>
                     <p className="text-sm uppercase tracking-[0.35em] text-slate-500">Seller information</p>
                     <h3 className="mt-3 text-xl font-semibold text-slate-900">{product.seller?.displayName || 'Seller'}</h3>
-                    {product.seller?.verified && (
-                      <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-sm text-emerald-700">
-                        <ShieldCheck className="w-4 h-4" /> Verified seller
-                      </div>
-                    )}
+                        {product.seller?.sellerVerificationStatus === 'verified' && (
+                          <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-sm text-emerald-700">
+                            <ShieldCheck className="w-4 h-4" /> Verified seller ✓
+                          </div>
+                        )}
+                        {product.seller?.sellerVerificationStatus === 'unverified' && (
+                          <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-amber-100 px-3 py-1 text-sm text-amber-700">
+                            Unverified Seller
+                          </div>
+                        )}
                   </div>
                   <div className="h-16 w-16 overflow-hidden rounded-3xl bg-slate-100">
                     {product.seller?.profileImageUrl ? (
@@ -436,6 +441,7 @@ const ProductDetailPage = () => {
                   location={item.location || 'Unknown'}
                   category={item.category?.labelKh || item.category?.name || 'General'}
                   imageUrl={item.images?.[0]?.secureUrl || item.images?.[0]?.url || ''}
+                  seller={item.seller}
                 />
               ))}
             </div>

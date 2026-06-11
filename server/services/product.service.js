@@ -39,7 +39,7 @@ const listProducts = async (filters) => {
 
   const [items, total] = await Promise.all([
     Product.find(query)
-      .populate('seller', 'displayName profileImageUrl location')
+      .populate('seller', 'displayName profileImageUrl location sellerVerificationStatus')
       .populate('category', 'name labelKh slug')
       .populate('images')
       .sort(sortBy)
@@ -54,7 +54,7 @@ const listProducts = async (filters) => {
 
 const getProductById = async (productId) => {
   const product = await Product.findById(productId)
-    .populate('seller', 'displayName profileImageUrl location email verified createdAt')
+    .populate('seller', 'displayName profileImageUrl location email verified createdAt sellerVerificationStatus')
     .populate('category', 'name labelKh slug')
     .populate('images');
 

@@ -48,6 +48,14 @@ const updateUserStatus = async (userId, updates) => {
     }
   }
 
+  if (updates.sellerVerificationStatus) {
+    user.sellerVerificationStatus = updates.sellerVerificationStatus;
+    // keep verified boolean in sync for backward compatibility
+    if (updates.sellerVerificationStatus === 'verified') user.verified = true;
+    if (updates.sellerVerificationStatus === 'rejected') user.verified = false;
+    if (updates.sellerVerificationStatus === 'unverified') user.verified = false;
+  }
+
   await user.save();
 
   if (updates.verificationStatus && ['approved', 'rejected'].includes(updates.verificationStatus)) {
@@ -57,6 +65,19 @@ const updateUserStatus = async (userId, updates) => {
       message: updates.verificationStatus === 'approved'
         ? 'Your seller verification request has been approved.'
         : 'Your seller verification request has been rejected.',
+      link: '/profile'
+    });
+  }
+
+  if (updates.sellerVerificationStatus && ['verified', 'rejected', 'unverified'].includes(updates.sellerVerificationStatus)) {
+    await notificationService.addNotification(user._id, {
+      type: 'seller_verification',
+      title: `Seller ${updates.sellerVerificationStatus}`,
+      message: updates.sellerVerificationStatus === 'verified'
+        ? 'Your seller verification has been approved.'
+        : updates.sellerVerificationStatus === 'rejected'
+        ? 'Your seller verification has been rejected.'
+        : 'Your seller verification status has been reset to unverified.',
       link: '/profile'
     });
   }

@@ -56,6 +56,7 @@ const FeaturedSection = ({ title, description, products, viewAllLink = '/' }: Fe
                 location={product.location || 'Unknown'}
                 category={categoryLabel}
                 imageUrl={imageUrl}
+                seller={(product as any).seller}
               />
             );
           })}
