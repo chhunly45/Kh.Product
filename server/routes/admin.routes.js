@@ -25,5 +25,6 @@ router.patch('/products/:id/status', param('id').isMongoId(), body('status').isI
 router.get('/reports', adminController.listReports);
 router.patch('/reports/:id', param('id').isMongoId(), body('status').isIn(['pending','reviewed','resolved','rejected']).withMessage('Invalid report status'), validate, adminController.updateReportStatus);
 router.post('/email/test', body('to').isEmail(), validate, adminController.sendTestEmail);
+router.post('/backfill/product-sellers', adminController.backfillProductSellers);
 
 module.exports = router;
