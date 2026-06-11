@@ -115,7 +115,8 @@ const ProductDetailPage = () => {
   const whatsappLink = sellerPhone ? `https://wa.me/${sellerPhone.replace(/^\+/, '')}` : null;
   const emailLink = product.seller?.email ? `mailto:${product.seller.email}?subject=Question%20about%20${encodeURIComponent(product.title)}` : null;
   const sellerJoined = product.seller?.createdAt ? new Date(product.seller.createdAt).toLocaleDateString() : null;
-  const sellerVerificationStatus = product.seller?.sellerVerificationStatus || (product.seller?.verified ? 'verified' : 'unverified');
+
+  console.log('Seller:', product?.seller);
 
   return (
     <>
@@ -260,11 +261,11 @@ const ProductDetailPage = () => {
                           {product.seller?.displayName || 'Seller'}
                         </h3>
                       </div>
-                      {sellerVerificationStatus === 'verified' ? (
+                      {product.seller?.sellerVerificationStatus === 'verified' ? (
                         <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-sm text-emerald-700">
                           <ShieldCheck className="w-4 h-4" /> ✓ Verified Seller
                         </div>
-                      ) : sellerVerificationStatus === 'unverified' ? (
+                      ) : product.seller?.sellerVerificationStatus === 'unverified' ? (
                         <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-amber-100 px-3 py-1 text-sm text-amber-700">
                           Unverified Seller
                         </div>
