@@ -10,6 +10,7 @@ export interface RegisterPayload {
 export interface LoginPayload {
   identifier: string;
   password: string;
+  useOtp?: boolean;
 }
 
 export interface AuthResponse {
