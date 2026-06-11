@@ -104,7 +104,7 @@ const registerUser = async ({ email, password, displayName, phoneNumber, locatio
     role: 'seller',
     emailVerified: false,
     phoneVerified: false,
-    sellerVerificationStatus: normalizedEmail ? 'pending' : 'unverified'
+    sellerVerificationStatus: 'unverified'
   };
   if (normalizedEmail) {
     userData.email = normalizedEmail;

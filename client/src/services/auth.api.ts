@@ -169,8 +169,21 @@ export const changePassword = async (payload: { currentPassword: string; newPass
 };
 
 export const getProfile = async () => {
-  const response = await api.get('/auth/me');
-  return response.data.data;
+  // Simple in-module cache to avoid rapid repeated requests from UI loops.
+  // Cache is valid for a short window (5 seconds).
+  try {
+    const now = Date.now();
+    if ((getProfile as any)._cache && now - (getProfile as any)._cacheAt < 5000) {
+      return (getProfile as any)._cache;
+    }
+    const response = await api.get('/auth/me');
+    const data = response.data.data;
+    (getProfile as any)._cache = data;
+    (getProfile as any)._cacheAt = Date.now();
+    return data;
+  } catch (err) {
+    throw err;
+  }
 };
 
 export const updateProfile = async (payload: Record<string, any>) => {
