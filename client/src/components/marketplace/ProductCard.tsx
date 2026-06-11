@@ -12,9 +12,10 @@ interface ProductCardProps {
   imageUrl?: string;
   isFavorite?: boolean;
   onToggleFavorite?: (productId: string, currentlyFavorite: boolean) => void;
+  seller?: { displayName?: string; sellerVerificationStatus?: string };
 }
 
-const ProductCard = ({ title, price, location, category, id, imageUrl, isFavorite = false, onToggleFavorite }: ProductCardProps) => {
+const ProductCard = ({ title, price, location, category, id, imageUrl, isFavorite = false, onToggleFavorite, seller }: ProductCardProps) => {
   const [isSaved, setIsSaved] = useState<boolean>(isFavorite);
 
   useEffect(() => {
@@ -53,6 +54,21 @@ const ProductCard = ({ title, price, location, category, id, imageUrl, isFavorit
           <div className="absolute top-3 left-3">
             <span className="rounded-full bg-sky-500 px-3 py-1 text-xs font-bold uppercase tracking-wide text-white shadow-lg">
               {category}
+            </span>
+          </div>
+        )}
+        {/* Seller badge */}
+        {seller?.sellerVerificationStatus === 'verified' && (
+          <div className="absolute top-3 left-3">
+            <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 shadow">
+              Verified Seller ✓
+            </span>
+          </div>
+        )}
+        {seller?.sellerVerificationStatus === 'unverified' && (
+          <div className="absolute top-3 left-3">
+            <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700 shadow">
+              Unverified Seller
             </span>
           </div>
         )}

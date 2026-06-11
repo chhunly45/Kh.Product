@@ -78,6 +78,7 @@ const FavoritesPage = () => {
                   location={product.location}
                   category={product.category?.labelKh || product.category?.name}
                   imageUrl={product.images?.[0]?.secureUrl || product.images?.[0]?.url}
+                  seller={product.seller}
                 />
               </div>
             ))}

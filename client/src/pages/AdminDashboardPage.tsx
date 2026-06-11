@@ -13,9 +13,10 @@ const statusOptions = ['published', 'sold', 'archived', 'flagged'];
 const reportStatusOptions = ['pending', 'reviewed', 'resolved', 'rejected'];
 
 const AdminDashboardPage = () => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'products' | 'reports' | 'analytics'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'products' | 'reports' | 'analytics' | 'sellers'>('overview');
   const [overview, setOverview] = useState<Record<string, any>>({});
   const [users, setUsers] = useState<any[]>([]);
+  const [sellers, setSellers] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
   const [reports, setReports] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -60,9 +61,19 @@ const AdminDashboardPage = () => {
   useEffect(() => {
     if (activeTab === 'overview') loadOverview();
     if (activeTab === 'users') loadUsers();
+    if (activeTab === 'sellers') loadSellers();
     if (activeTab === 'products') loadProducts();
     if (activeTab === 'reports') loadReports();
   }, [activeTab]);
+
+  const loadSellers = async () => {
+    try {
+      const data = await getAdminUsers({ role: 'seller' });
+      setSellers(data.items || []);
+    } catch {
+      setMessage('Unable to load sellers.');
+    }
+  };
 
   const totalUsers = overview.totalUsers ?? 0;
   const totalProducts = overview.totalProducts ?? 0;
@@ -106,7 +117,7 @@ const AdminDashboardPage = () => {
   const handleApproveVerification = async (userId: string) => {
     setLoading(true);
     try {
-      await updateAdminUserStatus(userId, { verified: true, verificationStatus: 'approved' });
+      await updateAdminUserStatus(userId, { sellerVerificationStatus: 'verified' });
       await loadUsers();
     } catch {
       setMessage('Unable to approve verification request.');
@@ -118,10 +129,34 @@ const AdminDashboardPage = () => {
   const handleRejectVerification = async (userId: string) => {
     setLoading(true);
     try {
-      await updateAdminUserStatus(userId, { verified: false, verificationStatus: 'rejected' });
+      await updateAdminUserStatus(userId, { sellerVerificationStatus: 'rejected' });
       await loadUsers();
     } catch {
       setMessage('Unable to reject verification request.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleApproveSeller = async (userId: string) => {
+    setLoading(true);
+    try {
+      await updateAdminUserStatus(userId, { sellerVerificationStatus: 'verified' });
+      await loadSellers();
+    } catch {
+      setMessage('Unable to approve seller.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRejectSeller = async (userId: string) => {
+    setLoading(true);
+    try {
+      await updateAdminUserStatus(userId, { sellerVerificationStatus: 'rejected' });
+      await loadSellers();
+    } catch {
+      setMessage('Unable to reject seller.');
     } finally {
       setLoading(false);
     }
@@ -160,7 +195,7 @@ const AdminDashboardPage = () => {
             <p className="mt-2 text-sm text-slate-500">Manage users, moderate products, review reports, and monitor platform health.</p>
           </div>
           <div className="flex flex-wrap gap-2">
-            {['overview', 'users', 'products', 'reports', 'analytics'].map((tab) => (
+            {['overview', 'users', 'sellers', 'products', 'reports', 'analytics'].map((tab) => (
               <button
                 key={tab}
                 type="button"
@@ -316,6 +351,62 @@ const AdminDashboardPage = () => {
                           </button>
                         </>
                       )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
+
+      {activeTab === 'sellers' && (
+        <section className="space-y-6">
+          <div className="rounded-[2rem] bg-white p-6 shadow-xl ring-1 ring-slate-200">
+            <h2 className="text-xl font-semibold text-slate-900">Seller management</h2>
+            <p className="mt-2 text-sm text-slate-500">Review seller verification requests and manage verified sellers.</p>
+          </div>
+
+          <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+            <table className="min-w-full divide-y divide-slate-200 text-sm">
+              <thead className="bg-slate-50 text-slate-600">
+                <tr>
+                  <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Seller</th>
+                  <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Email</th>
+                  <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Status</th>
+                  <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200">
+                {sellers.map((user) => (
+                  <tr key={user._id}>
+                    <td className="px-6 py-4">
+                      <div className="font-semibold text-slate-900">{user.displayName}</div>
+                      <div className="mt-1 text-slate-500">{user.location || ''}</div>
+                    </td>
+                    <td className="px-6 py-4">{user.email}</td>
+                    <td className="px-6 py-4">
+                      <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${user.sellerVerificationStatus === 'verified' ? 'bg-emerald-100 text-emerald-700' : user.sellerVerificationStatus === 'unverified' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-700'}`}>
+                        {user.sellerVerificationStatus}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 space-x-2">
+                      <button
+                        type="button"
+                        disabled={loading}
+                        onClick={() => handleApproveSeller(user._id)}
+                        className="rounded-full px-4 py-2 text-sm font-medium bg-emerald-600 text-white hover:bg-emerald-700 transition"
+                      >
+                        Approve
+                      </button>
+                      <button
+                        type="button"
+                        disabled={loading}
+                        onClick={() => handleRejectSeller(user._id)}
+                        className="rounded-full px-4 py-2 text-sm font-medium bg-rose-600 text-white hover:bg-rose-700 transition"
+                      >
+                        Reject
+                      </button>
                     </td>
                   </tr>
                 ))}

@@ -65,6 +65,15 @@ const updateReportStatus = async (req, res, next) => {
   }
 };
 
+const backfillProductSellers = async (req, res, next) => {
+  try {
+    const result = await adminService.backfillProductSellers();
+    res.json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const sendTestEmail = async (req, res, next) => {
   try {
     // Only allow in development environment or explicitly enabled
@@ -119,5 +128,6 @@ module.exports = {
   updateProductStatus,
   listReports,
   updateReportStatus,
+  backfillProductSellers,
   sendTestEmail
 };
