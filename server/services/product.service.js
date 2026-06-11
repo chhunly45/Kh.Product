@@ -1,5 +1,23 @@
-const { Product, Category, User } = require('../models');
+const { Product, Category, User, Image } = require('../models');
 const notificationService = require('./notification.service');
+
+const sellerPopulateFields = 'displayName profileImageUrl avatar email phoneNumber sellerVerificationStatus';
+
+const findFallbackSeller = async (product) => {
+  const fallbackUserId = product.createdBy || product.user;
+  if (fallbackUserId) {
+    const fallbackUser = await User.findById(fallbackUserId).select(sellerPopulateFields).lean();
+    if (fallbackUser) return fallbackUser;
+  }
+
+  const image = await Image.findOne({ product: product._id }).sort({ sortOrder: 1 }).select('uploadedBy').lean();
+  if (image?.uploadedBy) {
+    const uploader = await User.findById(image.uploadedBy).select(sellerPopulateFields).lean();
+    if (uploader) return uploader;
+  }
+
+  return null;
+};
 
 const listProducts = async (filters) => {
   const query = { status: 'published' };
@@ -39,7 +57,7 @@ const listProducts = async (filters) => {
 
   const [items, total] = await Promise.all([
     Product.find(query)
-      .populate('seller', 'displayName profileImageUrl location sellerVerificationStatus')
+      .populate('seller', sellerPopulateFields)
       .populate('category', 'name labelKh slug')
       .populate('images')
       .sort(sortBy)
@@ -54,7 +72,7 @@ const listProducts = async (filters) => {
 
 const getProductById = async (productId) => {
   const product = await Product.findById(productId)
-    .populate('seller', 'displayName profileImageUrl location email verified createdAt sellerVerificationStatus')
+    .populate('seller', sellerPopulateFields)
     .populate('category', 'name labelKh slug')
     .populate('images');
 
@@ -62,6 +80,13 @@ const getProductById = async (productId) => {
     const error = new Error('Product not found');
     error.statusCode = 404;
     throw error;
+  }
+
+  if (!product.seller) {
+    const fallbackSeller = await findFallbackSeller(product);
+    if (fallbackSeller) {
+      product.seller = fallbackSeller;
+    }
   }
 
   product.viewsCount += 1;
