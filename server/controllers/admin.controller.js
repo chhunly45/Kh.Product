@@ -84,6 +84,15 @@ const deleteReview = async (req, res, next) => {
   }
 };
 
+const getProductsByProvince = async (req, res, next) => {
+  try {
+    const data = await adminService.getProductsByProvince();
+    res.json({ success: true, data });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const sendTestEmail = async (req, res, next) => {
   try {
     // Only allow in development environment or explicitly enabled
@@ -140,5 +149,6 @@ module.exports = {
   updateReportStatus,
   deleteReview,
   backfillProductSellers,
-  sendTestEmail
+  sendTestEmail,
+  getProductsByProvince
 };

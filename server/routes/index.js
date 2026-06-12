@@ -11,6 +11,7 @@ const reportRoutes = require('./report.routes');
 const notificationRoutes = require('./notification.routes');
 const userRoutes = require('./user.routes');
 const reviewRoutes = require('./review.routes');
+const locationRoutes = require('./location.routes');
 
 const router = express.Router();
 
@@ -24,6 +25,7 @@ router.use('/chats', chatRoutes);
 router.use('/reports', reportRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/reviews', reviewRoutes);
+router.use('/locations', locationRoutes);
 router.use('/admin', adminRoutes);
 router.use('/users', userRoutes);
 

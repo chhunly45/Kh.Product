@@ -25,7 +25,8 @@ const listProducts = async (filters) => {
 
   if (filters.category) query.category = filters.category;
   if (filters.seller) query.seller = filters.seller;
-  if (filters.province) locationFilters.push({ location: new RegExp(filters.province, 'i') });
+  if (filters.province) query.province = Number(filters.province);
+  if (filters.district) query.district = Number(filters.district);
   if (filters.location) locationFilters.push({ location: new RegExp(filters.location, 'i') });
   if (locationFilters.length) query.$and = [...(query.$and || []), ...locationFilters];
   if (filters.minPrice) query.price = { ...query.price, $gte: Number(filters.minPrice) };

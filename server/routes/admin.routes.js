@@ -9,6 +9,7 @@ const router = express.Router();
 router.use(authMiddleware, roleMiddleware(['admin', 'moderator']));
 
 router.get('/overview', adminController.getOverview);
+router.get('/analytics/products-by-province', adminController.getProductsByProvince);
 router.get('/users', adminController.listUsers);
 router.patch('/users/:id/status',
   param('id').isMongoId(),

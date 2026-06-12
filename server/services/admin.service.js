@@ -163,6 +163,26 @@ const updateReportStatus = async (reportId, status, adminId) => {
   return report;
 };
 
+const getProductsByProvince = async () => {
+  const { provinces } = require('../config/provinces');
+  const aggregation = await Product.aggregate([
+    { $match: { status: 'published' } },
+    { $group: { _id: '$province', count: { $sum: 1 } } },
+    { $sort: { count: -1 } }
+  ]);
+
+  const result = aggregation.map((item) => {
+    const province = provinces.find((p) => p.id === item._id);
+    return {
+      provinceId: item._id,
+      provinceName: province?.name || 'Unknown',
+      productCount: item.count
+    };
+  });
+
+  return result;
+};
+
 module.exports = {
   getOverview,
   listUsers,
@@ -171,5 +191,6 @@ module.exports = {
   updateProductStatus,
   listReports,
   backfillProductSellers,
-  updateReportStatus
+  updateReportStatus,
+  getProductsByProvince
 };

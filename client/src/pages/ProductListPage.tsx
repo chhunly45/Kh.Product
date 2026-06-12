@@ -19,6 +19,7 @@ const ProductListPage = () => {
     location: searchParams.get('location') || '',
     category: searchParams.get('category') || '',
     province: searchParams.get('province') || '',
+    district: searchParams.get('district') || '',
     condition: searchParams.get('condition') || '',
     minPrice: searchParams.get('minPrice') || '',
     maxPrice: searchParams.get('maxPrice') || '',

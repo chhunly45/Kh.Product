@@ -5,6 +5,7 @@ import { getUserProfile, updateUserProfile } from '../services/user.api';
 import { getProducts } from '../services/product.api';
 import { getSellerReviews, createReview } from '../services/review.api';
 import { useAuth } from '../hooks/useAuth';
+import { getProvinces, getDistricts } from '../services/location.api';
 import ProductCard from '../components/marketplace/ProductCard';
 import {
   MapPin,
@@ -40,6 +41,7 @@ const ProfilePage = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '' });
   const [reviewLoading, setReviewLoading] = useState(false);
+  const [provinces, setProvinces] = useState<any[]>([]);
   const [profileForm, setProfileForm] = useState({
     displayName: '',
     bio: '',
@@ -74,11 +76,22 @@ const ProfilePage = () => {
     favoritesCount: 0
   };
 
+  const getLocationName = (province: number, district: number) => {
+    const provinceObj = provinces.find((p) => p.id === province);
+    if (!provinceObj) return '';
+    if (!district) return provinceObj.name;
+    const districtObj = provinceObj.districts?.find((d: any) => d.id === district);
+    return districtObj ? `${districtObj.name}, ${provinceObj.name}` : provinceObj.name;
+  };
+
   useEffect(() => {
     const loadProfile = async () => {
       setLoading(true);
       setStatusMessage('');
       try {
+        const provincesList = await getProvinces();
+        setProvinces(provincesList);
+
         let storedUser = null;
         const savedUser = localStorage.getItem('user');
         if (savedUser) {
@@ -629,6 +642,12 @@ const ProfilePage = () => {
                         <div className="flex items-center gap-2">
                           <MapPin className="h-4 w-4 text-slate-400" />
                           <span>{profile.location}</span>
+                        </div>
+                      )}
+                      {(profile?.province || profile?.district) && (
+                        <div className="flex items-center gap-2">
+                          <MapPin className="h-4 w-4 text-slate-400" />
+                          <span>{getLocationName(profile.province, profile.district)}</span>
                         </div>
                       )}
                     </div>

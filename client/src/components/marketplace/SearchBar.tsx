@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, MapPin, ChevronDown, ChevronUp } from 'lucide-react';
 import api from '../../services/api';
+import { getProvinces, getDistricts, Province, District } from '../../services/location.api';
 
 interface SearchBarProps {
   initialFilters?: {
@@ -9,6 +10,7 @@ interface SearchBarProps {
     location?: string;
     category?: string;
     province?: string;
+    district?: string;
     condition?: string;
     sort?: string;
     minPrice?: string;
@@ -17,30 +19,20 @@ interface SearchBarProps {
   };
 }
 
-const provinces = [
-  'Phnom Penh',
-  'Siem Reap',
-  'Battambang',
-  'Kampot',
-  'Kandal',
-  'Banteay Meanchey',
-  'Kampong Cham',
-  'Preah Sihanouk',
-  'Takeo',
-  'Kep',
-];
-
 const SearchBar = ({ initialFilters }: SearchBarProps) => {
   const [searchTerm, setSearchTerm] = useState(initialFilters?.search || '');
   const [location, setLocation] = useState(initialFilters?.location || '');
   const [category, setCategory] = useState(initialFilters?.category || '');
   const [province, setProvince] = useState(initialFilters?.province || '');
+  const [district, setDistrict] = useState(initialFilters?.district || '');
   const [condition, setCondition] = useState(initialFilters?.condition || '');
   const [sort, setSort] = useState(initialFilters?.sort || '');
   const [minPrice, setMinPrice] = useState(initialFilters?.minPrice || '');
   const [maxPrice, setMaxPrice] = useState(initialFilters?.maxPrice || '');
   const [datePosted, setDatePosted] = useState(initialFilters?.datePosted || '');
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [provinces, setProvinces] = useState<Province[]>([]);
+  const [districts, setDistricts] = useState<District[]>([]);
   interface CategoryItem { _id: string; name: string; labelKh?: string }
   const [categories, setCategories] = useState<CategoryItem[]>([]);
 
@@ -56,6 +48,7 @@ const SearchBar = ({ initialFilters }: SearchBarProps) => {
     setLocation(initialFilters?.location || '');
     setCategory(initialFilters?.category || '');
     setProvince(initialFilters?.province || '');
+    setDistrict(initialFilters?.district || '');
     setCondition(initialFilters?.condition || '');
     setSort(initialFilters?.sort || '');
     setMinPrice(initialFilters?.minPrice || '');
@@ -78,8 +71,44 @@ const SearchBar = ({ initialFilters }: SearchBarProps) => {
       }
     };
 
+    const fetchProvinces = async () => {
+      try {
+        const provincesData = await getProvinces();
+        setProvinces(provincesData);
+        if (initialFilters?.province) {
+          try {
+            const districtsData = await getDistricts(initialFilters.province);
+            setDistricts(districtsData);
+          } catch (error) {
+            console.error('Failed to load districts:', error);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load provinces:', error);
+      }
+    };
+
     fetchCategories();
+    fetchProvinces();
   }, []);
+
+  useEffect(() => {
+    const loadDistrictsForProvince = async () => {
+      if (province) {
+        try {
+          const districtsData = await getDistricts(province);
+          setDistricts(districtsData);
+        } catch (error) {
+          console.error('Failed to load districts:', error);
+        }
+      } else {
+        setDistricts([]);
+      }
+      setDistrict('');
+    };
+
+    loadDistrictsForProvince();
+  }, [province]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,6 +118,7 @@ const SearchBar = ({ initialFilters }: SearchBarProps) => {
     if (location) params.append('location', location);
     if (category) params.append('category', category);
     if (province) params.append('province', province);
+    if (district) params.append('district', district);
     if (condition) params.append('condition', condition);
     if (sort) params.append('sort', sort);
     if (minPrice) params.append('minPrice', minPrice);
@@ -165,9 +195,26 @@ const SearchBar = ({ initialFilters }: SearchBarProps) => {
               className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20"
             >
               <option value="">Any province</option>
-              {provinces.map((name) => (
-                <option key={name} value={name}>
-                  {name}
+              {provinces.map((prov) => (
+                <option key={prov.id} value={prov.id}>
+                  {prov.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="space-y-2">
+            <span className="text-sm font-medium text-slate-700">District</span>
+            <select
+              value={district}
+              onChange={(e) => setDistrict(e.target.value)}
+              disabled={!province}
+              className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <option value="">Any district</option>
+              {districts.map((dist) => (
+                <option key={dist.id} value={dist.id}>
+                  {dist.name}
                 </option>
               ))}
             </select>

@@ -6,7 +6,8 @@ import {
   getAdminProducts,
   updateAdminProductStatus,
   getAdminReports,
-  updateAdminReportStatus
+  updateAdminReportStatus,
+  getProductsByProvince
 } from '../services/admin.api';
 
 const statusOptions = ['published', 'sold', 'archived', 'flagged'];
@@ -21,6 +22,7 @@ const AdminDashboardPage = () => {
   const [reports, setReports] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [provinceStats, setProvinceStats] = useState<any[]>([]);
 
   const loadOverview = async () => {
     try {
@@ -58,12 +60,22 @@ const AdminDashboardPage = () => {
     }
   };
 
+  const loadAnalytics = async () => {
+    try {
+      const stats = await getProductsByProvince();
+      setProvinceStats(stats);
+    } catch {
+      setMessage('Unable to load analytics.');
+    }
+  };
+
   useEffect(() => {
     if (activeTab === 'overview') loadOverview();
     if (activeTab === 'users') loadUsers();
     if (activeTab === 'sellers') loadSellers();
     if (activeTab === 'products') loadProducts();
     if (activeTab === 'reports') loadReports();
+    if (activeTab === 'analytics') loadAnalytics();
   }, [activeTab]);
 
   const loadSellers = async () => {
@@ -520,6 +532,65 @@ const AdminDashboardPage = () => {
                 ))}
               </tbody>
             </table>
+          </div>
+        </section>
+      )}
+
+      {activeTab === 'analytics' && (
+        <section className="space-y-6">
+          <div className="rounded-[2rem] bg-white p-6 shadow-xl ring-1 ring-slate-200">
+            <h2 className="text-xl font-semibold text-slate-900">Analytics</h2>
+            <p className="mt-2 text-sm text-slate-500">Monitor platform statistics and product distribution across provinces.</p>
+          </div>
+
+          <div className="rounded-3xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-slate-200 text-sm">
+                <thead className="bg-slate-50 text-slate-600">
+                  <tr>
+                    <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Province</th>
+                    <th className="px-6 py-4 text-right font-medium uppercase tracking-[0.2em]">Product Count</th>
+                    <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Percentage</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200">
+                  {provinceStats.length > 0 ? (
+                    provinceStats.map((province) => {
+                      const total = provinceStats.reduce((sum, p) => sum + p.productCount, 0);
+                      const percentageValue = total > 0 ? (province.productCount / total) * 100 : 0;
+                      const percentage = percentageValue.toFixed(1);
+                      return (
+                        <tr key={province.provinceId}>
+                          <td className="px-6 py-4">
+                            <div className="font-semibold text-slate-900">{province.provinceName}</div>
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                            <div className="font-semibold text-slate-900">{province.productCount}</div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-3">
+                              <div className="h-2 w-32 rounded-full bg-slate-200">
+                                <div
+                                  className="h-2 rounded-full bg-sky-500 transition-all"
+                                  style={{ width: `${Math.min(percentageValue, 100)}%` }}
+                                />
+                              </div>
+                              <span className="text-slate-600">{percentage}%</span>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan={3} className="px-6 py-4 text-center text-slate-500">
+                        No products found
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </section>
       )}

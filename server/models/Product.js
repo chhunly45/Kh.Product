@@ -11,6 +11,8 @@ const ProductSchema = new Schema({
   currency: { type: String, default: 'KHR', trim: true },
   condition: { type: String, enum: ['new', 'used', 'refurbished'], default: 'used' },
   location: { type: String, trim: true },
+  province: { type: Number },
+  district: { type: Number },
   status: { type: String, enum: ['draft', 'published', 'sold', 'archived', 'flagged'], default: 'published' },
   images: [{ type: Types.ObjectId, ref: 'Image' }],
   tags: { type: [{ type: String, trim: true }], default: [] },
@@ -27,6 +29,7 @@ const ProductSchema = new Schema({
 
 ProductSchema.index({ title: 'text', description: 'text' }, { background: true });
 ProductSchema.index({ category: 1, location: 1, status: 1, condition: 1, price: 1 }, { background: true });
+ProductSchema.index({ province: 1, district: 1, status: 1 }, { background: true });
 ProductSchema.index({ createdAt: -1 }, { background: true });
 
 module.exports = model('Product', ProductSchema);

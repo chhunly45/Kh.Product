@@ -39,3 +39,8 @@ export const deleteAdminReview = async (reviewId: string) => {
   const response = await api.delete(`/admin/reviews/${reviewId}`);
   return response.data.data;
 };
+
+export const getProductsByProvince = async () => {
+  const response = await api.get('/admin/analytics/products-by-province');
+  return response.data.data;
+};

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../services/api';
 import { createProduct, uploadProductImages, getProductById, updateProduct } from '../services/product.api';
+import { getProvinces, getDistricts, Province, District } from '../services/location.api';
 
 const PostProductPage = () => {
   const [searchParams] = useSearchParams();
@@ -13,6 +14,10 @@ const PostProductPage = () => {
   const [category, setCategory] = useState('');
   const [condition, setCondition] = useState('used');
   const [categories, setCategories] = useState<Array<{ _id: string; name: string; labelKh?: string }>>([]);
+  const [provinces, setProvinces] = useState<Province[]>([]);
+  const [districts, setDistricts] = useState<District[]>([]);
+  const [province, setProvince] = useState<number | ''>('');
+  const [district, setDistrict] = useState<number | ''>('');
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [existingImageCount, setExistingImageCount] = useState(0);
@@ -36,6 +41,15 @@ const PostProductPage = () => {
       }
     };
 
+    const loadProvinces = async () => {
+      try {
+        const provinceList = await getProvinces();
+        setProvinces(provinceList);
+      } catch (error) {
+        console.error('Failed to load provinces:', error);
+      }
+    };
+
     const loadProduct = async () => {
       if (!productId) return;
       setIsEditing(true);
@@ -48,16 +62,46 @@ const PostProductPage = () => {
         setLocation(product.location || '');
         setCategory(product.category?._id || '');
         setCondition(product.condition || 'used');
+        setProvince(product.province || '');
+        setDistrict(product.district || '');
         setExistingImageCount(product.images?.length || 0);
         setStatus('');
+        if (product.province) {
+          try {
+            const districtList = await getDistricts(product.province);
+            setDistricts(districtList);
+          } catch (error) {
+            console.error('Failed to load districts:', error);
+          }
+        }
       } catch (error) {
         setStatus('Unable to load listing for edit.');
       }
     };
 
     loadCategories();
+    loadProvinces();
     loadProduct();
   }, [productId]);
+
+  useEffect(() => {
+    const loadDistrictsForProvince = async () => {
+      if (province) {
+        try {
+          const districtList = await getDistricts(province);
+          setDistricts(districtList);
+          setDistrict('');
+        } catch (error) {
+          console.error('Failed to load districts:', error);
+        }
+      } else {
+        setDistricts([]);
+        setDistrict('');
+      }
+    };
+
+    loadDistrictsForProvince();
+  }, [province]);
 
   const handleFiles = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = event.target.files;
@@ -81,6 +125,8 @@ const PostProductPage = () => {
     if (!location.trim()) nextErrors.location = 'Location is required';
     if (!category) nextErrors.category = 'Category is required';
     if (!condition) nextErrors.condition = 'Condition is required';
+    if (!province) nextErrors.province = 'Province is required';
+    if (!district) nextErrors.district = 'District is required';
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
   };
@@ -101,7 +147,9 @@ const PostProductPage = () => {
       price: Number(price),
       location,
       category,
-      condition
+      condition,
+      province: province ? Number(province) : undefined,
+      district: district ? Number(district) : undefined
     };
 
     try {
@@ -124,6 +172,9 @@ const PostProductPage = () => {
         setDescription('');
         setPrice('');
         setLocation('');
+        setProvince('');
+        setDistrict('');
+        setDistricts([]);
         setCondition('used');
         setImages([]);
         setPreviews([]);
@@ -223,6 +274,42 @@ const PostProductPage = () => {
               <option value="refurbished">Refurbished</option>
             </select>
             {errors.condition && <p className="mt-2 text-sm text-rose-600">{errors.condition}</p>}
+          </label>
+          <label className="block">
+            <span className="text-sm font-medium text-slate-700">Province</span>
+            <select
+              value={province}
+              onChange={(event) => setProvince(event.target.value ? Number(event.target.value) : '')}
+              className={`mt-2 w-full rounded-3xl border px-4 py-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 ${errors.province ? 'border-rose-400 bg-rose-50' : 'border-slate-200 bg-slate-50'}`}
+            >
+              <option value="">Select province</option>
+              {provinces.map((prov) => (
+                <option key={prov.id} value={prov.id}>
+                  {prov.name}
+                </option>
+              ))}
+            </select>
+            {errors.province && <p className="mt-2 text-sm text-rose-600">{errors.province}</p>}
+          </label>
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-2">
+          <label className="block">
+            <span className="text-sm font-medium text-slate-700">District</span>
+            <select
+              value={district}
+              onChange={(event) => setDistrict(event.target.value ? Number(event.target.value) : '')}
+              disabled={!province}
+              className={`mt-2 w-full rounded-3xl border px-4 py-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 ${errors.district ? 'border-rose-400 bg-rose-50' : 'border-slate-200 bg-slate-50'} ${!province ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
+              <option value="">Select district</option>
+              {districts.map((dist) => (
+                <option key={dist.id} value={dist.id}>
+                  {dist.name}
+                </option>
+              ))}
+            </select>
+            {errors.district && <p className="mt-2 text-sm text-rose-600">{errors.district}</p>}
           </label>
           <label className="block">
             <span className="text-sm font-medium text-slate-700">Product images</span>
