@@ -10,6 +10,7 @@ const createRefreshToken = (userId) => jwt.sign({ userId }, config.jwtSecret, { 
 
 const { normalizeCambodiaPhone, phoneSearchVariants } = require('../utils/phone');
 
+const loginOtpEnabled = process.env.LOGIN_OTP_ENABLED === 'true';
 const phoneOtpEnabled = (process.env.PHONE_OTP_ENABLED === 'true') && !!process.env.SMS_PROVIDER;
 
 const normalizeIdentifier = (identifier) => identifier?.toString().trim().toLowerCase();
@@ -104,7 +105,7 @@ const registerUser = async ({ email, password, displayName, phoneNumber, locatio
     role: 'seller',
     emailVerified: false,
     phoneVerified: false,
-    sellerVerificationStatus: normalizedEmail ? 'pending' : 'unverified'
+    sellerVerificationStatus: 'unverified'
   };
   if (normalizedEmail) {
     userData.email = normalizedEmail;
@@ -163,7 +164,7 @@ const sendPasswordResetOtpEmail = async (user, code) => {
   });
 };
 
-const loginUser = async (identifier, password) => {
+const loginUser = async (identifier, password, options = {}) => {
   const user = await findUserByIdentifier(identifier);
   if (!user || !user.isActive) {
     const error = new Error('Invalid credentials');
@@ -185,27 +186,63 @@ const loginUser = async (identifier, password) => {
     throw error;
   }
 
-  const now = new Date();
-  if (user.loginOtpRequestedAt && now.getTime() - user.loginOtpRequestedAt.getTime() < 60 * 1000) {
-    const wait = 60 - Math.floor((now.getTime() - user.loginOtpRequestedAt.getTime()) / 1000);
-    const error = new Error(`Please wait ${wait} seconds before requesting another verification code.`);
-    error.statusCode = 429;
-    throw error;
+  const useOtp = options.useOtp === true;
+  const requestLoginOtp = useOtp && loginOtpEnabled;
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('[LOGIN_FLOW]', {
+      useOtp,
+      loginOtpEnabled,
+      hasEmail: Boolean(user.email),
+      hasPhone: Boolean(user.phoneNumber),
+      requestLoginOtp
+    });
   }
 
-  const otp = generateOtp();
-  user.loginOtpHash = await bcrypt.hash(otp, 12);
-  user.loginOtpExpiresAt = new Date(now.getTime() + 5 * 60 * 1000);
-  user.loginOtpRequestedAt = now;
-  user.loginOtpAttempts = 0;
+  if (requestLoginOtp) {
+    const now = new Date();
+    if (user.loginOtpRequestedAt && now.getTime() - user.loginOtpRequestedAt.getTime() < 60 * 1000) {
+      const wait = 60 - Math.floor((now.getTime() - user.loginOtpRequestedAt.getTime()) / 1000);
+      const error = new Error(`Please wait ${wait} seconds before requesting another verification code.`);
+      error.statusCode = 429;
+      throw error;
+    }
+
+    const otp = generateOtp();
+    user.loginOtpHash = await bcrypt.hash(otp, 12);
+    user.loginOtpExpiresAt = new Date(now.getTime() + 5 * 60 * 1000);
+    user.loginOtpRequestedAt = now;
+    user.loginOtpAttempts = 0;
+    await user.save();
+
+    await sendLoginOtpNotification(user, otp);
+
+    return {
+      requiresOtp: true,
+      expiresIn: 300,
+      resendCooldownSeconds: 60
+    };
+  }
+
+  const accessToken = createToken(user.id);
+  const refreshToken = createRefreshToken(user.id);
+  user.refreshTokens.push(refreshToken);
+  user.lastLoginAt = new Date();
   await user.save();
 
-  await sendLoginOtpNotification(user, otp);
-
   return {
-    requiresOtp: true,
-    expiresIn: 300,
-    resendCooldownSeconds: 60
+    user: {
+      id: user.id,
+      email: user.email,
+      displayName: user.displayName,
+      role: user.role,
+      verified: user.verified,
+      emailVerified: user.emailVerified,
+      phoneVerified: user.phoneVerified,
+      sellerVerificationStatus: user.sellerVerificationStatus
+    },
+    accessToken,
+    authToken: accessToken,
+    refreshToken
   };
 };
 

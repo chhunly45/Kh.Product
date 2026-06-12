@@ -62,6 +62,15 @@ const authLimiter = rateLimit({
   message: { success: false, message: 'Too many authentication requests, please try again later.' }
 });
 
+// A lighter limiter for non-sensitive auth endpoints (optional).
+const authMeLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 60, // allow more requests for /auth/me
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, message: 'Too many requests, please try again later.' }
+});
+
 const apiLimiter = rateLimit({
   windowMs: config.rateLimitWindowMs,
   max: config.rateLimitMax,
@@ -70,7 +79,15 @@ const apiLimiter = rateLimit({
   message: { success: false, message: 'Too many requests, please try again later.' }
 });
 
-app.use('/api/auth', authLimiter);
+// Exclude the public "me" endpoint from the strict auth limiter to avoid
+// accidental 429s from frequent client-side profile checks. We still apply
+// a lighter limiter for GET /api/auth/me to protect from abuse.
+app.use('/api/auth', (req, res, next) => {
+  if (req.path === '/me' && req.method === 'GET') {
+    return authMeLimiter(req, res, next);
+  }
+  return authLimiter(req, res, next);
+});
 app.use(apiLimiter);
 app.use(csurf({ cookie: { httpOnly: true, secure: config.nodeEnv === 'production', sameSite: 'none' } }));
 

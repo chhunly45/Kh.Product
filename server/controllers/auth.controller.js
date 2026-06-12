@@ -12,8 +12,8 @@ const register = async (req, res, next) => {
 
 const login = async (req, res, next) => {
   try {
-    const { identifier, password } = req.body;
-    const result = await authService.loginUser(identifier, password);
+    const { identifier, password, useOtp } = req.body;
+    const result = await authService.loginUser(identifier, password, { useOtp: useOtp === true });
     res.json({ success: true, data: result });
   } catch (error) {
     next(error);

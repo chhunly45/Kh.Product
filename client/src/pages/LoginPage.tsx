@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { resendLoginOtp, resendPhoneOtp, requestPhoneOtp, verifyPhoneOtp } from '../services/auth.api';
 import { useAuth } from '../hooks/useAuth';
 
+const loginOtpEnabled = import.meta.env.VITE_LOGIN_OTP_ENABLED === 'true';
 const phoneOtpEnabled = import.meta.env.VITE_PHONE_OTP_ENABLED === 'true';
 
 const LoginPage = () => {
@@ -13,7 +14,7 @@ const LoginPage = () => {
     password: ''
   });
   const [phoneInput, setPhoneInput] = useState('');
-  const [mode, setMode] = useState<'credentials' | 'phoneOtp'>('credentials');
+  const [mode, setMode] = useState<'credentials' | 'phoneOtp' | 'loginOtp'>('credentials');
   const [otpCode, setOtpCode] = useState('');
   const [stage, setStage] = useState<'credentials' | 'otp'>('credentials');
   const [identifier, setIdentifier] = useState('');
@@ -96,6 +97,32 @@ const LoginPage = () => {
         }
 
         navigate('/dashboard');
+      } else if (mode === 'loginOtp') {
+        if (!formData.emailOrPhone.trim()) {
+          setError('Email or phone is required');
+          return;
+        }
+        if (!formData.password) {
+          setError('Password is required');
+          return;
+        }
+
+        const payload = {
+          identifier: buildIdentifier(formData.emailOrPhone),
+          password: formData.password,
+          useOtp: true
+        };
+
+        const result = await login(payload as any);
+        if (result && 'requiresOtp' in result && result.requiresOtp) {
+          setStage('otp');
+          setIdentifier(payload.identifier);
+          setStatus('Enter the verification code sent to your email or phone.');
+          setResendCooldown(result.resendCooldownSeconds || 60);
+          return;
+        }
+
+        navigate('/dashboard');
       } else {
         // phone OTP request
         if (!phoneInput.trim()) {
@@ -129,10 +156,10 @@ const LoginPage = () => {
         setError('Please enter the 6-digit verification code.');
         return;
       }
-      if (mode === 'credentials') {
-        await verifyLoginOtp({ identifier, code: otpCode.trim() });
-      } else {
+      if (mode === 'phoneOtp') {
         await verifyPhoneOtp({ phoneNumber: identifier, code: otpCode.trim() });
+      } else {
+        await verifyLoginOtp({ identifier, code: otpCode.trim() });
       }
       navigate('/dashboard');
     } catch (err: any) {
@@ -149,14 +176,14 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      if (mode === 'credentials') {
-        const response = await resendLoginOtp({ identifier: buildIdentifier(formData.emailOrPhone) });
-        setStatus('A fresh code was sent to your email.');
-        setResendCooldown(response.resendCooldownSeconds || 60);
-      } else {
+      if (mode === 'phoneOtp') {
         const digits = normalizePhoneDigits(phoneInput);
         const response = await resendPhoneOtp({ phoneNumber: digits });
         setStatus('A fresh code was sent to your phone.');
+        setResendCooldown(response.resendCooldownSeconds || 60);
+      } else {
+        const response = await resendLoginOtp({ identifier: buildIdentifier(formData.emailOrPhone) });
+        setStatus('A fresh code was sent to your email or phone.');
         setResendCooldown(response.resendCooldownSeconds || 60);
       }
     } catch (err: any) {
@@ -195,8 +222,11 @@ const LoginPage = () => {
         </div>
       )}
 
-      <div className="mt-6 flex gap-2">
+      <div className="mt-6 flex gap-2 flex-wrap">
         <button type="button" className={`px-4 py-2 rounded-full ${mode === 'credentials' ? 'bg-sky-600 text-white' : 'bg-white border'}`} onClick={() => setMode('credentials')}>Email or Phone + Password</button>
+        {loginOtpEnabled && (
+          <button type="button" className={`px-4 py-2 rounded-full ${mode === 'loginOtp' ? 'bg-sky-600 text-white' : 'bg-white border'}`} onClick={() => setMode('loginOtp')}>Password + OTP</button>
+        )}
         {phoneOtpEnabled && (
           <button type="button" className={`px-4 py-2 rounded-full ${mode === 'phoneOtp' ? 'bg-sky-600 text-white' : 'bg-white border'}`} onClick={() => setMode('phoneOtp')}>Phone OTP</button>
         )}

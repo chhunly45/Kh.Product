@@ -11,6 +11,7 @@
     "fix:email-index": "node scripts/fix-email-index.js",
     "backfill:sellers": "node scripts/backfill-product-sellers.js",
     "test:integration": "node scripts/run-integration-tests.js",
+    "test:unit": "node --test ./__tests__/auth.service.test.js",
     "test:seller": "node scripts/run-seller-verification-tests.js"
   },
   "dependencies": {
