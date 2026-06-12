@@ -70,6 +70,31 @@ describe('auth.service loginUser', () => {
     assert.equal(result.user.emailVerified, false);
   });
 
+  it('does not request OTP for phone password login when useOtp is omitted', async () => {
+    process.env.LOGIN_OTP_ENABLED = 'true';
+    try {
+      const password = 'PhonePass123!';
+      const passwordHash = await bcrypt.hash(password, 12);
+      const user = await User.create({
+        phoneNumber: '+85598765432',
+        passwordHash,
+        displayName: 'No OTP Phone User',
+        role: 'user',
+        emailVerified: false
+      });
+
+      const result = await authService.loginUser('+85598765432', password);
+
+      assert.ok(result.accessToken, 'accessToken should be present');
+      assert.ok(result.refreshToken, 'refreshToken should be present');
+      const storedUser = await User.findById(user.id);
+      assert.equal(storedUser.loginOtpHash, undefined);
+      assert.equal(storedUser.loginOtpRequestedAt, undefined);
+    } finally {
+      process.env.LOGIN_OTP_ENABLED = 'false';
+    }
+  });
+
   it('bypasses OTP when LOGIN_OTP_ENABLED is false even if useOtp is requested', async () => {
     const password = 'Password123!';
     const passwordHash = await bcrypt.hash(password, 12);
