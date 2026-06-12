@@ -186,8 +186,16 @@ const loginUser = async (identifier, password, options = {}) => {
     throw error;
   }
 
-  const requestLoginOtp = !!options.useOtp && loginOtpEnabled;
-  console.log('[LOGIN]', { useOtp: options.useOtp, loginOtpEnabled, requestLoginOtp });
+  const requestLoginOtp = options.useOtp === true && loginOtpEnabled;
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('[LOGIN_FLOW]', {
+      useOtp: options.useOtp,
+      loginOtpEnabled,
+      hasEmail: Boolean(user.email),
+      hasPhone: Boolean(user.phoneNumber),
+      requestLoginOtp
+    });
+  }
 
   if (requestLoginOtp) {
     const now = new Date();
