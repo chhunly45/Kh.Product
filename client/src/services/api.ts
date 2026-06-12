@@ -21,6 +21,20 @@ const fetchCsrfToken = async () => {
   return csrfToken;
 };
 
+const clearExpiredSession = () => {
+  localStorage.removeItem('authToken');
+  localStorage.removeItem('refreshToken');
+  localStorage.removeItem('user');
+  window.dispatchEvent(new Event('sessionExpired'));
+};
+
+const redirectToLogin = () => {
+  const url = new URL(window.location.href);
+  url.pathname = '/login';
+  url.searchParams.set('sessionExpired', '1');
+  window.location.href = url.toString();
+};
+
 api.interceptors.request.use(async (config) => {
   const token = localStorage.getItem('authToken');
   config.headers = config.headers || {};
@@ -39,5 +53,22 @@ api.interceptors.request.use(async (config) => {
 
   return config;
 });
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const response = error?.response;
+    const message = response?.data?.message;
+    if (
+      response?.status === 401 &&
+      typeof message === 'string' &&
+      message.toLowerCase().includes('invalid or expired')
+    ) {
+      clearExpiredSession();
+      redirectToLogin();
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default api;

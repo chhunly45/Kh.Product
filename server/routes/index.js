@@ -10,6 +10,7 @@ const adminRoutes = require('./admin.routes');
 const reportRoutes = require('./report.routes');
 const notificationRoutes = require('./notification.routes');
 const userRoutes = require('./user.routes');
+const reviewRoutes = require('./review.routes');
 
 const router = express.Router();
 
@@ -22,6 +23,7 @@ router.use('/banners', bannerRoutes);
 router.use('/chats', chatRoutes);
 router.use('/reports', reportRoutes);
 router.use('/notifications', notificationRoutes);
+router.use('/reviews', reviewRoutes);
 router.use('/admin', adminRoutes);
 router.use('/users', userRoutes);
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { resendLoginOtp, resendPhoneOtp, requestPhoneOtp, verifyPhoneOtp } from '../services/auth.api';
 import { useAuth } from '../hooks/useAuth';
 
@@ -9,6 +9,7 @@ const phoneOtpEnabled = import.meta.env.VITE_PHONE_OTP_ENABLED === 'true';
 const LoginPage = () => {
   const { login, verifyLoginOtp } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [formData, setFormData] = useState({
     emailOrPhone: '',
     password: ''
@@ -22,6 +23,13 @@ const LoginPage = () => {
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('sessionExpired') === '1') {
+      setStatus('Session expired. Please login again.');
+    }
+  }, [location.search]);
 
   useEffect(() => {
     let timer: number | undefined;

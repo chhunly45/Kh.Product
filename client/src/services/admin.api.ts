@@ -34,3 +34,8 @@ export const updateAdminReportStatus = async (reportId: string, status: string) 
   const response = await api.patch(`/admin/reports/${reportId}`, { status });
   return response.data.data;
 };
+
+export const deleteAdminReview = async (reviewId: string) => {
+  const response = await api.delete(`/admin/reviews/${reviewId}`);
+  return response.data.data;
+};

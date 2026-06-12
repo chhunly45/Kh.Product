@@ -55,9 +55,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setAuthToken(getStoredToken());
     };
 
+    const handleSessionExpired = () => {
+      setUser(null);
+      setAuthToken(null);
+    };
+
     window.addEventListener('storage', handleStorage);
+    window.addEventListener('sessionExpired', handleSessionExpired);
     return () => {
       window.removeEventListener('storage', handleStorage);
+      window.removeEventListener('sessionExpired', handleSessionExpired);
     };
   }, []);
 

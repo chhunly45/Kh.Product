@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import { getProfile } from '../services/auth.api';
 import { getUserProfile, updateUserProfile } from '../services/user.api';
 import { getProducts } from '../services/product.api';
+import { getSellerReviews, createReview } from '../services/review.api';
+import { useAuth } from '../hooks/useAuth';
 import ProductCard from '../components/marketplace/ProductCard';
 import {
   MapPin,
@@ -15,7 +17,8 @@ import {
   Globe,
   Edit3,
   Camera,
-  Image
+  Image,
+  Star
 } from 'lucide-react';
 import { formatPriceKHR, formatPriceUSD } from '../utils/price';
 
@@ -24,14 +27,19 @@ const defaultAvatar = 'https://images.unsplash.com/photo-1502685104226-ee32379fe
 
 const ProfilePage = () => {
   const { id: profileId } = useParams();
+  const { user: authUser } = useAuth();
   const [profile, setProfile] = useState<any>(null);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [products, setProducts] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [reviewSummary, setReviewSummary] = useState<any>({ avgRating: 0, totalReviews: 0 });
   const [activeTab, setActiveTab] = useState<'products' | 'about' | 'reviews'>('products');
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '' });
+  const [reviewLoading, setReviewLoading] = useState(false);
   const [profileForm, setProfileForm] = useState({
     displayName: '',
     bio: '',
@@ -112,11 +120,21 @@ const ProfilePage = () => {
         });
 
         if (finalProfile?.id || finalProfile?._id) {
-          const response = await getProducts({ seller: finalProfile.id || finalProfile._id, page: '1', perPage: '12' });
-          setProducts(response.items || []);
+          const [productsResponse, reviewsResponse] = await Promise.all([
+            getProducts({ seller: finalProfile.id || finalProfile._id, page: '1', perPage: '12' }),
+            getSellerReviews(finalProfile.id || finalProfile._id, { page: '1', perPage: '10' })
+          ]);
+          setProducts(productsResponse.items || []);
+          setReviews(reviewsResponse.items || []);
+          setReviewSummary(reviewsResponse.summary || { avgRating: 0, totalReviews: 0 });
         }
       } catch (error) {
         console.error(error);
+        const response = (error as any)?.response;
+        const message = response?.data?.message;
+        if (response?.status === 401 && typeof message === 'string' && message.toLowerCase().includes('invalid or expired')) {
+          return;
+        }
         setStatusMessage('Unable to load profile.');
         setProfile(null);
         setProducts([]);
@@ -620,9 +638,111 @@ const ProfilePage = () => {
             )}
 
             {activeTab === 'reviews' && !isEditing && (
-              <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                <h2 className="text-lg font-bold text-slate-900">Reviews</h2>
-                <p className="mt-4 text-slate-600">Reviews have not been enabled for this seller yet. Check back later as customer feedback grows.</p>
+              <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm space-y-6">
+                <div className="flex flex-wrap items-center gap-6">
+                  <div>
+                    <p className="text-sm text-slate-500">Average Rating</p>
+                    <div className="mt-2 flex items-center gap-2">
+                      <span className="text-3xl font-bold text-slate-900">{reviewSummary.avgRating.toFixed(1)}</span>
+                      <div className="flex gap-1">
+                        {[1, 2, 3, 4, 5].map((i) => (
+                          <Star key={i} className={`h-5 w-5 ${i <= Math.round(reviewSummary.avgRating) ? 'fill-amber-400 text-amber-400' : 'text-slate-300'}`} />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="rounded-3xl bg-slate-50 px-6 py-4">
+                    <p className="text-sm text-slate-500">Total Reviews</p>
+                    <p className="mt-2 text-2xl font-bold text-slate-900">{reviewSummary.totalReviews}</p>
+                  </div>
+                </div>
+
+                {authUser && !isOwner && (
+                  <div className="border-t pt-6">
+                    <h3 className="text-base font-semibold text-slate-900">Leave a Review</h3>
+                    <div className="mt-4 space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700">Rating</label>
+                        <div className="mt-2 flex gap-2">
+                          {[1, 2, 3, 4, 5].map((i) => (
+                            <button
+                              key={i}
+                              type="button"
+                              onClick={() => setReviewForm({ ...reviewForm, rating: i })}
+                              className="focus:outline-none transition"
+                            >
+                              <Star className={`h-6 w-6 ${i <= reviewForm.rating ? 'fill-amber-400 text-amber-400' : 'text-slate-300'}`} />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700">Comment (optional)</label>
+                        <textarea
+                          value={reviewForm.comment}
+                          onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
+                          placeholder="Share your experience..."
+                          className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                          rows={4}
+                          disabled={reviewLoading}
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          if (!profile?.id && !profile?._id) return;
+                          setReviewLoading(true);
+                          try {
+                            await createReview({
+                              seller: profile.id || profile._id,
+                              rating: reviewForm.rating,
+                              comment: reviewForm.comment
+                            });
+                            setReviewForm({ rating: 5, comment: '' });
+                            const updated = await getSellerReviews(profile.id || profile._id, { page: '1', perPage: '10' });
+                            setReviews(updated.items || []);
+                            setReviewSummary(updated.summary || { avgRating: 0, totalReviews: 0 });
+                            setSuccessMessage('Review posted successfully!');
+                            setTimeout(() => setSuccessMessage(''), 4000);
+                          } catch (err: any) {
+                            const errorMsg = err.response?.data?.message || 'Unable to post review';
+                            setStatusMessage(errorMsg);
+                          } finally {
+                            setReviewLoading(false);
+                          }
+                        }}
+                        disabled={reviewLoading}
+                        className="rounded-full bg-sky-600 px-5 py-2 text-sm font-semibold text-white hover:bg-sky-700 transition disabled:opacity-50"
+                      >
+                        {reviewLoading ? 'Posting...' : 'Post Review'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                <div className="space-y-4 border-t pt-6">
+                  <h3 className="text-base font-semibold text-slate-900">All Reviews</h3>
+                  {reviews.length > 0 ? (
+                    reviews.map((review: any) => (
+                      <div key={review._id} className="rounded-3xl bg-slate-50 p-4">
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <p className="font-semibold text-slate-900">{review.reviewer?.displayName || 'Anonymous'}</p>
+                            <div className="mt-1 flex gap-1">
+                              {[1, 2, 3, 4, 5].map((i) => (
+                                <Star key={i} className={`h-4 w-4 ${i <= review.rating ? 'fill-amber-400 text-amber-400' : 'text-slate-300'}`} />
+                              ))}
+                            </div>
+                          </div>
+                          <p className="text-xs text-slate-500">{new Date(review.createdAt).toLocaleDateString()}</p>
+                        </div>
+                        {review.comment && <p className="mt-2 text-sm text-slate-600">{review.comment}</p>}
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-slate-600">No reviews yet. Be the first to share your experience!</p>
+                  )}
+                </div>
               </div>
             )}
           </main>

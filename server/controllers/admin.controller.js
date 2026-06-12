@@ -1,4 +1,5 @@
 const adminService = require('../services/admin.service');
+const reviewService = require('../services/review.service');
 const emailService = require('../services/email.service');
 const config = require('../config');
 
@@ -74,6 +75,15 @@ const backfillProductSellers = async (req, res, next) => {
   }
 };
 
+const deleteReview = async (req, res, next) => {
+  try {
+    await reviewService.deleteReview(req.params.id);
+    res.json({ success: true, message: 'Review deleted' });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const sendTestEmail = async (req, res, next) => {
   try {
     // Only allow in development environment or explicitly enabled
@@ -128,6 +138,7 @@ module.exports = {
   updateProductStatus,
   listReports,
   updateReportStatus,
+  deleteReview,
   backfillProductSellers,
   sendTestEmail
 };
