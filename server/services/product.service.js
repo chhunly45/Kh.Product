@@ -90,8 +90,34 @@ const getProductById = async (productId) => {
     }
   }
 
-  product.viewsCount += 1;
-  await product.save();
+  return product;
+};
+
+const incrementProductViews = async (productId) => {
+  const product = await Product.findByIdAndUpdate(
+    productId,
+    { $inc: { viewsCount: 1 } },
+    { new: true, runValidators: true }
+  ).select('viewsCount status');
+
+  if (!product || product.status === 'archived') {
+    const error = new Error('Product not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  return product;
+};
+
+const getProductViews = async (productId) => {
+  const product = await Product.findById(productId).select('viewsCount status');
+
+  if (!product || product.status === 'archived') {
+    const error = new Error('Product not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
   return product;
 };
 
@@ -201,6 +227,8 @@ const deleteProduct = async (productId, user) => {
 module.exports = {
   listProducts,
   getProductById,
+  incrementProductViews,
+  getProductViews,
   createProduct,
   updateProduct,
   deleteProduct

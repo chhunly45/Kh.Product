@@ -56,6 +56,7 @@ const FeaturedSection = ({ title, description, products, viewAllLink = '/' }: Fe
                 location={product.location || 'Unknown'}
                 category={categoryLabel}
                 imageUrl={imageUrl}
+                viewsCount={(product as any).viewsCount}
                 seller={(product as any).seller}
               />
             );

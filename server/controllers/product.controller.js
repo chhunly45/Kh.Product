@@ -30,6 +30,15 @@ const getProduct = async (req, res, next) => {
   }
 };
 
+const addProductView = async (req, res, next) => {
+  try {
+    const product = await productService.incrementProductViews(req.params.id);
+    res.json({ success: true, data: { viewsCount: product.viewsCount } });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const createProduct = async (req, res, next) => {
   try {
     const payload = req.body;

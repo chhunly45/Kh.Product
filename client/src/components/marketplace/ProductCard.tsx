@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useEffect, useState, MouseEvent } from 'react';
-import { MapPin, Heart } from 'lucide-react';
+import { MapPin, Heart, Eye } from 'lucide-react';
+import { formatViewsCount } from '../../utils/views';
 import { formatPriceKHR, formatPriceUSD } from '../../utils/price';
 
 interface ProductCardProps {
@@ -10,12 +11,13 @@ interface ProductCardProps {
   category?: string;
   id: string;
   imageUrl?: string;
+  viewsCount?: number;
   isFavorite?: boolean;
   onToggleFavorite?: (productId: string, currentlyFavorite: boolean) => void;
   seller?: { displayName?: string; sellerVerificationStatus?: string };
 }
 
-const ProductCard = ({ title, price, location, category, id, imageUrl, isFavorite = false, onToggleFavorite, seller }: ProductCardProps) => {
+const ProductCard = ({ title, price, location, category, id, imageUrl, viewsCount = 0, isFavorite = false, onToggleFavorite, seller }: ProductCardProps) => {
   const [isSaved, setIsSaved] = useState<boolean>(isFavorite);
 
   useEffect(() => {
@@ -120,9 +122,10 @@ const ProductCard = ({ title, price, location, category, id, imageUrl, isFavorit
               {priceText.khr}
             </span>
           </div>
-          <span className="rounded-full bg-sky-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-sky-600 group-hover:bg-sky-100 transition">
-            View
-          </span>
+          <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-600 group-hover:bg-slate-200 transition">
+            <Eye className="w-4 h-4" />
+            {formatViewsCount(viewsCount)} views
+          </div>
         </div>
       </div>
     </Link>

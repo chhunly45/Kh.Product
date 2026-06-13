@@ -104,6 +104,7 @@ const ProductListPage = () => {
                   category={product.category?.labelKh || product.category?.name || 'General'}
                   seller={product.seller}
                   imageUrl={product.images?.[0]?.secureUrl || product.images?.[0]?.url || ''}
+                  viewsCount={product.viewsCount}
                   isFavorite={favoriteIds.includes(product._id)}
                   onToggleFavorite={async (productId, currentFavorite) => {
                     try {

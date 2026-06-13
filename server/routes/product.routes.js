@@ -22,6 +22,7 @@ router.get('/',
 );
 
 router.get('/:id', param('id').isMongoId(), validate, productController.getProduct);
+router.post('/:id/views', param('id').isMongoId(), validate, productController.addProductView);
 
 router.post(
   '/',

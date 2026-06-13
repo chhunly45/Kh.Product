@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useMatch } from 'react-router-dom';
 import {
   getAdminOverview,
   getAdminUsers,
@@ -14,7 +15,8 @@ const statusOptions = ['published', 'sold', 'archived', 'flagged'];
 const reportStatusOptions = ['pending', 'reviewed', 'resolved', 'rejected'];
 
 const AdminDashboardPage = () => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'products' | 'reports' | 'analytics' | 'sellers'>('overview');
+  const isSellersPath = useMatch('/admin/sellers');
+  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'products' | 'reports' | 'analytics' | 'sellers'>(isSellersPath ? 'sellers' : 'overview');
   const [overview, setOverview] = useState<Record<string, any>>({});
   const [users, setUsers] = useState<any[]>([]);
   const [sellers, setSellers] = useState<any[]>([]);
@@ -77,6 +79,12 @@ const AdminDashboardPage = () => {
     if (activeTab === 'reports') loadReports();
     if (activeTab === 'analytics') loadAnalytics();
   }, [activeTab]);
+
+  useEffect(() => {
+    if (isSellersPath) {
+      setActiveTab('sellers');
+    }
+  }, [isSellersPath]);
 
   const loadSellers = async () => {
     try {

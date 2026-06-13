@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Phone, MessageCircle, ShieldCheck, ArrowUpRight, AlertTriangle, MapPin, CalendarDays, Heart } from 'lucide-react';
-import { getProductById, getProducts, updateProduct, deleteProduct } from '../services/product.api';
+import { getProductById, getProducts, trackProductView, updateProduct, deleteProduct } from '../services/product.api';
+import { formatViewsCount } from '../utils/views';
 import { getProfile } from '../services/auth.api';
 import { checkFavorite, addFavorite, removeFavorite } from '../services/favorites.api';
 import { createReport } from '../services/report.api';
@@ -28,6 +29,27 @@ const ProductDetailPage = () => {
 
   const getUserId = (user: any) => user?._id || user?.id || user?.userId;
   const getProductSellerId = (product: any) => product?.seller?._id || product?.seller?.id || product?.seller;
+
+  const hasTrackedView = (productId: string) => {
+    if (typeof window === 'undefined' || !productId) return false;
+    try {
+      const stored = JSON.parse(window.localStorage.getItem('viewedProducts') || '{}');
+      return Boolean(stored[productId]);
+    } catch {
+      return false;
+    }
+  };
+
+  const markViewTracked = (productId: string) => {
+    if (typeof window === 'undefined' || !productId) return;
+    try {
+      const stored = JSON.parse(window.localStorage.getItem('viewedProducts') || '{}');
+      stored[productId] = Date.now();
+      window.localStorage.setItem('viewedProducts', JSON.stringify(stored));
+    } catch {
+      // ignore storage failures
+    }
+  };
 
   const isOwner = useMemo(() => {
     const currentUserId = getUserId(currentUser);
@@ -61,6 +83,22 @@ const ProductDetailPage = () => {
       }
     };
     loadProduct();
+  }, [id]);
+
+  useEffect(() => {
+    const trackView = async () => {
+      if (!id || hasTrackedView(id)) return;
+      try {
+        const result = await trackProductView(id);
+        if (result?.viewsCount != null) {
+          setProduct((current: any) => current ? { ...current, viewsCount: result.viewsCount } : current);
+        }
+        markViewTracked(id);
+      } catch (error) {
+        console.error('Unable to track product view:', error);
+      }
+    };
+    trackView();
   }, [id]);
 
   useEffect(() => {
@@ -188,6 +226,8 @@ const ProductDetailPage = () => {
                 <span>{product.location || 'Local'}</span>
                 <span className="h-1 w-1 rounded-full bg-slate-300" />
                 <span>{product.condition || 'Condition not specified'}</span>
+                <span className="h-1 w-1 rounded-full bg-slate-300" />
+                <span>{formatViewsCount(product.viewsCount)} views</span>
               </div>
             </div>
             <div className="flex flex-col items-start gap-2 rounded-3xl bg-slate-100 px-5 py-4 text-left sm:text-right">

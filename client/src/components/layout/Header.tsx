@@ -194,6 +194,15 @@ const Header = () => {
                   )}
                   <span>{user?.displayName?.split(' ')[0] || user?.phoneNumber || 'Account'}</span>
                 </button>
+                {user?.role === 'admin' && (
+                  <button
+                    type="button"
+                    onClick={() => navigate('/admin')}
+                    className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+                  >
+                    Admin Dashboard
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={async () => {
@@ -293,6 +302,18 @@ const Header = () => {
                 >
                   {user?.displayName ? `Hi, ${user.displayName.split(' ')[0]}` : user?.phoneNumber ? `Hi, ${user.phoneNumber}` : 'Profile'}
                 </button>
+                {user?.role === 'admin' && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigate('/admin');
+                      setMobileMenuOpen(false);
+                    }}
+                    className="block w-full rounded-lg border border-slate-300 bg-white px-4 py-2 text-center text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+                  >
+                    Admin Dashboard
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={async () => {

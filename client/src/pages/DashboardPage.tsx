@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getProfile } from '../services/auth.api';
 import { getProducts, updateProduct, deleteProduct } from '../services/product.api';
 import { Edit3, Trash2, CheckCircle, PlusCircle, Eye, TrendingUp } from 'lucide-react';
+import { formatViewsCount } from '../utils/views';
 import { formatPriceKHR, formatPriceUSD } from '../utils/price';
 
 const DashboardPage = () => {
@@ -105,7 +106,7 @@ const DashboardPage = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs uppercase tracking-[0.35em] text-slate-500">{stat.label}</p>
-                <p className="mt-3 text-3xl font-semibold text-slate-900">{stat.value}</p>
+                <p className="mt-3 text-3xl font-semibold text-slate-900">{stat.label === 'Total views' ? formatViewsCount(stat.value as number) : stat.value}</p>
               </div>
               <div className="rounded-2xl bg-sky-50 p-3">
                 <stat.icon className="w-6 h-6 text-sky-600" />
@@ -135,7 +136,7 @@ const DashboardPage = () => {
                 <div className="text-right">
                   <div className="inline-flex items-center gap-2 rounded-full bg-sky-100 px-3 py-1">
                     <Eye className="w-4 h-4 text-sky-600" />
-                    <span className="text-sm font-semibold text-sky-700">{product.viewsCount || 0}</span>
+                    <span className="text-sm font-semibold text-sky-700">{formatViewsCount(product.viewsCount)}</span>
                   </div>
                 </div>
               </div>
