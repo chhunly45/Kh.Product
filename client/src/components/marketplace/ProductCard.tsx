@@ -12,12 +12,13 @@ interface ProductCardProps {
   id: string;
   imageUrl?: string;
   viewsCount?: number;
+  featured?: boolean;
   isFavorite?: boolean;
   onToggleFavorite?: (productId: string, currentlyFavorite: boolean) => void;
   seller?: { displayName?: string; sellerVerificationStatus?: string };
 }
 
-const ProductCard = ({ title, price, location, category, id, imageUrl, viewsCount = 0, isFavorite = false, onToggleFavorite, seller }: ProductCardProps) => {
+const ProductCard = ({ title, price, location, category, id, imageUrl, viewsCount = 0, featured = false, isFavorite = false, onToggleFavorite, seller }: ProductCardProps) => {
   const [isSaved, setIsSaved] = useState<boolean>(isFavorite);
 
   useEffect(() => {
@@ -56,6 +57,14 @@ const ProductCard = ({ title, price, location, category, id, imageUrl, viewsCoun
           <div className="absolute top-3 left-3">
             <span className="rounded-full bg-sky-500 px-3 py-1 text-xs font-bold uppercase tracking-wide text-white shadow-lg">
               {category}
+            </span>
+          </div>
+        )}
+        {/* Featured Badge */}
+        {featured && (
+          <div className="absolute top-3 right-3">
+            <span className="rounded-full bg-amber-400 px-3 py-1 text-xs font-bold uppercase tracking-wide text-white shadow-lg">
+              Featured
             </span>
           </div>
         )}

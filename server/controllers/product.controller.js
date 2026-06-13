@@ -39,6 +39,15 @@ const addProductView = async (req, res, next) => {
   }
 };
 
+const listFeaturedProducts = async (req, res, next) => {
+  try {
+    const products = await productService.getFeaturedProducts(req.query);
+    res.json({ success: true, data: products });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const createProduct = async (req, res, next) => {
   try {
     const payload = req.body;
@@ -73,6 +82,7 @@ const deleteProduct = async (req, res, next) => {
 module.exports = {
   listProducts,
   getProduct,
+  listFeaturedProducts,
   createProduct,
   updateProduct,
   deleteProduct

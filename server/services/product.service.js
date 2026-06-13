@@ -109,6 +109,25 @@ const incrementProductViews = async (productId) => {
   return product;
 };
 
+const getFeaturedProducts = async (filters = {}) => {
+  const query = { status: 'published', $or: [{ featured: true }, { isFeatured: true }] };
+  const page = Number(filters.page) || 1;
+  const limit = Number(filters.perPage) || 12;
+  const skip = (page - 1) * limit;
+
+  const items = await Product.find(query)
+    .populate('seller', sellerPopulateFields)
+    .populate('category', 'name labelKh slug')
+    .populate('images')
+    .sort({ featuredAt: -1, createdAt: -1 })
+    .skip(skip)
+    .limit(limit)
+    .lean();
+
+  const total = await Product.countDocuments(query);
+  return { items, meta: { page, limit, total } };
+};
+
 const getProductViews = async (productId) => {
   const product = await Product.findById(productId).select('viewsCount status');
 
@@ -229,6 +248,7 @@ module.exports = {
   getProductById,
   incrementProductViews,
   getProductViews,
+  getFeaturedProducts,
   createProduct,
   updateProduct,
   deleteProduct

@@ -197,7 +197,12 @@ const ProductDetailPage = () => {
             <div className="space-y-2">
               <p className="text-sm uppercase tracking-[0.35em] text-sky-600">Product detail</p>
               <div className="flex flex-wrap items-center gap-3">
-                <h1 className="text-3xl font-semibold text-slate-900">{product.title}</h1>
+                <div className="flex items-center gap-3">
+                  <h1 className="text-3xl font-semibold text-slate-900">{product.title}</h1>
+                  {(product.featured || product.isFeatured) && (
+                    <span className="rounded-full bg-amber-400 px-3 py-1 text-sm font-semibold uppercase tracking-wide text-white shadow">Featured</span>
+                  )}
+                </div>
                 <button
                   type="button"
                   onClick={async () => {
@@ -502,6 +507,7 @@ const ProductDetailPage = () => {
                       category={item.category?.labelKh || item.category?.name || 'General'}
                       imageUrl={item.images?.[0]?.secureUrl || item.images?.[0]?.url || ''}
                       seller={item.seller}
+                      featured={item.featured || item.isFeatured}
                     />
                   ))}
                 </div>

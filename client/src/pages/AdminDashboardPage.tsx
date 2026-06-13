@@ -6,6 +6,7 @@ import {
   updateAdminUserStatus,
   getAdminProducts,
   updateAdminProductStatus,
+  updateAdminProductFeatured,
   getAdminReports,
   updateAdminReportStatus,
   getProductsByProvince
@@ -189,6 +190,18 @@ const AdminDashboardPage = () => {
       await loadProducts();
     } catch {
       setMessage('Unable to update product status.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleToggleFeatured = async (productId: string, currentlyFeatured: boolean) => {
+    setLoading(true);
+    try {
+      await updateAdminProductFeatured(productId, !currentlyFeatured);
+      await loadProducts();
+    } catch {
+      setMessage('Unable to update featured status.');
     } finally {
       setLoading(false);
     }
@@ -450,6 +463,7 @@ const AdminDashboardPage = () => {
                   <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Product</th>
                   <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Seller</th>
                   <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Status</th>
+                  <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Featured</th>
                   <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Action</th>
                 </tr>
               </thead>
@@ -468,6 +482,12 @@ const AdminDashboardPage = () => {
                       <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${product.status === 'published' ? 'bg-emerald-100 text-emerald-700' : product.status === 'flagged' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-700'}`}>
                         {product.status}
                       </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <label className="inline-flex items-center gap-2">
+                        <input type="checkbox" checked={Boolean(product.featured || product.isFeatured)} onChange={() => handleToggleFeatured(product._id, Boolean(product.featured || product.isFeatured))} />
+                        <span className="text-sm text-slate-600">Featured</span>
+                      </label>
                     </td>
                     <td className="px-6 py-4">
                       <select

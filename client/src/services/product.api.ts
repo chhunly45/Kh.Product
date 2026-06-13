@@ -31,6 +31,11 @@ export const trackProductView = async (productId: string) => {
   return response.data.data;
 };
 
+export const getFeaturedProducts = async (params: Record<string, any> = {}) => {
+  const response = await api.get('/products/featured', { params });
+  return response.data.data;
+};
+
 export const updateProduct = async (productId: string, payload: Record<string, any>) => {
   const response = await api.put(`/products/${productId}`, payload);
   return response.data.data;

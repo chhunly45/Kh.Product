@@ -125,6 +125,20 @@ const updateProductStatus = async (productId, status) => {
   return product;
 };
 
+const updateProductFeatured = async (productId, featured) => {
+  const product = await Product.findById(productId);
+  if (!product) {
+    const error = new Error('Product not found');
+    error.statusCode = 404;
+    throw error;
+  }
+  product.featured = Boolean(featured);
+  product.isFeatured = Boolean(featured);
+  product.featuredAt = product.featured ? new Date() : null;
+  await product.save();
+  return product;
+};
+
 const listReports = async ({ status, page = 1, limit = 25 }) => {
   const query = {};
   if (status) query.status = status;
@@ -189,6 +203,7 @@ module.exports = {
   updateUserStatus,
   listProducts,
   updateProductStatus,
+  updateProductFeatured,
   listReports,
   backfillProductSellers,
   updateReportStatus,

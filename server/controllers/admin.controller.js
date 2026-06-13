@@ -48,6 +48,16 @@ const updateProductStatus = async (req, res, next) => {
   }
 };
 
+const updateProductFeatured = async (req, res, next) => {
+  try {
+    const featured = req.body.featured === true;
+    const product = await adminService.updateProductFeatured(req.params.id, featured);
+    res.json({ success: true, data: product });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const listReports = async (req, res, next) => {
   try {
     const reports = await adminService.listReports(req.query);
@@ -145,6 +155,7 @@ module.exports = {
   updateUserStatus,
   listProducts,
   updateProductStatus,
+  updateProductFeatured,
   listReports,
   updateReportStatus,
   deleteReview,

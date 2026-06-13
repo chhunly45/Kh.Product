@@ -18,6 +18,8 @@ const ProductSchema = new Schema({
   tags: { type: [{ type: String, trim: true }], default: [] },
   viewsCount: { type: Number, default: 0 },
   isFeatured: { type: Boolean, default: false },
+  featured: { type: Boolean, default: false },
+  featuredAt: { type: Date, default: null },
   metaTitle: { type: String, trim: true },
   metaDescription: { type: String, trim: true },
   locationRegion: { type: String, trim: true },

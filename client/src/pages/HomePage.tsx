@@ -6,7 +6,7 @@ import CategoriesGrid from '../components/marketplace/CategoriesGrid';
 import FeaturedSection from '../components/marketplace/FeaturedSection';
 import SEO from '../components/SEO';
 import { Star, TrendingUp, Zap, ShieldCheck, ArrowRight } from 'lucide-react';
-import { getProducts } from '../services/product.api';
+import { getProducts, getFeaturedProducts } from '../services/product.api';
 
 const HomePage = () => {
   const [topAds, setTopAds] = useState<any[]>([]);
@@ -18,7 +18,7 @@ const HomePage = () => {
     const loadTopAds = async () => {
       setLoadingTopAds(true);
       try {
-        const { items } = await getProducts({ page: '1', perPage: '8' });
+        const { items } = await getFeaturedProducts({ page: '1', perPage: '8' });
         setTopAds(items || []);
       } catch (error) {
         setTopAds([]);

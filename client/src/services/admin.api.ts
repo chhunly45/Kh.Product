@@ -25,6 +25,11 @@ export const updateAdminProductStatus = async (productId: string, status: string
   return response.data.data;
 };
 
+export const updateAdminProductFeatured = async (productId: string, featured: boolean) => {
+  const response = await api.patch(`/admin/products/${productId}/featured`, { featured });
+  return response.data.data;
+};
+
 export const getAdminReports = async (params: Record<string, any> = {}) => {
   const response = await api.get('/admin/reports', { params });
   return response.data.data;
