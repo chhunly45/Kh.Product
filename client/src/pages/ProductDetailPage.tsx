@@ -15,6 +15,7 @@ const ProductDetailPage = () => {
   const [product, setProduct] = useState<any>(null);
   const [selectedImage, setSelectedImage] = useState<string>('');
   const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
+  const [relatedLoading, setRelatedLoading] = useState(false);
   const [status, setStatus] = useState('');
   const [isFavorite, setIsFavorite] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
@@ -65,12 +66,17 @@ const ProductDetailPage = () => {
   useEffect(() => {
     const loadRelated = async () => {
       if (!product?.category?._id || !id) return;
+      setRelatedLoading(true);
       try {
-        const response = await getProducts({ category: product.category._id, perPage: '4', sort: 'newest' });
-        const items = response.items || [];
-        setRelatedProducts(items.filter((item: any) => item._id !== product._id).slice(0, 4));
+        const response = await getProducts({ category: product.category._id, perPage: '8', sort: 'newest' });
+        let items = response.items || [];
+        items = items.filter((item: any) => item._id !== product._id && item.status !== 'sold');
+        const shuffled = items.sort(() => Math.random() - 0.5);
+        setRelatedProducts(shuffled.slice(0, 8));
       } catch (error) {
         setRelatedProducts([]);
+      } finally {
+        setRelatedLoading(false);
       }
     };
     loadRelated();
@@ -429,28 +435,41 @@ const ProductDetailPage = () => {
           </div>
         </div>
 
-        {relatedProducts.length > 0 && (
+        {(relatedLoading || relatedProducts.length > 0 || (!relatedLoading && product?.category?._id)) && (
           <div className="mt-10">
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="text-sm uppercase tracking-[0.35em] text-slate-500">Related listings</p>
-                <h2 className="text-2xl font-semibold text-slate-900">More listings like this</h2>
+                <p className="text-sm uppercase tracking-[0.35em] text-slate-500">Similar Products</p>
+                <h2 className="text-2xl font-semibold text-slate-900">You might also like</h2>
               </div>
               <Link to="/products" className="text-sm font-semibold text-sky-600 hover:text-sky-700">Browse all</Link>
             </div>
-            <div className="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-              {relatedProducts.map((item) => (
-                <ProductCard
-                  key={item._id}
-                  id={item._id}
-                  title={item.title}
-                  price={item.price}
-                  location={item.location || 'Unknown'}
-                  category={item.category?.labelKh || item.category?.name || 'General'}
-                  imageUrl={item.images?.[0]?.secureUrl || item.images?.[0]?.url || ''}
-                  seller={item.seller}
-                />
-              ))}
+
+            <div className="mt-6">
+              {relatedLoading ? (
+                <div className="rounded-[2rem] border border-slate-200 bg-slate-50 p-8 text-center text-slate-600">
+                  Loading similar products...
+                </div>
+              ) : relatedProducts.length > 0 ? (
+                <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+                  {relatedProducts.map((item) => (
+                    <ProductCard
+                      key={item._id}
+                      id={item._id}
+                      title={item.title}
+                      price={item.price}
+                      location={item.location || 'Unknown'}
+                      category={item.category?.labelKh || item.category?.name || 'General'}
+                      imageUrl={item.images?.[0]?.secureUrl || item.images?.[0]?.url || ''}
+                      seller={item.seller}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="rounded-[2rem] border border-slate-200 bg-slate-50 p-8 text-center text-slate-600">
+                  No similar products were found in this category.
+                </div>
+              )}
             </div>
           </div>
         )}
