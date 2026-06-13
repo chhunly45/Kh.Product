@@ -14,6 +14,7 @@ import ChatPage from '../pages/ChatPage';
 import DashboardPage from '../pages/DashboardPage';
 import AdminDashboardPage from '../pages/AdminDashboardPage';
 import AdminBannersPage from '../pages/AdminBannersPage';
+import AdminRoute from './AdminRoute';
 import NotificationsPage from '../pages/NotificationsPage';
 import NotFoundPage from '../pages/NotFoundPage';
 
@@ -35,8 +36,11 @@ const AppRoutes = () => (
     <Route path="/favorites" element={<FavoritesPage />} />
     <Route path="/chat" element={<ChatPage />} />
     <Route path="/dashboard" element={<DashboardPage />} />
-    <Route path="/admin" element={<AdminDashboardPage />} />
-    <Route path="/admin/banners" element={<AdminBannersPage />} />
+    <Route path="/admin" element={<AdminRoute />}>
+      <Route index element={<AdminDashboardPage />} />
+      <Route path="sellers" element={<AdminDashboardPage />} />
+      <Route path="banners" element={<AdminBannersPage />} />
+    </Route>
     <Route path="*" element={<NotFoundPage />} />
   </Routes>
 );
