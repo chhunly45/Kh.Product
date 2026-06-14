@@ -21,7 +21,12 @@ describe('chat API wrappers', () => {
     expect(mockedApi.get).toHaveBeenCalledWith('/chats/chat1');
   });
 
-  it('sends a message and marks chat as read', async () => {
+  it('creates a chat, sends a message and marks chat as read', async () => {
+    mockedApi.post.mockResolvedValueOnce({ data: { data: { chat: { id: 'chat1' } } } });
+    const created = await chatApi.createChat('prod1', 'Hi there');
+    expect(created).toEqual({ chat: { id: 'chat1' } });
+    expect(mockedApi.post).toHaveBeenCalledWith('/chats', { productId: 'prod1', message: 'Hi there' });
+
     mockedApi.post.mockResolvedValueOnce({ data: { data: { message: 'ok' } } });
     const response = await chatApi.sendChatMessage('chat1', 'hello');
     expect(response).toEqual({ message: 'ok' });

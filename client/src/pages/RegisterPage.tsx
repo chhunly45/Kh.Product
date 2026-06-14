@@ -2,7 +2,16 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
-const captchaEnabled = import.meta.env.VITE_CAPTCHA_ENABLED === 'true';
+const safeImportMetaEnv = () => {
+  try {
+    return eval('import.meta.env') as Record<string, string>;
+  } catch {
+    return {} as Record<string, string>;
+  }
+};
+
+const env = safeImportMetaEnv();
+const captchaEnabled = env.VITE_CAPTCHA_ENABLED === 'true';
 
 const RegisterPage = () => {
   const navigate = useNavigate();

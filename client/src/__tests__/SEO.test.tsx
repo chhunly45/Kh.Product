@@ -21,7 +21,20 @@ describe('SEO component', () => {
     expect(document.querySelector('meta[name="description"]')).toHaveAttribute('content', 'A test description');
     expect(document.querySelector('meta[property="og:title"]')).toHaveAttribute('content', 'Test Page | Konpuk');
     expect(document.querySelector('meta[property="og:url"]')).toHaveAttribute('content', 'https://konpuk.com/test');
+    expect(document.querySelector('meta[name="robots"]')).toHaveAttribute('content', 'index, follow');
+    expect(document.querySelector('meta[name="twitter:url"]')).toHaveAttribute('content', 'https://konpuk.com/test');
     expect(document.querySelector('link[rel="canonical"]')).toHaveAttribute('href', 'https://konpuk.com/test');
+  });
+
+  it('supports custom robots directives', async () => {
+    render(<SEO title="Noindex Page" robots="noindex" url="https://konpuk.com/noindex" />);
+
+    await waitFor(() => {
+      expect(document.querySelector('meta[name="robots"]')).toBeInTheDocument();
+    });
+
+    expect(document.querySelector('meta[name="robots"]')).toHaveAttribute('content', 'noindex');
+    expect(document.querySelector('meta[property="og:url"]')).toHaveAttribute('content', 'https://konpuk.com/noindex');
   });
 
   it('uses default metadata and structured data when no props are provided', async () => {

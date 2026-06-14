@@ -3,8 +3,17 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { resendLoginOtp, resendPhoneOtp, requestPhoneOtp, verifyPhoneOtp } from '../services/auth.api';
 import { useAuth } from '../hooks/useAuth';
 
-const loginOtpEnabled = import.meta.env.VITE_LOGIN_OTP_ENABLED === 'true';
-const phoneOtpEnabled = import.meta.env.VITE_PHONE_OTP_ENABLED === 'true';
+const safeImportMetaEnv = () => {
+  try {
+    return eval('import.meta.env') as Record<string, string>;
+  } catch {
+    return {} as Record<string, string>;
+  }
+};
+
+const env = safeImportMetaEnv();
+const loginOtpEnabled = env.VITE_LOGIN_OTP_ENABLED === 'true';
+const phoneOtpEnabled = env.VITE_PHONE_OTP_ENABLED === 'true';
 
 const LoginPage = () => {
   const { login, verifyLoginOtp } = useAuth();

@@ -6,7 +6,9 @@ import { formatViewsCount } from '../utils/views';
 import { getProfile } from '../services/auth.api';
 import { checkFavorite, addFavorite, removeFavorite } from '../services/favorites.api';
 import { createReport } from '../services/report.api';
+import { createChat } from '../services/chat.api';
 import { formatPriceKHR, formatPriceUSD } from '../utils/price';
+import { useAuth } from '../hooks/useAuth';
 import SellerContactCard from '../components/marketplace/SellerContactCard';
 import SEO from '../components/SEO';
 import ProductCard from '../components/marketplace/ProductCard';
@@ -24,7 +26,9 @@ const ProductDetailPage = () => {
   const [reportReason, setReportReason] = useState<'scam' | 'fake_product' | 'duplicate_listing' | 'wrong_category' | 'other' | ''>('');
   const [reportMessage, setReportMessage] = useState('');
   const [reportSuccess, setReportSuccess] = useState('');
+  const [chatStatus, setChatStatus] = useState('');
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   const getUserId = (user: any) => user?._id || user?.id || user?.userId;
@@ -127,6 +131,16 @@ const ProductDetailPage = () => {
     };
   };
 
+  const getSeoDescription = (product: any) => {
+    if (!product) return 'Find great local products on Konpuk.';
+
+    const base = `${product.title} in ${product.location || 'Cambodia'} under ${product.category?.labelKh || product.category?.name || 'General'} priced at ${formatPrice(product.price).usd}.`;
+    const descriptionText = `${base} ${product.description ? product.description.trim() : ''}`.replace(/\s+/g, ' ').trim();
+    const maxLength = 160;
+    if (descriptionText.length <= maxLength) return descriptionText;
+    return `${descriptionText.slice(0, maxLength - 3).trimEnd()}...`;
+  };
+
   const safelyPhone = (value?: string) => {
     if (!value) return '';
     return value.replace(/[^0-9+]/g, '');
@@ -151,6 +165,27 @@ const ProductDetailPage = () => {
     }
   };
 
+  const startChatWithSeller = async () => {
+    if (!product) return;
+    if (!isAuthenticated) {
+      navigate(`/login?redirectTo=/products/${product._id}`);
+      return;
+    }
+
+    try {
+      setChatStatus('Starting conversation...');
+      const response = await createChat(product._id);
+      const chatId = response?.chat?._id || response?.chat?.id;
+      if (chatId) {
+        navigate(`/messages/${chatId}`);
+      } else {
+        setChatStatus('Unable to open chat. Please try again.');
+      }
+    } catch (error: any) {
+      setChatStatus(error?.response?.data?.message || error?.message || 'Unable to start chat.');
+    }
+  };
+
   if (!product) {
     return <div className="p-8 text-center text-slate-600">{status || 'Loading product details...'}</div>;
   }
@@ -162,19 +197,26 @@ const ProductDetailPage = () => {
 
   console.log('Seller:', product?.seller);
 
+  const seoTitle = `${product.title} for Sale in ${product.location || 'Cambodia'}`;
+  const seoDescription = getSeoDescription(product);
+  const canonicalUrl = `${window.location.origin}/products/${product._id}`;
+  const seoImage = product.images?.[0]?.secureUrl || product.images?.[0]?.url || 'https://via.placeholder.com/1200x630.png?text=Marketplace+Kh';
+  const robotsTag = product.status === 'deleted' ? 'noindex' : 'index, follow';
+
   return (
     <>
       <SEO
-        title={`${product.title} in ${product.location || 'Cambodia'}`}
-        description={product.description.slice(0, 155)}
-        url={window.location.href}
-        image={product.images?.[0]?.secureUrl || product.images?.[0]?.url || 'https://via.placeholder.com/1200x630.png?text=Marketplace+Kh'}
+        title={seoTitle}
+        description={seoDescription}
+        url={canonicalUrl}
+        image={seoImage}
         type="product"
+        robots={robotsTag}
         structuredData={{
           '@context': 'https://schema.org',
           '@type': 'Product',
           name: product.title,
-          image: [product.images?.[0]?.secureUrl || product.images?.[0]?.url || 'https://via.placeholder.com/1200x630.png?text=Marketplace+Kh'],
+          image: [seoImage],
           description: product.description,
           sku: product._id,
           brand: {
@@ -183,7 +225,7 @@ const ProductDetailPage = () => {
           },
           offers: {
             '@type': 'Offer',
-            url: window.location.href,
+            url: canonicalUrl,
             priceCurrency: 'USD',
             price: product.price,
             availability: product.status === 'published' ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock'
@@ -345,12 +387,39 @@ const ProductDetailPage = () => {
                 </div>
 
                 <div className="mt-6 space-y-4">
+                  {!isOwner && (
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <button
+                        type="button"
+                        onClick={startChatWithSeller}
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-3xl bg-sky-600 px-4 py-3 text-sm font-semibold text-white hover:bg-sky-700 transition"
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                        Message seller
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          window.open(`mailto:${product.seller?.email}?subject=${encodeURIComponent(`Question about ${product.title}`)}`, '_blank');
+                        }}
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-3xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+                      >
+                        <ArrowUpRight className="w-4 h-4" />
+                        Email seller
+                      </button>
+                    </div>
+                  )}
                   <SellerContactCard 
                     sellerName={product.seller?.displayName}
                     sellerPhone={sellerPhone}
                     sellerEmail={product.seller?.email}
                     telegramHandle={product.seller?.telegramHandle}
                   />
+                  {chatStatus && (
+                    <div className="rounded-3xl bg-sky-50 p-4 text-sm text-sky-700">
+                      {chatStatus}
+                    </div>
+                  )}
                   {/* Owner controls */}
                   {isOwner && (
                     <div className="mt-4 grid gap-3 sm:grid-cols-3">

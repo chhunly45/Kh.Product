@@ -69,10 +69,13 @@ const createChat = async (buyerId, productId, initialMessage) => {
     });
   }
 
-  const message = await Message.create({ chat: chat.id, sender: buyerId, content: initialMessage });
-  chat.lastMessageAt = new Date();
-  chat.unreadCount += 1;
-  await chat.save();
+  let message = null;
+  if (initialMessage && initialMessage.trim()) {
+    message = await Message.create({ chat: chat.id, sender: buyerId, content: initialMessage.trim() });
+    chat.lastMessageAt = new Date();
+    chat.unreadCount += 1;
+    await chat.save();
+  }
 
   return { chat, message };
 };

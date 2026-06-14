@@ -13,7 +13,7 @@ router.get('/:id', param('id').isMongoId(), validate, chatController.getChat);
 router.post(
   '/',
   body('productId').isMongoId().withMessage('Valid product ID is required'),
-  body('message').notEmpty().withMessage('Initial message is required'),
+  body('message').optional().isString().trim(),
   validate,
   chatController.createChat
 );

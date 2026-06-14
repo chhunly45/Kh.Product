@@ -1,8 +1,17 @@
 import { useEffect } from 'react';
 
 const getViteEnv = (key: string, fallback: string) => {
-  const value = (import.meta.env as Record<string, string>)[key];
+  const env = safeImportMetaEnv();
+  const value = env[key];
   return value || fallback;
+};
+
+const safeImportMetaEnv = () => {
+  try {
+    return eval('import.meta.env') as Record<string, string>;
+  } catch {
+    return {} as Record<string, string>;
+  }
 };
 
 const defaultSiteUrl = getViteEnv('VITE_SITE_URL', 'https://konpuk.com');
@@ -14,6 +23,7 @@ interface SEOProps {
   url?: string;
   image?: string;
   type?: string;
+  robots?: string;
   structuredData?: Record<string, any>;
 }
 
@@ -54,23 +64,25 @@ const insertStructuredData = (structuredData: Record<string, any>) => {
   script.textContent = JSON.stringify(structuredData);
 };
 
-const SEO = ({ title, description, url, image, type = 'website', structuredData }: SEOProps) => {
+const SEO = ({ title, description, url, image, type = 'website', structuredData, robots = 'index, follow' }: SEOProps) => {
   useEffect(() => {
     const pageTitle = title ? `${title} | Konpuk` : 'Konpuk';
     document.title = pageTitle;
 
     setMeta('meta[name="description"]', 'name', description || 'Cambodian marketplace for buyers and sellers.');
     setMeta('meta[name="keywords"]', 'name', 'Cambodia marketplace, buy sell, local classifieds, Khmer products');
-    setMeta('meta[name="robots"]', 'name', 'index, follow');
+    setMeta('meta[name="robots"]', 'name', robots);
     setMeta('meta[property="og:title"]', 'property', pageTitle);
     setMeta('meta[property="og:description"]', 'property', description || 'Cambodian marketplace for buyers and sellers.');
     setMeta('meta[property="og:type"]', 'property', type);
     setMeta('meta[property="og:url"]', 'property', url || window.location.href);
     setMeta('meta[property="og:image"]', 'property', image || defaultImage);
+    setMeta('meta[property="og:site_name"]', 'property', 'Konpuk');
     setMeta('meta[name="twitter:card"]', 'name', 'summary_large_image');
     setMeta('meta[name="twitter:title"]', 'name', pageTitle);
     setMeta('meta[name="twitter:description"]', 'name', description || 'Cambodian marketplace for buyers and sellers.');
     setMeta('meta[name="twitter:image"]', 'name', image || defaultImage);
+    setMeta('meta[name="twitter:url"]', 'name', url || window.location.href);
     setLink('canonical', url || window.location.href);
 
     const siteJsonLd = structuredData || {
@@ -87,7 +99,7 @@ const SEO = ({ title, description, url, image, type = 'website', structuredData 
     };
 
     insertStructuredData(siteJsonLd);
-  }, [title, description, url, image, type, structuredData]);
+  }, [title, description, url, image, type, robots, structuredData]);
 
   return null;
 };

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { connectSocket, disconnectSocket } from '../services/socket';
 import { getChat, listChats, markChatRead } from '../services/chat.api';
 
@@ -25,6 +26,8 @@ const ChatPage = () => {
   const socketRef = useRef<any>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const currentUserId = useMemo(() => decodeTokenUserId(), []);
+  const { id: routeChatId } = useParams<{ id?: string }>();
+  const navigate = useNavigate();
 
   const selectedChat = useMemo(
     () => chats.find((chat) => chat._id === selectedChatId),
@@ -41,8 +44,17 @@ const ChatPage = () => {
       try {
         const data = await listChats();
         setChats(data);
+        if (routeChatId) {
+          const exists = data.some((chat: any) => chat._id === routeChatId);
+          if (exists) {
+            setSelectedChatId(routeChatId);
+            return;
+          }
+        }
+
         if (data.length > 0) {
           setSelectedChatId(data[0]._id);
+          navigate(`/messages/${data[0]._id}`, { replace: true });
         }
       } catch (error) {
         setStatus('Unable to load chats.');
@@ -79,7 +91,7 @@ const ChatPage = () => {
       socket.off('message_received');
       socket.off('chat_updated');
     };
-  }, [currentUserId]);
+  }, [currentUserId, routeChatId, navigate]);
 
   useEffect(() => {
     if (!selectedChatId) return;
@@ -108,6 +120,7 @@ const ChatPage = () => {
 
   const handleSelectChat = (chatId: string) => {
     setSelectedChatId(chatId);
+    navigate(`/messages/${chatId}`);
   };
 
   const handleSendMessage = (event: React.FormEvent<HTMLFormElement>) => {

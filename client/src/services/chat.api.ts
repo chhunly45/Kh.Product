@@ -10,6 +10,11 @@ export const getChat = async (chatId: string) => {
   return response.data.data;
 };
 
+export const createChat = async (productId: string, message?: string) => {
+  const response = await api.post('/chats', { productId, message });
+  return response.data.data;
+};
+
 export const sendChatMessage = async (chatId: string, message: string) => {
   const response = await api.post(`/chats/${chatId}/messages`, { message });
   return response.data.data;
