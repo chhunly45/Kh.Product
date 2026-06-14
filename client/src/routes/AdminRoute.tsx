@@ -12,7 +12,7 @@ const AdminRoute = () => {
 
   if (user.role !== 'admin') {
     return (
-      <div className="min-h-screen bg-slate-50 py-10">
+      <div className="min-h-screen bg-background py-10">
         <div className="max-w-3xl mx-auto rounded-3xl border border-red-200 bg-white p-8 shadow-sm">
           <h1 className="text-3xl font-semibold text-red-900">Access Denied</h1>
           <p className="mt-4 text-sm text-red-700">

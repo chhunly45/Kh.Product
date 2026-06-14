@@ -41,17 +41,17 @@ const CategoriesGrid = () => {
 
   const getCategoryColor = (index: number) => {
     const colors = [
-      'from-blue-500 to-sky-400',
+      'from-primary to-primary-hover',
       'from-purple-500 to-pink-400',
       'from-green-500 to-emerald-400',
       'from-orange-500 to-amber-400',
       'from-red-500 to-rose-400',
       'from-indigo-500 to-blue-400',
-      'from-cyan-500 to-sky-400',
+      'from-primary to-primary-hover',
       'from-teal-500 to-green-400',
     ];
     return colors[index % colors.length];
-  };
+  }; 
 
   return (
     <section className="py-4">
@@ -94,9 +94,9 @@ const CategoriesGrid = () => {
               );
             })
           ) : (
-            <div className="col-span-full rounded-2xl border border-slate-200 bg-slate-50 p-12 text-center text-slate-600">
+            <div className="col-span-full rounded-2xl border border-muted bg-background p-12 text-center text-text-secondary">
               Loading categories…
-            </div>
+            </div> 
           )}
         </div>
       </div>

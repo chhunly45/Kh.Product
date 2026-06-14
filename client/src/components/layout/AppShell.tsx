@@ -8,7 +8,7 @@ interface AppShellProps {
 
 const AppShell = ({ children }: AppShellProps) => {
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
+    <div className="min-h-screen bg-background text-text-primary">
       <Header />
       <main>{children}</main>
       <Footer />

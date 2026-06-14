@@ -117,7 +117,7 @@ const AdminBannersPage = () => {
         <>
           <h1 className="text-2xl font-bold mb-6">Manage Promotional Banners</h1>
 
-      <form onSubmit={handleSave} className="space-y-4 mb-8 rounded-lg border border-slate-200 bg-white p-6">
+      <form onSubmit={handleSave} className="space-y-4 mb-8 rounded-lg border border-muted bg-white p-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <input name="title" defaultValue={editing?.title || ''} placeholder="Title" className="p-3 border rounded" required />
           <input name="subtitle" defaultValue={editing?.subtitle || ''} placeholder="Subtitle" className="p-3 border rounded" />
@@ -134,12 +134,12 @@ const AdminBannersPage = () => {
           <input name="image" type="file" accept="image/*" />
         </div>
         <div className="flex gap-2">
-          <button className="px-4 py-2 bg-sky-600 text-white rounded">Save</button>
+          <button className="px-4 py-2 bg-primary text-white rounded">Save</button>
           {editing && <button type="button" onClick={() => setEditing(null)} className="px-4 py-2 border rounded">Cancel</button>}
         </div>
       </form>
 
-      <div className="rounded-lg border border-slate-200 bg-white p-6">
+      <div className="rounded-lg border border-muted bg-white p-6">
         <h2 className="text-lg font-semibold mb-4">Banners</h2>
         {loading ? <div>Loading…</div> : (
           <div className="space-y-3">
@@ -149,8 +149,8 @@ const AdminBannersPage = () => {
                   {b.imageUrl && <img src={b.imageUrl} alt={b.title} className="w-36 h-16 object-cover rounded" />}
                   <div>
                     <div className="font-semibold">{b.title}</div>
-                    <div className="text-sm text-slate-600">{b.subtitle}</div>
-                    <div className="text-xs text-slate-500">Position: {b.position} • Enabled: {b.enabled ? 'yes' : 'no'}</div>
+                    <div className="text-sm text-text-secondary">{b.subtitle}</div>
+                    <div className="text-xs text-text-secondary">Position: {b.position} • Enabled: {b.enabled ? 'yes' : 'no'}</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">

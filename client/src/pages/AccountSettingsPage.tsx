@@ -91,7 +91,7 @@ const AccountSettingsPage = () => {
         <h2 className="font-semibold mb-3">Profile</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
           <div className="sm:col-span-1">
-            <div className="h-28 w-28 rounded-2xl overflow-hidden bg-slate-100 border">
+            <div className="h-28 w-28 rounded-2xl overflow-hidden bg-background border">
               <img src={profile?.profileImageUrl || '/placeholder-avatar.png'} alt="avatar" className="h-full w-full object-cover" />
             </div>
           </div>
@@ -107,10 +107,10 @@ const AccountSettingsPage = () => {
             <input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className="mt-1 w-full rounded-md border px-3 py-2" />
 
             <div className="mt-4">
-              <button onClick={submitProfile} disabled={loading} className="rounded-lg bg-sky-600 text-white px-4 py-2">
+              <button onClick={submitProfile} disabled={loading} className="rounded-lg bg-primary text-white px-4 py-2">
                 Save profile
               </button>
-            </div>
+            </div> 
           </div>
         </div>
       </section>
@@ -122,10 +122,10 @@ const AccountSettingsPage = () => {
           <input type="password" placeholder="New password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="mt-1 w-full rounded-md border px-3 py-2" />
           <input type="password" placeholder="Confirm new password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="mt-1 w-full rounded-md border px-3 py-2" />
           <div>
-            <button onClick={submitPassword} disabled={loading} className="rounded-lg bg-amber-600 text-white px-4 py-2">
+            <button onClick={submitPassword} disabled={loading} className="rounded-lg bg-accent text-white px-4 py-2">
               Change password
             </button>
-          </div>
+          </div> 
         </div>
       </section>
 
@@ -137,7 +137,7 @@ const AccountSettingsPage = () => {
         <p>Seller verification: {profile?.verificationStatus || 'none'}</p>
       </section>
 
-      {message && <div className="mt-4 text-sm text-slate-700">{message}</div>}
+      {message && <div className="mt-4 text-sm text-text-secondary">{message}</div>} 
     </div>
   );
 };

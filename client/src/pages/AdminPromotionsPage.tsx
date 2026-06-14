@@ -88,16 +88,16 @@ const AdminPromotionsPage = () => {
 
   return (
     <div className="space-y-8 px-4 py-10 sm:px-6 lg:px-8">
-      <header className="rounded-[2rem] bg-white p-8 shadow-xl ring-1 ring-slate-200">
+      <header className="rounded-[2rem] bg-white p-8 shadow-xl ring-1 ring-muted">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h1 className="text-3xl font-semibold text-slate-900">Promotions dashboard</h1>
-            <p className="mt-2 text-sm text-slate-500">Approve featured placement requests and monitor monetization performance.</p>
+            <h1 className="text-3xl font-semibold text-text-primary">Promotions dashboard</h1>
+            <p className="mt-2 text-sm text-text-secondary">Approve featured placement requests and monitor monetization performance.</p>
           </div>
           <button
             type="button"
             onClick={() => navigate('/admin')}
-            className="rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-900 hover:bg-slate-50 transition"
+            className="rounded-full border border-muted bg-white px-5 py-3 text-sm font-semibold text-text-primary hover:bg-background transition"
           >
             Back to admin
           </button>
@@ -112,38 +112,38 @@ const AdminPromotionsPage = () => {
         <StatCard label="Revenue from promotions" value={`${metrics.revenueFromPromotions.toLocaleString()} KHR`} />
       </section>
 
-      <section className="rounded-[2rem] bg-white p-6 shadow-sm ring-1 ring-slate-200">
+      <section className="rounded-[2rem] bg-white p-6 shadow-sm ring-1 ring-muted">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-slate-900">Promotion requests</h2>
-            <p className="mt-2 text-sm text-slate-500">Review pending purchases and manage active campaigns.</p>
+            <h2 className="text-xl font-semibold text-text-primary">Promotion requests</h2>
+            <p className="mt-2 text-sm text-text-secondary">Review pending purchases and manage active campaigns.</p>
           </div>
           <div className="flex items-center gap-3">
-            <label className="text-sm font-medium text-slate-700">Extend days</label>
+            <label className="text-sm font-medium text-text-secondary">Extend days</label>
             <input
               type="number"
               min={1}
               value={extendDays}
               onChange={(event) => setExtendDays(Number(event.target.value))}
-              className="w-24 rounded-2xl border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-500"
+              className="w-24 rounded-2xl border border-muted px-3 py-2 text-sm text-text-primary outline-none focus:border-primary"
             />
           </div>
         </div>
 
         {loading ? (
-          <div className="mt-8 rounded-3xl border border-slate-200 bg-slate-50 p-12 text-center text-slate-600">Loading promotions…</div>
+          <div className="mt-8 rounded-3xl border border-muted bg-background p-12 text-center text-text-secondary">Loading promotions…</div>
         ) : promotions.length ? (
-          <div className="mt-6 overflow-hidden rounded-3xl border border-slate-200 text-sm shadow-sm">
-            <div className="grid grid-cols-[3fr_1fr_1fr_1fr_2fr] gap-2 bg-slate-100 px-4 py-3 text-xs uppercase tracking-[0.24em] text-slate-500">
+          <div className="mt-6 overflow-hidden rounded-3xl border border-muted text-sm shadow-sm">
+            <div className="grid grid-cols-[3fr_1fr_1fr_1fr_2fr] gap-2 bg-background px-4 py-3 text-xs uppercase tracking-[0.24em] text-text-secondary">
               <span>Product</span>
               <span>Seller</span>
               <span>Status</span>
               <span>End date</span>
               <span>Actions</span>
             </div>
-            <div className="divide-y divide-slate-200 bg-white">
+            <div className="divide-y divide-muted bg-white">
               {promotions.map((promotion) => (
-                <div key={promotion._id} className="grid grid-cols-[3fr_1fr_1fr_1fr_2fr] gap-2 px-4 py-4 text-sm text-slate-700">
+                <div key={promotion._id} className="grid grid-cols-[3fr_1fr_1fr_1fr_2fr] gap-2 px-4 py-4 text-sm text-text-secondary">
                   <div>{promotion.product?.title || 'Unknown product'}</div>
                   <div>{promotion.seller?.displayName || promotion.seller?.email || 'Unknown'}</div>
                   <div>
@@ -195,7 +195,7 @@ const AdminPromotionsPage = () => {
             </div>
           </div>
         ) : (
-          <div className="mt-8 rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-12 text-center text-slate-600">No promotions found.</div>
+          <div className="mt-8 rounded-3xl border border-dashed border-muted bg-background p-12 text-center text-text-secondary">No promotions found.</div>
         )}
       </section>
     </div>

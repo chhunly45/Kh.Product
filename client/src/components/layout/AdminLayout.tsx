@@ -16,13 +16,13 @@ const navItems = [
 
 const AdminLayout = () => {
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background">
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         <div className="grid gap-8 lg:grid-cols-[280px_1fr]">
-          <aside className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-xl ring-1 ring-slate-200">
+          <aside className="rounded-[2rem] border border-muted bg-white p-6 shadow-xl ring-1 ring-muted">
             <div className="mb-8">
-              <p className="text-sm font-semibold uppercase tracking-[0.35em] text-slate-500">Admin menu</p>
-              <h2 className="mt-3 text-2xl font-semibold text-slate-900">Manage platform</h2>
+              <p className="text-sm font-semibold uppercase tracking-[0.35em] text-text-secondary">Admin menu</p>
+              <h2 className="mt-3 text-2xl font-semibold text-text-primary">Manage platform</h2>
             </div>
             <nav className="space-y-2">
               {navItems.map((item) => {
@@ -34,11 +34,11 @@ const AdminLayout = () => {
                     end={item.to === '/admin'}
                     className={({ isActive }) =>
                       `flex items-center gap-3 rounded-3xl px-4 py-3 text-sm font-medium transition ${
-                        isActive ? 'bg-sky-600 text-white shadow-sm' : 'text-slate-700 hover:bg-slate-100'
+                        isActive ? 'bg-primary text-white shadow-sm' : 'text-text-secondary hover:bg-background'
                       }`
                     }
                   >
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-100 text-slate-600">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-background text-text-secondary">
                       <Icon className="h-4 w-4" />
                     </span>
                     <span>{item.label}</span>

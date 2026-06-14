@@ -26,13 +26,13 @@ const FeaturedSection = ({ title, description, products, viewAllLink = '/' }: Fe
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div>
-            <h2 className="text-3xl font-bold text-slate-900">{title}</h2>
-            {description && <p className="mt-2 text-slate-600">{description}</p>}
+            <h2 className="text-3xl font-bold text-text-primary">{title}</h2>
+            {description && <p className="mt-2 text-text-secondary">{description}</p>}
           </div>
           {viewAllLink && (
             <Link
               to={viewAllLink}
-              className="inline-flex items-center gap-2 text-sky-600 font-semibold hover:text-sky-700 transition group"
+              className="inline-flex items-center gap-2 text-primary font-semibold hover:text-primary-hover transition group"
             >
               View all
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition" />
