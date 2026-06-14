@@ -1,4 +1,4 @@
-import { useEffect, useState, FormEvent } from 'react';
+﻿import { useEffect, useState, FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingBag, UploadCloud, LogIn, User, Globe, Search, ChevronDown, MapPin, Menu, X, Heart, Bell, MessageSquare, LogOut } from 'lucide-react';
 import api from '../../services/api';
@@ -116,7 +116,7 @@ const Header = () => {
                 <span className="text-xl font-bold text-text-primary">Konpuk</span>
               </div>
             </Link>
-            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="lg:hidden text-slate-700">
+            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="lg:hidden text-text-secondary">
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
@@ -293,10 +293,10 @@ const Header = () => {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden mt-4 pb-4 border-t border-slate-200 space-y-3">
+          <div className="lg:hidden mt-4 pb-4 border-t border-muted space-y-3">
             <Link
               to="/post-product"
-              className="block rounded-lg bg-orange-500 px-4 py-2 text-center text-sm font-semibold text-white hover:bg-orange-600 transition"
+              className="block rounded-lg bg-accent px-4 py-2 text-center text-sm font-semibold text-white hover:bg-accent/90 transition"
               onClick={() => setMobileMenuOpen(false)}
             >
               <UploadCloud className="w-4 h-4 inline mr-2" />
@@ -311,7 +311,7 @@ const Header = () => {
                     navigate('/profile');
                     setMobileMenuOpen(false);
                   }}
-                  className="block rounded-lg border border-slate-300 bg-white px-4 py-2 text-center text-sm font-semibold text-slate-700 hover:bg-slate-50 transition cursor-pointer"
+                  className="block rounded-lg border border-muted bg-white px-4 py-2 text-center text-sm font-semibold text-text-secondary hover:bg-background transition cursor-pointer"
                   title="View your profile"
                   aria-label="Open profile"
                   type="button"
@@ -325,7 +325,7 @@ const Header = () => {
                       navigate('/admin');
                       setMobileMenuOpen(false);
                     }}
-                    className="block w-full rounded-lg border border-slate-300 bg-white px-4 py-2 text-center text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+                    className="block w-full rounded-lg border border-muted bg-white px-4 py-2 text-center text-sm font-semibold text-text-secondary hover:bg-background transition"
                   >
                     Admin Dashboard
                   </button>
@@ -343,7 +343,7 @@ const Header = () => {
                     setMobileMenuOpen(false);
                     navigate('/');
                   }}
-                  className="block w-full rounded-lg border border-slate-300 bg-white px-4 py-2 text-center text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+                  className="block w-full rounded-lg border border-muted bg-white px-4 py-2 text-center text-sm font-semibold text-text-secondary hover:bg-background transition"
                 >
                   Logout
                 </button>
@@ -352,14 +352,14 @@ const Header = () => {
               <>
                 <Link
                   to="/login"
-                  className="block rounded-lg border border-slate-300 bg-white px-4 py-2 text-center text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+                  className="block rounded-lg border border-muted bg-white px-4 py-2 text-center text-sm font-semibold text-text-secondary hover:bg-background transition"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Login
                 </Link>
                 <Link
                   to="/register"
-                  className="block rounded-lg bg-sky-500 px-4 py-2 text-center text-sm font-semibold text-white hover:bg-sky-600 transition"
+                  className="block rounded-lg bg-primary px-4 py-2 text-center text-sm font-semibold text-white hover:bg-primary-hover transition"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Register
@@ -368,14 +368,14 @@ const Header = () => {
             )}
             <Link
               to="/notifications"
-              className="block rounded-lg border border-slate-300 bg-white px-4 py-2 text-center text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+              className="block rounded-lg border border-muted bg-white px-4 py-2 text-center text-sm font-semibold text-text-secondary hover:bg-background transition"
               onClick={() => setMobileMenuOpen(false)}
             >
               Notifications{notificationCount > 0 ? ` (${notificationCount})` : ''}
             </Link>
             <Link
               to="/favorites"
-              className="block rounded-lg border border-slate-300 bg-white px-4 py-2 text-center text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+              className="block rounded-lg border border-muted bg-white px-4 py-2 text-center text-sm font-semibold text-text-secondary hover:bg-background transition"
               onClick={() => setMobileMenuOpen(false)}
             >
               Favorites ({favoriteCount})
@@ -388,3 +388,4 @@ const Header = () => {
 };
 
 export default Header;
+

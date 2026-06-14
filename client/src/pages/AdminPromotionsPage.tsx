@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { approvePromotion, cancelPromotion, extendPromotion, getAdminPromotionMetrics, getAdminPromotions, rejectPromotion } from '../services/promotion.api';
 import { useNavigate } from 'react-router-dom';
 
@@ -176,7 +176,7 @@ const AdminPromotionsPage = () => {
                         <button
                           type="button"
                           onClick={() => handleExtend(promotion._id)}
-                          className="rounded-full bg-slate-900 px-3 py-2 text-xs font-semibold text-white hover:bg-slate-800 transition"
+                          className="rounded-full bg-text-primary px-3 py-2 text-xs font-semibold text-white hover:bg-primary-hover transition"
                         >
                           Extend
                         </button>
@@ -203,9 +203,9 @@ const AdminPromotionsPage = () => {
 };
 
 const StatCard = ({ label, value }: { label: string; value: string | number }) => (
-  <article className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-    <p className="text-sm uppercase tracking-[0.35em] text-slate-500">{label}</p>
-    <p className="mt-4 text-3xl font-semibold text-slate-900">{value}</p>
+  <article className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-border">
+    <p className="text-sm uppercase tracking-[0.35em] text-muted">{label}</p>
+    <p className="mt-4 text-3xl font-semibold text-text-primary">{value}</p>
   </article>
 );
 
@@ -216,14 +216,16 @@ const getStatusClasses = (status: string) => {
     case 'pending':
       return 'bg-amber-100 text-amber-700';
     case 'expired':
-      return 'bg-slate-100 text-slate-700';
+      return 'bg-background text-text-secondary';
     case 'rejected':
       return 'bg-rose-100 text-rose-700';
     case 'cancelled':
       return 'bg-rose-100 text-rose-700';
     default:
-      return 'bg-slate-100 text-slate-700';
+      return 'bg-background text-text-secondary';
   }
 };
 
 export default AdminPromotionsPage;
+
+

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { verifyEmailCode, resendEmailVerificationCode } from '../services/auth.api';
 
@@ -85,16 +85,16 @@ const VerifyEmailPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-lg rounded-[2rem] bg-white p-10 shadow-2xl ring-1 ring-slate-200">
+    <div className="min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-lg rounded-[2rem] bg-white p-10 shadow-2xl ring-1 ring-border">
         <div className="space-y-3 text-center">
-          <p className="text-sm uppercase tracking-[0.35em] text-sky-600">Verify your email</p>
-          <h1 className="text-3xl font-semibold text-slate-900">Confirm your account</h1>
-          <p className="text-sm text-slate-500">Enter the code sent to your email to finish registration.</p>
+          <p className="text-sm uppercase tracking-[0.35em] text-primary">Verify your email</p>
+          <h1 className="text-3xl font-semibold text-text-primary">Confirm your account</h1>
+          <p className="text-sm text-muted">Enter the code sent to your email to finish registration.</p>
         </div>
 
         {status && (
-          <div className="mt-6 rounded-3xl border border-sky-200 bg-sky-50 p-4 text-sm text-sky-700">
+          <div className="mt-6 rounded-3xl border border-primary/30 bg-primary/10 p-4 text-sm text-primary">
             {status}
           </div>
         )}
@@ -106,32 +106,32 @@ const VerifyEmailPage = () => {
 
         <form className="mt-10 space-y-6" onSubmit={handleSubmit}>
           <label className="block">
-            <span className="text-sm font-medium text-slate-700">Email or Phone</span>
+            <span className="text-sm font-medium text-text-secondary">Email or Phone</span>
             <input
               type="text"
               value={identifier}
               onChange={(event) => setIdentifier(event.target.value)}
               placeholder="Enter email or phone number"
-              className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+              className="mt-2 w-full rounded-3xl border border-muted bg-background px-4 py-3 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
               disabled={loading}
             />
           </label>
 
           <label className="block">
-            <span className="text-sm font-medium text-slate-700">Verification Code</span>
+            <span className="text-sm font-medium text-text-secondary">Verification Code</span>
             <input
               type="text"
               value={otpCode}
               onChange={(event) => setOtpCode(event.target.value.replace(/\D/g, '').slice(0, 6))}
               placeholder="Enter 6-digit code"
-              className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+              className="mt-2 w-full rounded-3xl border border-muted bg-background px-4 py-3 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
               disabled={loading}
             />
           </label>
 
           <button
             type="submit"
-            className="w-full rounded-3xl bg-sky-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-sky-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full rounded-3xl bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={loading}
           >
             {loading ? 'Verifying...' : 'Verify email'}
@@ -140,15 +140,15 @@ const VerifyEmailPage = () => {
           <button
             type="button"
             onClick={handleResend}
-            className="w-full rounded-3xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full rounded-3xl border border-muted bg-white px-5 py-3 text-sm font-semibold text-text-secondary transition hover:bg-background disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={loading || resendCooldown > 0}
           >
             {resendCooldown > 0 ? `Resend code in ${resendCooldown}s` : 'Resend code'}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-slate-500">
-          Already verified? <Link to="/login" className="font-semibold text-sky-600 hover:text-sky-700">Sign in</Link>
+        <p className="mt-6 text-center text-sm text-muted">
+          Already verified? <Link to="/login" className="font-semibold text-primary hover:text-primary">Sign in</Link>
         </p>
       </div>
     </div>
@@ -156,3 +156,5 @@ const VerifyEmailPage = () => {
 };
 
 export default VerifyEmailPage;
+
+

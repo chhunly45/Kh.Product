@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { useMatch, useNavigate } from 'react-router-dom';
 import {
   getAdminOverview,
@@ -246,11 +246,11 @@ const AdminDashboardPage = () => {
 
   return (
     <div className="space-y-6">
-      <header className="rounded-[2rem] bg-white p-8 shadow-xl ring-1 ring-slate-200">
+      <header className="rounded-[2rem] bg-white p-8 shadow-xl ring-1 ring-border">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h1 className="text-3xl font-semibold text-slate-900">Admin dashboard</h1>
-            <p className="mt-2 text-sm text-slate-500">Manage users, moderate products, review reports, and monitor platform health.</p>
+            <h1 className="text-3xl font-semibold text-text-primary">Admin dashboard</h1>
+            <p className="mt-2 text-sm text-muted">Manage users, moderate products, review reports, and monitor platform health.</p>
           </div>
           <div className="flex flex-wrap gap-2">
             {['overview', 'users', 'sellers', 'products', 'reports', 'audit', 'analytics'].map((tab) => (
@@ -260,8 +260,8 @@ const AdminDashboardPage = () => {
                 onClick={() => setActiveTab(tab as any)}
                 className={`rounded-full px-4 py-2 text-sm font-medium transition ${
                   activeTab === tab
-                    ? 'bg-sky-600 text-white shadow-sm'
-                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                    ? 'bg-primary text-white shadow-sm'
+                    : 'bg-background text-text-secondary hover:bg-background'
                 }`}
               >
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -279,26 +279,26 @@ const AdminDashboardPage = () => {
       </header>
 
       {message && (
-        <div className="rounded-3xl border border-orange-200 bg-orange-50 p-4 text-sm text-orange-700">{message}</div>
+        <div className="rounded-3xl border border-warning/30 bg-background p-4 text-sm text-warning">{message}</div>
       )}
 
       {activeTab === 'overview' && (
         <section className="grid gap-6 xl:grid-cols-4">
-          <article className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-            <p className="text-sm uppercase tracking-[0.35em] text-slate-500">Total users</p>
-            <p className="mt-4 text-3xl font-semibold text-slate-900">{totalUsers}</p>
+          <article className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-border">
+            <p className="text-sm uppercase tracking-[0.35em] text-muted">Total users</p>
+            <p className="mt-4 text-3xl font-semibold text-text-primary">{totalUsers}</p>
           </article>
-          <article className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-            <p className="text-sm uppercase tracking-[0.35em] text-slate-500">Published products</p>
-            <p className="mt-4 text-3xl font-semibold text-slate-900">{totalProducts}</p>
+          <article className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-border">
+            <p className="text-sm uppercase tracking-[0.35em] text-muted">Published products</p>
+            <p className="mt-4 text-3xl font-semibold text-text-primary">{totalProducts}</p>
           </article>
-          <article className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-            <p className="text-sm uppercase tracking-[0.35em] text-slate-500">Open reports</p>
-            <p className="mt-4 text-3xl font-semibold text-slate-900">{pendingReports}</p>
+          <article className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-border">
+            <p className="text-sm uppercase tracking-[0.35em] text-muted">Open reports</p>
+            <p className="mt-4 text-3xl font-semibold text-text-primary">{pendingReports}</p>
           </article>
-          <article className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-            <p className="text-sm uppercase tracking-[0.35em] text-slate-500">Total chats</p>
-            <p className="mt-4 text-3xl font-semibold text-slate-900">{totalChats}</p>
+          <article className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-border">
+            <p className="text-sm uppercase tracking-[0.35em] text-muted">Total chats</p>
+            <p className="mt-4 text-3xl font-semibold text-text-primary">{totalChats}</p>
           </article>
         </section>
       )}
@@ -307,31 +307,31 @@ const AdminDashboardPage = () => {
         <section className="space-y-6">
           <div className="grid gap-6 xl:grid-cols-4">
             {analyticsCards.map((card) => (
-              <article key={card.label} className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-                <p className="text-sm uppercase tracking-[0.35em] text-slate-500">{card.label}</p>
-                <p className="mt-4 text-3xl font-semibold text-slate-900">{card.value}</p>
+              <article key={card.label} className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-border">
+                <p className="text-sm uppercase tracking-[0.35em] text-muted">{card.label}</p>
+                <p className="mt-4 text-3xl font-semibold text-text-primary">{card.value}</p>
               </article>
             ))}
           </div>
 
           <div className="grid gap-6 lg:grid-cols-2">
-            <article className="rounded-[2rem] bg-white p-8 shadow-xl ring-1 ring-slate-200">
-              <h2 className="text-xl font-semibold text-slate-900">Platform health</h2>
-              <div className="mt-6 space-y-4 text-sm text-slate-600">
-                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">Average daily active listings are stable.</div>
-                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">Moderation backlog remains under target.</div>
-                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">User retention and verified seller growth are trending upward.</div>
+            <article className="rounded-[2rem] bg-white p-8 shadow-xl ring-1 ring-border">
+              <h2 className="text-xl font-semibold text-text-primary">Platform health</h2>
+              <div className="mt-6 space-y-4 text-sm text-text-secondary">
+                <div className="rounded-3xl border border-muted bg-background p-4">Average daily active listings are stable.</div>
+                <div className="rounded-3xl border border-muted bg-background p-4">Moderation backlog remains under target.</div>
+                <div className="rounded-3xl border border-muted bg-background p-4">User retention and verified seller growth are trending upward.</div>
               </div>
             </article>
-            <article className="rounded-[2rem] bg-white p-8 shadow-xl ring-1 ring-slate-200">
-              <h2 className="text-xl font-semibold text-slate-900">Key metrics</h2>
-              <dl className="mt-6 grid gap-4 text-sm text-slate-600">
-                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-                  <dt className="font-semibold text-slate-900">Active listings ratio</dt>
+            <article className="rounded-[2rem] bg-white p-8 shadow-xl ring-1 ring-border">
+              <h2 className="text-xl font-semibold text-text-primary">Key metrics</h2>
+              <dl className="mt-6 grid gap-4 text-sm text-text-secondary">
+                <div className="rounded-3xl border border-muted bg-background p-4">
+                  <dt className="font-semibold text-text-primary">Active listings ratio</dt>
                   <dd className="mt-2">82% of published products remain active.</dd>
                 </div>
-                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-                  <dt className="font-semibold text-slate-900">Pending review</dt>
+                <div className="rounded-3xl border border-muted bg-background p-4">
+                  <dt className="font-semibold text-text-primary">Pending review</dt>
                   <dd className="mt-2">{pendingReports} reports are awaiting action.</dd>
                 </div>
               </dl>
@@ -342,14 +342,14 @@ const AdminDashboardPage = () => {
 
       {activeTab === 'users' && (
         <section className="space-y-6">
-          <div className="rounded-[2rem] bg-white p-6 shadow-xl ring-1 ring-slate-200">
-            <h2 className="text-xl font-semibold text-slate-900">User management</h2>
-            <p className="mt-2 text-sm text-slate-500">Ban users, change roles, and review account status.</p>
+          <div className="rounded-[2rem] bg-white p-6 shadow-xl ring-1 ring-border">
+            <h2 className="text-xl font-semibold text-text-primary">User management</h2>
+            <p className="mt-2 text-sm text-muted">Ban users, change roles, and review account status.</p>
           </div>
 
-          <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-            <table className="min-w-full divide-y divide-slate-200 text-sm">
-              <thead className="bg-slate-50 text-slate-600">
+          <div className="overflow-hidden rounded-3xl border border-muted bg-white shadow-sm">
+            <table className="min-w-full divide-y divide-border text-sm">
+              <thead className="bg-background text-text-secondary">
                 <tr>
                   <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">User</th>
                   <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Role</th>
@@ -358,18 +358,18 @@ const AdminDashboardPage = () => {
                   <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-200">
+              <tbody className="divide-y divide-border">
                 {users.map((user) => (
                   <tr key={user._id}>
                     <td className="px-6 py-4">
-                      <div className="font-semibold text-slate-900">{user.displayName}</div>
-                      <div className="mt-1 text-slate-500">{user.email}</div>
+                      <div className="font-semibold text-text-primary">{user.displayName}</div>
+                      <div className="mt-1 text-muted">{user.email}</div>
                     </td>
                     <td className="px-6 py-4">
                       <select
                         value={user.role}
                         onChange={(event) => handleChangeUserRole(user._id, event.target.value)}
-                        className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none focus:border-sky-500"
+                        className="rounded-xl border border-muted bg-white px-3 py-2 text-text-primary outline-none focus:border-primary"
                       >
                         <option value="user">User</option>
                         <option value="seller">Seller</option>
@@ -383,7 +383,7 @@ const AdminDashboardPage = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${user.verified ? 'bg-emerald-100 text-emerald-700' : user.verificationStatus === 'pending' ? 'bg-amber-100 text-amber-700' : user.verificationStatus === 'rejected' ? 'bg-rose-100 text-rose-700' : 'bg-slate-100 text-slate-700'}`}>
+                      <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${user.verified ? 'bg-emerald-100 text-emerald-700' : user.verificationStatus === 'pending' ? 'bg-amber-100 text-amber-700' : user.verificationStatus === 'rejected' ? 'bg-rose-100 text-rose-700' : 'bg-background text-text-secondary'}`}>
                         {user.verified ? 'Verified' : user.verificationStatus === 'pending' ? 'Pending' : user.verificationStatus === 'rejected' ? 'Rejected' : 'Unverified'}
                       </span>
                     </td>
@@ -427,14 +427,14 @@ const AdminDashboardPage = () => {
 
       {activeTab === 'sellers' && (
         <section className="space-y-6">
-          <div className="rounded-[2rem] bg-white p-6 shadow-xl ring-1 ring-slate-200">
-            <h2 className="text-xl font-semibold text-slate-900">Seller management</h2>
-            <p className="mt-2 text-sm text-slate-500">Review seller verification requests and manage verified sellers.</p>
+          <div className="rounded-[2rem] bg-white p-6 shadow-xl ring-1 ring-border">
+            <h2 className="text-xl font-semibold text-text-primary">Seller management</h2>
+            <p className="mt-2 text-sm text-muted">Review seller verification requests and manage verified sellers.</p>
           </div>
 
-          <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-            <table className="min-w-full divide-y divide-slate-200 text-sm">
-              <thead className="bg-slate-50 text-slate-600">
+          <div className="overflow-hidden rounded-3xl border border-muted bg-white shadow-sm">
+            <table className="min-w-full divide-y divide-border text-sm">
+              <thead className="bg-background text-text-secondary">
                 <tr>
                   <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Seller</th>
                   <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Email</th>
@@ -442,16 +442,16 @@ const AdminDashboardPage = () => {
                   <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-200">
+              <tbody className="divide-y divide-border">
                 {sellers.map((user) => (
                   <tr key={user._id}>
                     <td className="px-6 py-4">
-                      <div className="font-semibold text-slate-900">{user.displayName}</div>
-                      <div className="mt-1 text-slate-500">{user.location || ''}</div>
+                      <div className="font-semibold text-text-primary">{user.displayName}</div>
+                      <div className="mt-1 text-muted">{user.location || ''}</div>
                     </td>
                     <td className="px-6 py-4">{user.email}</td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${user.sellerVerificationStatus === 'verified' ? 'bg-emerald-100 text-emerald-700' : user.sellerVerificationStatus === 'unverified' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-700'}`}>
+                      <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${user.sellerVerificationStatus === 'verified' ? 'bg-emerald-100 text-emerald-700' : user.sellerVerificationStatus === 'unverified' ? 'bg-amber-100 text-amber-700' : 'bg-background text-text-secondary'}`}>
                         {user.sellerVerificationStatus}
                       </span>
                     </td>
@@ -483,14 +483,14 @@ const AdminDashboardPage = () => {
 
       {activeTab === 'products' && (
         <section className="space-y-6">
-          <div className="rounded-[2rem] bg-white p-6 shadow-xl ring-1 ring-slate-200">
-            <h2 className="text-xl font-semibold text-slate-900">Product moderation</h2>
-            <p className="mt-2 text-sm text-slate-500">Review listings and adjust visibility or moderation status.</p>
+          <div className="rounded-[2rem] bg-white p-6 shadow-xl ring-1 ring-border">
+            <h2 className="text-xl font-semibold text-text-primary">Product moderation</h2>
+            <p className="mt-2 text-sm text-muted">Review listings and adjust visibility or moderation status.</p>
           </div>
 
-          <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-            <table className="min-w-full divide-y divide-slate-200 text-sm">
-              <thead className="bg-slate-50 text-slate-600">
+          <div className="overflow-hidden rounded-3xl border border-muted bg-white shadow-sm">
+            <table className="min-w-full divide-y divide-border text-sm">
+              <thead className="bg-background text-text-secondary">
                 <tr>
                   <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Product</th>
                   <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Seller</th>
@@ -499,33 +499,33 @@ const AdminDashboardPage = () => {
                   <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-200">
+              <tbody className="divide-y divide-border">
                 {products.map((product) => (
                   <tr key={product._id}>
                     <td className="px-6 py-4">
-                      <div className="font-semibold text-slate-900">{product.title}</div>
-                      <div className="mt-1 text-slate-500">{product.category?.labelKh || product.category?.name || 'General'}</div>
+                      <div className="font-semibold text-text-primary">{product.title}</div>
+                      <div className="mt-1 text-muted">{product.category?.labelKh || product.category?.name || 'General'}</div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-slate-900">{product.seller?.displayName || 'Unknown'}</div>
-                      <div className="mt-1 text-slate-500">{product.seller?.email || ''}</div>
+                      <div className="text-text-primary">{product.seller?.displayName || 'Unknown'}</div>
+                      <div className="mt-1 text-muted">{product.seller?.email || ''}</div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${product.status === 'published' ? 'bg-emerald-100 text-emerald-700' : product.status === 'flagged' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-700'}`}>
+                      <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${product.status === 'published' ? 'bg-emerald-100 text-emerald-700' : product.status === 'flagged' ? 'bg-amber-100 text-amber-700' : 'bg-background text-text-secondary'}`}>
                         {product.status}
                       </span>
                     </td>
                     <td className="px-6 py-4">
                       <label className="inline-flex items-center gap-2">
                         <input type="checkbox" checked={Boolean(product.featured || product.isFeatured)} onChange={() => handleToggleFeatured(product._id, Boolean(product.featured || product.isFeatured))} />
-                        <span className="text-sm text-slate-600">Featured</span>
+                        <span className="text-sm text-text-secondary">Featured</span>
                       </label>
                     </td>
                     <td className="px-6 py-4">
                       <select
                         value={product.status}
                         onChange={(event) => handleChangeProductStatus(product._id, event.target.value)}
-                        className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none focus:border-sky-500"
+                        className="rounded-xl border border-muted bg-white px-3 py-2 text-text-primary outline-none focus:border-primary"
                       >
                         {statusOptions.map((statusOption) => (
                           <option key={statusOption} value={statusOption}>
@@ -544,14 +544,14 @@ const AdminDashboardPage = () => {
 
       {activeTab === 'reports' && (
         <section className="space-y-6">
-          <div className="rounded-[2rem] bg-white p-6 shadow-xl ring-1 ring-slate-200">
-            <h2 className="text-xl font-semibold text-slate-900">Report management</h2>
-            <p className="mt-2 text-sm text-slate-500">Review flagged content and mark reports reviewed, resolved, or rejected.</p>
+          <div className="rounded-[2rem] bg-white p-6 shadow-xl ring-1 ring-border">
+            <h2 className="text-xl font-semibold text-text-primary">Report management</h2>
+            <p className="mt-2 text-sm text-muted">Review flagged content and mark reports reviewed, resolved, or rejected.</p>
           </div>
 
-          <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-            <table className="min-w-full divide-y divide-slate-200 text-sm">
-              <thead className="bg-slate-50 text-slate-600">
+          <div className="overflow-hidden rounded-3xl border border-muted bg-white shadow-sm">
+            <table className="min-w-full divide-y divide-border text-sm">
+              <thead className="bg-background text-text-secondary">
                 <tr>
                   <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Report</th>
                   <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Reporter</th>
@@ -559,19 +559,19 @@ const AdminDashboardPage = () => {
                   <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-200">
+              <tbody className="divide-y divide-border">
                 {reports.map((report) => (
                   <tr key={report._id}>
                     <td className="px-6 py-4">
-                      <div className="font-semibold text-slate-900">{report.reason || 'Flagged content'}</div>
-                      <div className="mt-1 text-slate-500">{report.details || 'No details provided'}</div>
+                      <div className="font-semibold text-text-primary">{report.reason || 'Flagged content'}</div>
+                      <div className="mt-1 text-muted">{report.details || 'No details provided'}</div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-slate-900">{report.reporter?.displayName || 'Anonymous'}</div>
-                      <div className="mt-1 text-slate-500">{report.reporter?.email || ''}</div>
+                      <div className="text-text-primary">{report.reporter?.displayName || 'Anonymous'}</div>
+                      <div className="mt-1 text-muted">{report.reporter?.email || ''}</div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${report.status === 'pending' ? 'bg-amber-100 text-amber-700' : report.status === 'resolved' ? 'bg-emerald-100 text-emerald-700' : report.status === 'rejected' ? 'bg-rose-100 text-rose-700' : 'bg-slate-100 text-slate-700'}`}>
+                      <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${report.status === 'pending' ? 'bg-amber-100 text-amber-700' : report.status === 'resolved' ? 'bg-emerald-100 text-emerald-700' : report.status === 'rejected' ? 'bg-rose-100 text-rose-700' : 'bg-background text-text-secondary'}`}>
                         {report.status}
                       </span>
                     </td>
@@ -579,7 +579,7 @@ const AdminDashboardPage = () => {
                       <select
                         value={report.status}
                         onChange={(event) => handleChangeReportStatus(report._id, event.target.value)}
-                        className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none focus:border-sky-500"
+                        className="rounded-xl border border-muted bg-white px-3 py-2 text-text-primary outline-none focus:border-primary"
                       >
                         {reportStatusOptions.map((statusOption) => (
                           <option key={statusOption} value={statusOption}>
@@ -598,14 +598,14 @@ const AdminDashboardPage = () => {
 
       {activeTab === 'audit' && (
         <section className="space-y-6">
-          <div className="rounded-[2rem] bg-white p-6 shadow-xl ring-1 ring-slate-200">
-            <h2 className="text-xl font-semibold text-slate-900">Audit logs</h2>
-            <p className="mt-2 text-sm text-slate-500">View recent moderation actions and audit history.</p>
+          <div className="rounded-[2rem] bg-white p-6 shadow-xl ring-1 ring-border">
+            <h2 className="text-xl font-semibold text-text-primary">Audit logs</h2>
+            <p className="mt-2 text-sm text-muted">View recent moderation actions and audit history.</p>
           </div>
 
-          <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-            <table className="min-w-full divide-y divide-slate-200 text-sm">
-              <thead className="bg-slate-50 text-slate-600">
+          <div className="overflow-hidden rounded-3xl border border-muted bg-white shadow-sm">
+            <table className="min-w-full divide-y divide-border text-sm">
+              <thead className="bg-background text-text-secondary">
                 <tr>
                   <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Action</th>
                   <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Admin</th>
@@ -613,28 +613,28 @@ const AdminDashboardPage = () => {
                   <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">When</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-200">
+              <tbody className="divide-y divide-border">
                 {auditLogs.length > 0 ? (
                   auditLogs.map((log) => (
                     <tr key={log._id}>
                       <td className="px-6 py-4">
-                        <div className="font-semibold text-slate-900">{log.action}</div>
-                        <div className="mt-1 text-slate-500">{log.details}</div>
+                        <div className="font-semibold text-text-primary">{log.action}</div>
+                        <div className="mt-1 text-muted">{log.details}</div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-slate-900">{log.admin?.displayName || 'Unknown'}</div>
-                        <div className="mt-1 text-slate-500">{log.admin?.email || ''}</div>
+                        <div className="text-text-primary">{log.admin?.displayName || 'Unknown'}</div>
+                        <div className="mt-1 text-muted">{log.admin?.email || ''}</div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-slate-900">{log.targetType}</div>
-                        <div className="mt-1 text-slate-500">{log.targetId || 'n/a'}</div>
+                        <div className="text-text-primary">{log.targetType}</div>
+                        <div className="mt-1 text-muted">{log.targetId || 'n/a'}</div>
                       </td>
-                      <td className="px-6 py-4 text-slate-500">{new Date(log.createdAt).toLocaleString()}</td>
+                      <td className="px-6 py-4 text-muted">{new Date(log.createdAt).toLocaleString()}</td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={4} className="px-6 py-4 text-center text-slate-500">
+                    <td colSpan={4} className="px-6 py-4 text-center text-muted">
                       No audit logs available.
                     </td>
                   </tr>
@@ -647,22 +647,22 @@ const AdminDashboardPage = () => {
 
       {activeTab === 'analytics' && (
         <section className="space-y-6">
-          <div className="rounded-[2rem] bg-white p-6 shadow-xl ring-1 ring-slate-200">
-            <h2 className="text-xl font-semibold text-slate-900">Analytics</h2>
-            <p className="mt-2 text-sm text-slate-500">Monitor platform statistics and product distribution across provinces.</p>
+          <div className="rounded-[2rem] bg-white p-6 shadow-xl ring-1 ring-border">
+            <h2 className="text-xl font-semibold text-text-primary">Analytics</h2>
+            <p className="mt-2 text-sm text-muted">Monitor platform statistics and product distribution across provinces.</p>
           </div>
 
-          <div className="rounded-3xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+          <div className="rounded-3xl border border-muted bg-white shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-slate-200 text-sm">
-                <thead className="bg-slate-50 text-slate-600">
+              <table className="min-w-full divide-y divide-border text-sm">
+                <thead className="bg-background text-text-secondary">
                   <tr>
                     <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Province</th>
                     <th className="px-6 py-4 text-right font-medium uppercase tracking-[0.2em]">Product Count</th>
                     <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Percentage</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200">
+                <tbody className="divide-y divide-border">
                   {provinceStats.length > 0 ? (
                     provinceStats.map((province) => {
                       const total = provinceStats.reduce((sum, p) => sum + p.productCount, 0);
@@ -671,20 +671,20 @@ const AdminDashboardPage = () => {
                       return (
                         <tr key={province.provinceId}>
                           <td className="px-6 py-4">
-                            <div className="font-semibold text-slate-900">{province.provinceName}</div>
+                            <div className="font-semibold text-text-primary">{province.provinceName}</div>
                           </td>
                           <td className="px-6 py-4 text-right">
-                            <div className="font-semibold text-slate-900">{province.productCount}</div>
+                            <div className="font-semibold text-text-primary">{province.productCount}</div>
                           </td>
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-3">
-                              <div className="h-2 w-32 rounded-full bg-slate-200">
+                              <div className="h-2 w-32 rounded-full bg-background">
                                 <div
-                                  className="h-2 rounded-full bg-sky-500 transition-all"
+                                  className="h-2 rounded-full bg-primary transition-all"
                                   style={{ width: `${Math.min(percentageValue, 100)}%` }}
                                 />
                               </div>
-                              <span className="text-slate-600">{percentage}%</span>
+                              <span className="text-text-secondary">{percentage}%</span>
                             </div>
                           </td>
                         </tr>
@@ -692,7 +692,7 @@ const AdminDashboardPage = () => {
                     })
                   ) : (
                     <tr>
-                      <td colSpan={3} className="px-6 py-4 text-center text-slate-500">
+                      <td colSpan={3} className="px-6 py-4 text-center text-muted">
                         No products found
                       </td>
                     </tr>
@@ -708,3 +708,5 @@ const AdminDashboardPage = () => {
 };
 
 export default AdminDashboardPage;
+
+

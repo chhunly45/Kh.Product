@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { resendLoginOtp, resendPhoneOtp, requestPhoneOtp, verifyPhoneOtp } from '../services/auth.api';
 import { useAuth } from '../hooks/useAuth';
@@ -213,15 +213,15 @@ const LoginPage = () => {
 
 
   return (
-    <div className="mx-auto max-w-2xl rounded-[2rem] bg-white p-10 shadow-xl ring-1 ring-slate-200">
+    <div className="mx-auto max-w-2xl rounded-[2rem] bg-white p-10 shadow-xl ring-1 ring-border">
       <div className="space-y-3 text-center">
-        <p className="text-sm uppercase tracking-[0.35em] text-sky-600">Welcome back</p>
-        <h1 className="text-3xl font-semibold text-slate-900">Log in to your account</h1>
-        <p className="text-sm text-slate-500">Enter your email and password to manage listings, chat, and favorites.</p>
+        <p className="text-sm uppercase tracking-[0.35em] text-primary">Welcome back</p>
+        <h1 className="text-3xl font-semibold text-text-primary">Log in to your account</h1>
+        <p className="text-sm text-muted">Enter your email and password to manage listings, chat, and favorites.</p>
       </div>
 
       {status && (
-        <div className="mt-6 rounded-3xl border border-sky-200 bg-sky-50 p-4 text-sm text-sky-700">
+        <div className="mt-6 rounded-3xl border border-primary/30 bg-primary/10 p-4 text-sm text-primary">
           {status}
         </div>
       )}
@@ -240,12 +240,12 @@ const LoginPage = () => {
       )}
 
       <div className="mt-6 flex gap-2 flex-wrap">
-        <button type="button" className={`px-4 py-2 rounded-full ${mode === 'credentials' ? 'bg-sky-600 text-white' : 'bg-white border'}`} onClick={() => setMode('credentials')}>Email or Phone + Password</button>
+        <button type="button" className={`px-4 py-2 rounded-full ${mode === 'credentials' ? 'bg-primary text-white' : 'bg-white border'}`} onClick={() => setMode('credentials')}>Email or Phone + Password</button>
         {loginOtpEnabled && (
-          <button type="button" className={`px-4 py-2 rounded-full ${mode === 'loginOtp' ? 'bg-sky-600 text-white' : 'bg-white border'}`} onClick={() => setMode('loginOtp')}>Password + OTP</button>
+          <button type="button" className={`px-4 py-2 rounded-full ${mode === 'loginOtp' ? 'bg-primary text-white' : 'bg-white border'}`} onClick={() => setMode('loginOtp')}>Password + OTP</button>
         )}
         {phoneOtpEnabled && (
-          <button type="button" className={`px-4 py-2 rounded-full ${mode === 'phoneOtp' ? 'bg-sky-600 text-white' : 'bg-white border'}`} onClick={() => setMode('phoneOtp')}>Phone OTP</button>
+          <button type="button" className={`px-4 py-2 rounded-full ${mode === 'phoneOtp' ? 'bg-primary text-white' : 'bg-white border'}`} onClick={() => setMode('phoneOtp')}>Phone OTP</button>
         )}
       </div>
 
@@ -254,48 +254,48 @@ const LoginPage = () => {
           {mode === 'credentials' ? (
             <>
               <label className="block">
-                <span className="text-sm font-medium text-slate-700">Email or Phone</span>
+                <span className="text-sm font-medium text-text-secondary">Email or Phone</span>
                 <input
                   type="text"
                   name="emailOrPhone"
                   value={formData.emailOrPhone}
                   onChange={handleIdentifierChange}
                   placeholder="Email or phone number"
-                  className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                  className="mt-2 w-full rounded-3xl border border-muted bg-background px-4 py-3 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
                   disabled={loading}
                 />
               </label>
               <label className="block">
-                <span className="text-sm font-medium text-slate-700">Password</span>
+                <span className="text-sm font-medium text-text-secondary">Password</span>
                 <input 
                   type="password" 
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="********" 
-                  className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100" 
+                  className="mt-2 w-full rounded-3xl border border-muted bg-background px-4 py-3 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20" 
                   disabled={loading}
                 />
               </label>
             </>
           ) : (
             <label className="block">
-              <span className="text-sm font-medium text-slate-700">Phone number (Cambodia)</span>
+              <span className="text-sm font-medium text-text-secondary">Phone number (Cambodia)</span>
               <input
                 type="text"
                 value={phoneInput}
                 onChange={(e) => setPhoneInput(e.target.value)}
                 placeholder="e.g. 012 345 678"
-                className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                className="mt-2 w-full rounded-3xl border border-muted bg-background px-4 py-3 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
                 disabled={loading}
               />
-              <p className="mt-2 text-sm text-slate-500">No password is required for phone OTP login.</p>
+              <p className="mt-2 text-sm text-muted">No password is required for phone OTP login.</p>
             </label>
           )}
 
           <button 
             type="submit" 
-            className="w-full rounded-3xl bg-sky-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-sky-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full rounded-3xl bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={loading}
           >
             {loading ? (mode === 'credentials' ? 'Signing in...' : 'Requesting OTP...') : (mode === 'credentials' ? 'Sign in' : 'Request OTP')}
@@ -304,21 +304,21 @@ const LoginPage = () => {
       ) : (
         <form className="mt-10 space-y-6" onSubmit={handleOtpSubmit}>
           <label className="block">
-            <span className="text-sm font-medium text-slate-700">Verification Code</span>
+            <span className="text-sm font-medium text-text-secondary">Verification Code</span>
             <input
               type="text"
               name="otpCode"
               value={otpCode}
               onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
               placeholder="Enter 6-digit code"
-              className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+              className="mt-2 w-full rounded-3xl border border-muted bg-background px-4 py-3 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
               disabled={loading}
             />
           </label>
 
           <button 
             type="submit" 
-            className="w-full rounded-3xl bg-sky-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-sky-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full rounded-3xl bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={loading}
           >
             {loading ? 'Verifying code...' : 'Verify code'}
@@ -327,7 +327,7 @@ const LoginPage = () => {
           <button 
             type="button" 
             onClick={handleResendCode}
-            className="w-full rounded-3xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full rounded-3xl border border-muted bg-white px-5 py-3 text-sm font-semibold text-text-secondary transition hover:bg-background disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={loading || resendCooldown > 0}
           >
             {resendCooldown > 0 ? `Resend code in ${resendCooldown}s` : 'Resend code'}
@@ -335,12 +335,12 @@ const LoginPage = () => {
         </form>
       )}
 
-      <div className="mt-6 flex flex-col items-center gap-3 text-center text-sm text-slate-500">
-        <Link to="/forgot-password" className="font-semibold text-sky-600 hover:text-sky-700">
+      <div className="mt-6 flex flex-col items-center gap-3 text-center text-sm text-muted">
+        <Link to="/forgot-password" className="font-semibold text-primary hover:text-primary">
           Forgot password?
         </Link>
         <p>
-          New to Konpuk? <Link to="/register" className="font-semibold text-sky-600 hover:text-sky-700">Create account</Link>
+          New to Konpuk? <Link to="/register" className="font-semibold text-primary hover:text-primary">Create account</Link>
         </p>
       </div>
     </div>
@@ -348,3 +348,5 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+
+

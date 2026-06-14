@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../services/api';
 import { createProduct, uploadProductImages, getProductById, updateProduct } from '../services/product.api';
@@ -188,31 +188,31 @@ const PostProductPage = () => {
   };
 
   return (
-    <div className="mx-auto max-w-4xl rounded-[2rem] bg-white p-10 shadow-xl ring-1 ring-slate-200">
+    <div className="mx-auto max-w-4xl rounded-[2rem] bg-white p-10 shadow-xl ring-1 ring-border">
       <div className="space-y-3">
-        <p className="text-sm uppercase tracking-[0.35em] text-sky-600">{isEditing ? 'Edit listing' : 'New listing'}</p>
-        <h1 className="text-3xl font-semibold text-slate-900">{isEditing ? 'Update your product' : 'Post your product'}</h1>
-        <p className="text-sm text-slate-500">Share your product with thousands of local buyers quickly.</p>
+        <p className="text-sm uppercase tracking-[0.35em] text-primary">{isEditing ? 'Edit listing' : 'New listing'}</p>
+        <h1 className="text-3xl font-semibold text-text-primary">{isEditing ? 'Update your product' : 'Post your product'}</h1>
+        <p className="text-sm text-muted">Share your product with thousands of local buyers quickly.</p>
       </div>
 
       <form className="mt-10 space-y-6" onSubmit={handleSubmit}>
         <div className="grid gap-6 lg:grid-cols-2">
           <label className="block">
-            <span className="text-sm font-medium text-slate-700">Product title</span>
+            <span className="text-sm font-medium text-text-secondary">Product title</span>
             <input
               value={title}
               onChange={(event) => setTitle(event.target.value)}
-              className={`mt-2 w-full rounded-3xl border px-4 py-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 ${errors.title ? 'border-rose-400 bg-rose-50' : 'border-slate-200 bg-slate-50'}`}
+              className={`mt-2 w-full rounded-3xl border px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 ${errors.title ? 'border-rose-400 bg-rose-50' : 'border-muted bg-background'}`}
             />
             {errors.title && <p className="mt-2 text-sm text-rose-600">{errors.title}</p>}
           </label>
 
           <label className="block">
-            <span className="text-sm font-medium text-slate-700">Category</span>
+            <span className="text-sm font-medium text-text-secondary">Category</span>
             <select
               value={category}
               onChange={(event) => setCategory(event.target.value)}
-              className={`mt-2 w-full rounded-3xl border px-4 py-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 ${errors.category ? 'border-rose-400 bg-rose-50' : 'border-slate-200 bg-slate-50'}`}
+              className={`mt-2 w-full rounded-3xl border px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 ${errors.category ? 'border-rose-400 bg-rose-50' : 'border-muted bg-background'}`}
             >
               <option value="">Select category</option>
               {categories.map((item) => (
@@ -224,19 +224,19 @@ const PostProductPage = () => {
         </div>
 
         <label className="block">
-          <span className="text-sm font-medium text-slate-700">Description</span>
+          <span className="text-sm font-medium text-text-secondary">Description</span>
           <textarea
             value={description}
             onChange={(event) => setDescription(event.target.value)}
             rows={5}
-            className={`mt-2 w-full rounded-3xl border px-4 py-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 ${errors.description ? 'border-rose-400 bg-rose-50' : 'border-slate-200 bg-slate-50'}`}
+            className={`mt-2 w-full rounded-3xl border px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 ${errors.description ? 'border-rose-400 bg-rose-50' : 'border-muted bg-background'}`}
           />
           {errors.description && <p className="mt-2 text-sm text-rose-600">{errors.description}</p>}
         </label>
 
         <div className="grid gap-6 lg:grid-cols-2">
           <label className="block">
-            <span className="text-sm font-medium text-slate-700">Price (USD)</span>
+            <span className="text-sm font-medium text-text-secondary">Price (USD)</span>
             <input
               type="number"
               step="0.01"
@@ -244,17 +244,17 @@ const PostProductPage = () => {
               value={price}
               onChange={(event) => setPrice(event.target.value)}
               placeholder="Enter price in USD"
-              className={`mt-2 w-full rounded-3xl border px-4 py-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 ${errors.price ? 'border-rose-400 bg-rose-50' : 'border-slate-200 bg-slate-50'}`}
+              className={`mt-2 w-full rounded-3xl border px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 ${errors.price ? 'border-rose-400 bg-rose-50' : 'border-muted bg-background'}`}
             />
             {errors.price && <p className="mt-2 text-sm text-rose-600">{errors.price}</p>}
           </label>
 
           <label className="block">
-            <span className="text-sm font-medium text-slate-700">Location</span>
+            <span className="text-sm font-medium text-text-secondary">Location</span>
             <input
               value={location}
               onChange={(event) => setLocation(event.target.value)}
-              className={`mt-2 w-full rounded-3xl border px-4 py-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 ${errors.location ? 'border-rose-400 bg-rose-50' : 'border-slate-200 bg-slate-50'}`}
+              className={`mt-2 w-full rounded-3xl border px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 ${errors.location ? 'border-rose-400 bg-rose-50' : 'border-muted bg-background'}`}
             />
             {errors.location && <p className="mt-2 text-sm text-rose-600">{errors.location}</p>}
           </label>
@@ -262,11 +262,11 @@ const PostProductPage = () => {
 
         <div className="grid gap-6 lg:grid-cols-2">
           <label className="block">
-            <span className="text-sm font-medium text-slate-700">Condition</span>
+            <span className="text-sm font-medium text-text-secondary">Condition</span>
             <select
               value={condition}
               onChange={(event) => setCondition(event.target.value)}
-              className={`mt-2 w-full rounded-3xl border px-4 py-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 ${errors.condition ? 'border-rose-400 bg-rose-50' : 'border-slate-200 bg-slate-50'}`}
+              className={`mt-2 w-full rounded-3xl border px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 ${errors.condition ? 'border-rose-400 bg-rose-50' : 'border-muted bg-background'}`}
             >
               <option value="">Select condition</option>
               <option value="new">New</option>
@@ -276,11 +276,11 @@ const PostProductPage = () => {
             {errors.condition && <p className="mt-2 text-sm text-rose-600">{errors.condition}</p>}
           </label>
           <label className="block">
-            <span className="text-sm font-medium text-slate-700">Province</span>
+            <span className="text-sm font-medium text-text-secondary">Province</span>
             <select
               value={province}
               onChange={(event) => setProvince(event.target.value ? Number(event.target.value) : '')}
-              className={`mt-2 w-full rounded-3xl border px-4 py-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 ${errors.province ? 'border-rose-400 bg-rose-50' : 'border-slate-200 bg-slate-50'}`}
+              className={`mt-2 w-full rounded-3xl border px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 ${errors.province ? 'border-rose-400 bg-rose-50' : 'border-muted bg-background'}`}
             >
               <option value="">Select province</option>
               {provinces.map((prov) => (
@@ -295,12 +295,12 @@ const PostProductPage = () => {
 
         <div className="grid gap-6 lg:grid-cols-2">
           <label className="block">
-            <span className="text-sm font-medium text-slate-700">District</span>
+            <span className="text-sm font-medium text-text-secondary">District</span>
             <select
               value={district}
               onChange={(event) => setDistrict(event.target.value ? Number(event.target.value) : '')}
               disabled={!province}
-              className={`mt-2 w-full rounded-3xl border px-4 py-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 ${errors.district ? 'border-rose-400 bg-rose-50' : 'border-slate-200 bg-slate-50'} ${!province ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`mt-2 w-full rounded-3xl border px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 ${errors.district ? 'border-rose-400 bg-rose-50' : 'border-muted bg-background'} ${!province ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               <option value="">Select district</option>
               {districts.map((dist) => (
@@ -312,17 +312,17 @@ const PostProductPage = () => {
             {errors.district && <p className="mt-2 text-sm text-rose-600">{errors.district}</p>}
           </label>
           <label className="block">
-            <span className="text-sm font-medium text-slate-700">Product images</span>
+            <span className="text-sm font-medium text-text-secondary">Product images</span>
             <input
               type="file"
               accept="image/*"
               multiple
               onChange={handleFiles}
-              className="mt-2 w-full text-sm text-slate-700"
+              className="mt-2 w-full text-sm text-text-secondary"
             />
-            <p className="mt-2 text-xs text-slate-500">Upload up to 6 new images. Images will be optimized automatically.</p>
+            <p className="mt-2 text-xs text-muted">Upload up to 6 new images. Images will be optimized automatically.</p>
             {isEditing && existingImageCount > 0 && (
-              <p className="mt-2 text-xs text-slate-500">This listing already has {existingImageCount} existing image{existingImageCount > 1 ? 's' : ''}. Uploading new images will add to the gallery.</p>
+              <p className="mt-2 text-xs text-muted">This listing already has {existingImageCount} existing image{existingImageCount > 1 ? 's' : ''}. Uploading new images will add to the gallery.</p>
             )}
           </label>
         </div>
@@ -330,7 +330,7 @@ const PostProductPage = () => {
         {previews.length > 0 && (
           <div className="grid gap-3 sm:grid-cols-3">
             {previews.map((preview, index) => (
-              <div key={`${preview}-${index}`} className="group relative overflow-hidden rounded-3xl bg-slate-100">
+              <div key={`${preview}-${index}`} className="group relative overflow-hidden rounded-3xl bg-background">
                 <img src={preview} alt={`Preview ${index + 1}`} className="h-28 w-full object-cover" />
                 <button
                   type="button"
@@ -344,13 +344,13 @@ const PostProductPage = () => {
           </div>
         )}
 
-        {status && <p className="text-sm text-slate-600">{status}</p>}
+        {status && <p className="text-sm text-text-secondary">{status}</p>}
 
         <div className="flex flex-wrap items-center gap-3">
           <button
             type="submit"
             disabled={isSubmitting}
-            className="rounded-3xl bg-sky-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-3xl bg-primary px-6 py-3 text-sm font-semibold text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isSubmitting ? (isEditing ? 'Updating...' : 'Publishing...') : (isEditing ? 'Update listing' : 'Publish listing')}
           </button>
@@ -358,7 +358,7 @@ const PostProductPage = () => {
             <button
               type="button"
               onClick={() => navigate(`/products/${savedProductId}`)}
-              className="rounded-3xl border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+              className="rounded-3xl border border-muted bg-white px-6 py-3 text-sm font-semibold text-text-secondary hover:bg-background transition"
             >
               View listing
             </button>
@@ -370,3 +370,5 @@ const PostProductPage = () => {
 };
 
 export default PostProductPage;
+
+

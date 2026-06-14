@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingBag, Smartphone, Cpu, Car, Home, Camera, Heart, Gift, Zap, BookOpen, Palette, Utensils } from 'lucide-react';
 import api from '../../services/api';
@@ -44,9 +44,9 @@ const CategoriesGrid = () => {
       'from-primary to-primary-hover',
       'from-purple-500 to-pink-400',
       'from-green-500 to-emerald-400',
-      'from-orange-500 to-amber-400',
+      'from-accent to-accent/80',
       'from-red-500 to-rose-400',
-      'from-indigo-500 to-blue-400',
+      'from-primary to-primary-hover',
       'from-primary to-primary-hover',
       'from-teal-500 to-green-400',
     ];
@@ -105,3 +105,4 @@ const CategoriesGrid = () => {
 };
 
 export default CategoriesGrid;
+

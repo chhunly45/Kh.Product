@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -209,7 +209,7 @@ const TrafficAnalyticsPage = () => {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600"></div>
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
           <p className="mt-4 text-gray-600">Loading traffic analytics...</p>
         </div>
       </div>
@@ -220,9 +220,9 @@ const TrafficAnalyticsPage = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
-          <div className="p-8 bg-slate-50 rounded-lg border border-slate-200 text-center">
-            <p className="text-slate-600 text-lg">No traffic data available yet.</p>
-            <p className="text-slate-500 mt-2">Traffic analytics will appear here as users browse the platform.</p>
+          <div className="p-8 bg-background rounded-lg border border-muted text-center">
+            <p className="text-text-secondary text-lg">No traffic data available yet.</p>
+            <p className="text-muted mt-2">Traffic analytics will appear here as users browse the platform.</p>
           </div>
         </div>
       </div>
@@ -240,7 +240,7 @@ const TrafficAnalyticsPage = () => {
           </div>
           <button
             onClick={exportToCSV}
-            className="flex items-center gap-2 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition"
+            className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition"
           >
             <Download size={20} />
             Export CSV
@@ -256,7 +256,7 @@ const TrafficAnalyticsPage = () => {
         {/* Key Metrics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <MetricCard
-            icon={<Activity className="text-blue-600" size={24} />}
+            icon={<Activity className="text-primary" size={24} />}
             label="Total Visits"
             value={metrics.totalVisits}
           />
@@ -271,7 +271,7 @@ const TrafficAnalyticsPage = () => {
             value={metrics.returningVisitors}
           />
           <MetricCard
-            icon={<TrendingUp className="text-orange-600" size={24} />}
+            icon={<TrendingUp className="text-warning" size={24} />}
             label="New Visitors"
             value={metrics.newVisitors}
           />
@@ -306,7 +306,7 @@ const TrafficAnalyticsPage = () => {
                   onClick={() => setChartPeriod(period)}
                   className={`px-3 py-1 rounded text-sm transition capitalize ${
                     chartPeriod === period
-                      ? 'bg-sky-600 text-white'
+                      ? 'bg-primary text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
@@ -358,7 +358,7 @@ const TrafficAnalyticsPage = () => {
                       <p className="font-medium text-gray-900 truncate">{item.keyword}</p>
                       <p className="text-sm text-gray-500">{item.avgResults} avg results</p>
                     </div>
-                    <span className="text-lg font-bold text-sky-600">{item.searches}</span>
+                    <span className="text-lg font-bold text-primary">{item.searches}</span>
                   </div>
                 ))}
               </div>
@@ -384,7 +384,7 @@ const TrafficAnalyticsPage = () => {
                 {searchAnalytics.categorySearchTrends.slice(0, 5).map((item, idx) => (
                   <div key={idx} className="flex justify-between items-center pb-3 border-b border-gray-200">
                     <p className="font-medium text-gray-900 text-sm">{item.category}</p>
-                    <span className="text-lg font-bold text-sky-600">{item.searches}</span>
+                    <span className="text-lg font-bold text-primary">{item.searches}</span>
                   </div>
                 ))}
               </div>
@@ -405,7 +405,7 @@ const TrafficAnalyticsPage = () => {
                       <span className="font-bold text-gray-500 w-6">{idx + 1}</span>
                       <span className="font-medium text-gray-900 truncate">{product.title}</span>
                     </span>
-                    <span className="text-sm font-semibold text-sky-600">{product.views}</span>
+                    <span className="text-sm font-semibold text-primary">{product.views}</span>
                   </div>
                 ))}
               </div>
@@ -439,7 +439,7 @@ const TrafficAnalyticsPage = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {insights.map((insight, idx) => (
-                <div key={idx} className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
+                <div key={idx} className="p-4 bg-gradient-to-br from-background to-background border border-primary/30 rounded-lg">
                   <p className="font-semibold text-gray-900 mb-1">{insight.title}</p>
                   <p className="text-sm text-gray-700">{insight.description}</p>
                 </div>
@@ -473,3 +473,5 @@ const MetricCard = ({ icon, label, value, isPercentage, isTime }: MetricCardProp
 );
 
 export default TrafficAnalyticsPage;
+
+

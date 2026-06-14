@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Bell, CheckCircle2 } from 'lucide-react';
 import { getNotifications, markNotificationRead } from '../services/notification.api';
@@ -36,14 +36,14 @@ const NotificationsPage = () => {
 
   return (
     <div className="space-y-8 px-4 py-10 sm:px-6 lg:px-8">
-      <header className="rounded-[2rem] bg-white p-8 shadow-xl ring-1 ring-slate-200">
+      <header className="rounded-[2rem] bg-white p-8 shadow-xl ring-1 ring-border">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-3xl font-semibold text-slate-900">Notifications</h1>
-            <p className="mt-2 text-sm text-slate-500">Review updates about favorites, sales, verification status, and moderation.</p>
+            <h1 className="text-3xl font-semibold text-text-primary">Notifications</h1>
+            <p className="mt-2 text-sm text-muted">Review updates about favorites, sales, verification status, and moderation.</p>
           </div>
-          <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-700">
-            <Bell className="w-5 h-5 text-slate-500" />
+          <div className="inline-flex items-center gap-2 rounded-full bg-background px-4 py-2 text-sm text-text-secondary">
+            <Bell className="w-5 h-5 text-muted" />
             {notifications.filter((notification) => !notification.read).length} unread
           </div>
         </div>
@@ -54,17 +54,17 @@ const NotificationsPage = () => {
       )}
 
       {loading ? (
-        <div className="rounded-3xl border border-slate-200 bg-slate-50 p-12 text-center text-slate-600">Loading notifications…</div>
+        <div className="rounded-3xl border border-muted bg-background p-12 text-center text-text-secondary">Loading notifications…</div>
       ) : notifications.length ? (
         <div className="space-y-4">
           {notifications.map((notification) => (
-            <article key={notification._id} className={`rounded-3xl border ${notification.read ? 'border-slate-200 bg-white' : 'border-sky-300 bg-sky-50'} p-6 shadow-sm`}>
+            <article key={notification._id} className={`rounded-3xl border ${notification.read ? 'border-muted bg-white' : 'border-primary/30 bg-primary/10'} p-6 shadow-sm`}>
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                  <h2 className="text-lg font-semibold text-slate-900">{notification.title}</h2>
-                  <p className="mt-2 text-sm text-slate-600">{notification.message}</p>
+                  <h2 className="text-lg font-semibold text-text-primary">{notification.title}</h2>
+                  <p className="mt-2 text-sm text-text-secondary">{notification.message}</p>
                   {notification.link && (
-                    <Link to={notification.link} className="mt-3 inline-flex text-sm font-semibold text-sky-600 hover:text-sky-700">
+                    <Link to={notification.link} className="mt-3 inline-flex text-sm font-semibold text-primary hover:text-primary">
                       View details
                     </Link>
                   )}
@@ -73,7 +73,7 @@ const NotificationsPage = () => {
                   type="button"
                   onClick={() => markRead(notification._id)}
                   disabled={notification.read}
-                  className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-700 ring-1 ring-slate-200 hover:bg-slate-100 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 transition"
+                  className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-text-secondary ring-1 ring-border hover:bg-background disabled:cursor-not-allowed disabled:bg-background disabled:text-muted transition"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   {notification.read ? 'Read' : 'Mark as read'}
@@ -83,7 +83,7 @@ const NotificationsPage = () => {
           ))}
         </div>
       ) : (
-        <div className="rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-12 text-center text-slate-600">
+        <div className="rounded-3xl border border-dashed border-muted bg-background p-12 text-center text-text-secondary">
           <p className="text-lg font-semibold">No notifications yet</p>
           <p className="mt-2 text-sm">Once your listings are saved or reviewed, notifications will appear here.</p>
         </div>
@@ -93,3 +93,5 @@ const NotificationsPage = () => {
 };
 
 export default NotificationsPage;
+
+

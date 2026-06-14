@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, MapPin, ChevronDown, ChevronUp } from 'lucide-react';
 import api from '../../services/api';
@@ -267,7 +267,7 @@ const SearchBar = ({ initialFilters }: SearchBarProps) => {
 
           <div className="grid grid-cols-2 gap-4">
             <label className="space-y-2">
-              <span className="text-sm font-medium text-slate-700">Min price</span>
+              <span className="text-sm font-medium text-text-secondary">Min price</span>
               <input
                 type="number"
                 min={0}
@@ -278,7 +278,7 @@ const SearchBar = ({ initialFilters }: SearchBarProps) => {
               />
             </label>
             <label className="space-y-2">
-              <span className="text-sm font-medium text-slate-700">Max price</span>
+              <span className="text-sm font-medium text-text-secondary">Max price</span>
               <input
                 type="number"
                 min={0}
@@ -296,3 +296,4 @@ const SearchBar = ({ initialFilters }: SearchBarProps) => {
 };
 
 export default SearchBar;
+

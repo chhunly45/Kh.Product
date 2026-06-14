@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getProfile } from '../services/auth.api';
 import { getProducts, updateProduct, deleteProduct } from '../services/product.api';
@@ -91,11 +91,11 @@ const DashboardPage = () => {
 
   return (
     <div className="space-y-8 px-4 py-10 sm:px-6 lg:px-8">
-      <header className="rounded-[2rem] bg-white p-8 shadow-xl ring-1 ring-slate-200">
+      <header className="rounded-[2rem] bg-white p-8 shadow-xl ring-1 ring-border">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h1 className="text-3xl font-semibold text-slate-900">Seller dashboard</h1>
-            <p className="mt-2 text-sm text-slate-500">Manage your active listings, update status, and keep track of your products.</p>
+            <h1 className="text-3xl font-semibold text-text-primary">Seller dashboard</h1>
+            <p className="mt-2 text-sm text-muted">Manage your active listings, update status, and keep track of your products.</p>
           </div>
           <div className="flex items-center gap-3">
             {user?.role === 'admin' && (
@@ -103,14 +103,14 @@ const DashboardPage = () => {
                 <button
                   type="button"
                   onClick={() => navigate('/admin/banners')}
-                  className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-50 transition"
+                  className="inline-flex items-center gap-2 rounded-full border border-muted bg-white px-4 py-2 text-sm font-semibold text-text-primary hover:bg-background transition"
                 >
                   Manage Banners
                 </button>
                 <button
                   type="button"
                   onClick={() => navigate('/admin/revenue')}
-                  className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-50 transition"
+                  className="inline-flex items-center gap-2 rounded-full border border-muted bg-white px-4 py-2 text-sm font-semibold text-text-primary hover:bg-background transition"
                 >
                   Revenue Dashboard
                 </button>
@@ -120,7 +120,7 @@ const DashboardPage = () => {
             <button
               type="button"
               onClick={() => navigate('/post-product')}
-              className="inline-flex items-center gap-2 rounded-full bg-sky-600 px-5 py-3 text-sm font-semibold text-white hover:bg-sky-700 transition"
+              className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white hover:bg-primary-hover transition"
             >
               <PlusCircle className="w-4 h-4" /> Post new listing
             </button>
@@ -136,14 +136,14 @@ const DashboardPage = () => {
           { label: 'Total views', value: totalViews, icon: Eye },
           { label: 'Drafts', value: draftCount, icon: PlusCircle }
         ].map((stat) => (
-          <article key={stat.label} className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+          <article key={stat.label} className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-border">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs uppercase tracking-[0.35em] text-slate-500">{stat.label}</p>
-                <p className="mt-3 text-3xl font-semibold text-slate-900">{stat.label === 'Total views' ? formatViewsCount(stat.value as number) : stat.value}</p>
+                <p className="text-xs uppercase tracking-[0.35em] text-muted">{stat.label}</p>
+                <p className="mt-3 text-3xl font-semibold text-text-primary">{stat.label === 'Total views' ? formatViewsCount(stat.value as number) : stat.value}</p>
               </div>
-              <div className="rounded-2xl bg-sky-50 p-3">
-                <stat.icon className="w-6 h-6 text-sky-600" />
+              <div className="rounded-2xl bg-primary/10 p-3">
+                <stat.icon className="w-6 h-6 text-primary" />
               </div>
             </div>
           </article>
@@ -157,53 +157,53 @@ const DashboardPage = () => {
           { label: 'Expiring soon', value: expiringSoonCount, icon: Clock },
           { label: 'Spent on promotions', value: promotionSpend.toLocaleString(), icon: DollarSign }
         ].map((stat) => (
-          <article key={stat.label} className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+          <article key={stat.label} className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-border">
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="text-xs uppercase tracking-[0.35em] text-slate-500">{stat.label}</p>
-                <p className="mt-3 text-3xl font-semibold text-slate-900">{stat.value}</p>
+                <p className="text-xs uppercase tracking-[0.35em] text-muted">{stat.label}</p>
+                <p className="mt-3 text-3xl font-semibold text-text-primary">{stat.value}</p>
               </div>
-              <div className="rounded-2xl bg-sky-50 p-3">
-                <stat.icon className="w-6 h-6 text-sky-600" />
+              <div className="rounded-2xl bg-primary/10 p-3">
+                <stat.icon className="w-6 h-6 text-primary" />
               </div>
             </div>
           </article>
         ))}
       </section>
 
-      <section className="rounded-[2rem] bg-white p-6 shadow-xl ring-1 ring-slate-200">
+      <section className="rounded-[2rem] bg-white p-6 shadow-xl ring-1 ring-border">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-2xl font-semibold text-slate-900">Promoted Products</h2>
-            <p className="mt-2 text-sm text-slate-500">Review all promotion activity for your products.</p>
+            <h2 className="text-2xl font-semibold text-text-primary">Promoted Products</h2>
+            <p className="mt-2 text-sm text-muted">Review all promotion activity for your products.</p>
           </div>
           <button
             type="button"
             onClick={() => navigate('/seller/promotions')}
-            className="inline-flex items-center justify-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white hover:bg-slate-800 transition"
+            className="inline-flex items-center justify-center rounded-full bg-text-primary px-5 py-3 text-sm font-semibold text-white hover:bg-primary-hover transition"
           >
             Promote Another Product
           </button>
         </div>
 
         {promotions.length ? (
-          <div className="mt-6 overflow-hidden rounded-3xl border border-slate-200">
-            <div className="grid grid-cols-[2.5fr_1fr_1fr_1fr_1fr] gap-2 bg-slate-100 px-4 py-3 text-xs uppercase tracking-[0.25em] text-slate-500">
+          <div className="mt-6 overflow-hidden rounded-3xl border border-muted">
+            <div className="grid grid-cols-[2.5fr_1fr_1fr_1fr_1fr] gap-2 bg-background px-4 py-3 text-xs uppercase tracking-[0.25em] text-muted">
               <span>Product</span>
               <span>Plan</span>
               <span>Start date</span>
               <span>Expires</span>
               <span>Status</span>
             </div>
-            <div className="divide-y divide-slate-200 bg-white">
+            <div className="divide-y divide-border bg-white">
               {promotions.map((promotion) => (
-                <div key={promotion._id} className="grid grid-cols-[2.5fr_1fr_1fr_1fr_1fr] gap-2 px-4 py-4 text-sm text-slate-700">
+                <div key={promotion._id} className="grid grid-cols-[2.5fr_1fr_1fr_1fr_1fr] gap-2 px-4 py-4 text-sm text-text-secondary">
                   <div className="truncate">{promotion.product?.title || 'Unknown product'}</div>
                   <div>{promotion.plan.replace('_', ' ')}</div>
                   <div>{formatPromotionDate(promotion.startDate)}</div>
                   <div>{formatPromotionDate(promotion.endDate)}</div>
                   <div>
-                    <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] ${promotion.status === 'active' ? 'bg-emerald-100 text-emerald-700' : promotion.status === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-700'}`}>
+                    <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] ${promotion.status === 'active' ? 'bg-emerald-100 text-emerald-700' : promotion.status === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-background text-text-secondary'}`}>
                       {promotion.status}
                     </span>
                   </div>
@@ -212,73 +212,73 @@ const DashboardPage = () => {
             </div>
           </div>
         ) : (
-          <div className="mt-6 rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-slate-600">
+          <div className="mt-6 rounded-3xl border border-dashed border-muted bg-background p-8 text-center text-text-secondary">
             <p className="text-lg font-semibold">No promoted products yet</p>
             <p className="mt-2 text-sm">Use the promotion page to feature your listings and boost visibility.</p>
           </div>
         )}
       </section>
 
-      <section className="rounded-[2rem] bg-white p-6 shadow-xl ring-1 ring-slate-200">
+      <section className="rounded-[2rem] bg-white p-6 shadow-xl ring-1 ring-border">
         <div>
-          <h2 className="text-2xl font-semibold text-slate-900">Most viewed products</h2>
-          <p className="mt-2 text-sm text-slate-500">Your top performing listings based on view count.</p>
+          <h2 className="text-2xl font-semibold text-text-primary">Most viewed products</h2>
+          <p className="mt-2 text-sm text-muted">Your top performing listings based on view count.</p>
         </div>
 
         {mostViewedProducts.length ? (
           <div className="mt-6 space-y-3">
             {mostViewedProducts.map((product, idx) => (
-              <div key={product._id} className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-sky-100 font-semibold text-sky-600">
+              <div key={product._id} className="flex items-center gap-4 rounded-2xl border border-muted bg-background p-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/20 font-semibold text-primary">
                   #{idx + 1}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="truncate font-semibold text-slate-900">{product.title}</p>
-                  <p className="text-xs text-slate-500">{product.category?.labelKh || product.category?.name || 'General'}</p>
+                  <p className="truncate font-semibold text-text-primary">{product.title}</p>
+                  <p className="text-xs text-muted">{product.category?.labelKh || product.category?.name || 'General'}</p>
                 </div>
                 <div className="text-right">
-                  <div className="inline-flex items-center gap-2 rounded-full bg-sky-100 px-3 py-1">
-                    <Eye className="w-4 h-4 text-sky-600" />
-                    <span className="text-sm font-semibold text-sky-700">{formatViewsCount(product.viewsCount)}</span>
+                  <div className="inline-flex items-center gap-2 rounded-full bg-primary/20 px-3 py-1">
+                    <Eye className="w-4 h-4 text-primary" />
+                    <span className="text-sm font-semibold text-primary">{formatViewsCount(product.viewsCount)}</span>
                   </div>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="mt-6 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-slate-600">
+          <div className="mt-6 rounded-2xl border border-dashed border-muted bg-background p-8 text-center text-text-secondary">
             <p>No products with views yet. Create and share your listings to get views.</p>
           </div>
         )}
       </section>
 
-      <section className="rounded-[2rem] bg-white p-6 shadow-xl ring-1 ring-slate-200">
+      <section className="rounded-[2rem] bg-white p-6 shadow-xl ring-1 ring-border">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-2xl font-semibold text-slate-900">Manage your ads</h2>
-            <p className="mt-2 text-sm text-slate-500">Edit, delete, or mark your products as sold from one place.</p>
+            <h2 className="text-2xl font-semibold text-text-primary">Manage your ads</h2>
+            <p className="mt-2 text-sm text-muted">Edit, delete, or mark your products as sold from one place.</p>
           </div>
           <button
             type="button"
             onClick={() => navigate('/post-product')}
-            className="rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white hover:bg-slate-800 transition"
+            className="rounded-full bg-text-primary px-5 py-3 text-sm font-semibold text-white hover:bg-primary-hover transition"
           >
             Create listing
           </button>
         </div>
 
-        {message && <div className="mt-6 rounded-3xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">{message}</div>}
+        {message && <div className="mt-6 rounded-3xl border border-muted bg-background p-4 text-sm text-text-secondary">{message}</div>}
 
         {loading ? (
-          <div className="mt-6 rounded-3xl border border-slate-200 bg-slate-50 p-12 text-center text-slate-600">Loading your listings…</div>
+          <div className="mt-6 rounded-3xl border border-muted bg-background p-12 text-center text-text-secondary">Loading your listings…</div>
         ) : products.length ? (
           <div className="mt-6 grid gap-4">
             {products.map((product) => (
-              <article key={product._id} className="rounded-3xl border border-slate-200 bg-slate-50 p-6 shadow-sm">
+              <article key={product._id} className="rounded-3xl border border-muted bg-background p-6 shadow-sm">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                   <div className="min-w-0">
-                    <h3 className="text-xl font-semibold text-slate-900">{product.title}</h3>
-                    <div className="mt-2 flex flex-wrap gap-3 text-sm text-slate-600">
+                    <h3 className="text-xl font-semibold text-text-primary">{product.title}</h3>
+                    <div className="mt-2 flex flex-wrap gap-3 text-sm text-text-secondary">
                       <span>{product.category?.labelKh || product.category?.name || 'General'}</span>
                       <span>{product.location || 'Unknown location'}</span>
                       <span>{formatPriceUSD(product.price)} {formatPriceKHR(product.price)}</span>
@@ -288,12 +288,12 @@ const DashboardPage = () => {
                     {product.status === 'sold' ? (
                       <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-emerald-700">Sold</span>
                     ) : (
-                      <span className="rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-sky-700">{product.status || 'Published'}</span>
+                      <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-primary">{product.status || 'Published'}</span>
                     )}
                     <button
                       type="button"
                       onClick={() => navigate(`/post-product?id=${product._id}`)}
-                      className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-700 ring-1 ring-slate-200 hover:bg-slate-100 transition"
+                      className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-text-secondary ring-1 ring-border hover:bg-background transition"
                     >
                       <Edit3 className="w-4 h-4" /> Edit
                     </button>
@@ -308,7 +308,7 @@ const DashboardPage = () => {
                       <button
                         type="button"
                         onClick={() => handleMarkSold(product._id)}
-                        className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 transition"
+                        className="inline-flex items-center gap-2 rounded-full bg-text-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-hover transition"
                       >
                         <CheckCircle className="w-4 h-4" /> Mark sold
                       </button>
@@ -319,7 +319,7 @@ const DashboardPage = () => {
             ))}
           </div>
         ) : (
-          <div className="mt-6 rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-12 text-center text-slate-600">
+          <div className="mt-6 rounded-3xl border border-dashed border-muted bg-background p-12 text-center text-text-secondary">
             <p className="text-lg font-semibold">No active ads yet</p>
             <p className="mt-2 text-sm">Create your first listing to start selling.</p>
           </div>
@@ -330,3 +330,5 @@ const DashboardPage = () => {
 };
 
 export default DashboardPage;
+
+

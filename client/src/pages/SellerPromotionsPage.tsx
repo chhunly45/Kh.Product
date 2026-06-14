@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { getProfile } from '../services/auth.api';
@@ -103,7 +103,7 @@ const SellerPromotionsPage = () => {
 
   if (user.role !== 'seller') {
     return (
-      <div className="min-h-screen bg-slate-50 py-10">
+      <div className="min-h-screen bg-background py-10">
         <div className="mx-auto max-w-3xl rounded-3xl border border-red-200 bg-white p-8 shadow-sm">
           <h1 className="text-3xl font-semibold text-red-900">Access Denied</h1>
           <p className="mt-4 text-sm text-red-700">Only sellers can access this page.</p>
@@ -114,16 +114,16 @@ const SellerPromotionsPage = () => {
 
   return (
     <div className="space-y-8 px-4 py-10 sm:px-6 lg:px-8">
-      <header className="rounded-[2rem] bg-white p-8 shadow-xl ring-1 ring-slate-200">
+      <header className="rounded-[2rem] bg-white p-8 shadow-xl ring-1 ring-border">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h1 className="text-3xl font-semibold text-slate-900">Featured promotions</h1>
-            <p className="mt-2 text-sm text-slate-500">Purchase featured placement to increase visibility for your listings.</p>
+            <h1 className="text-3xl font-semibold text-text-primary">Featured promotions</h1>
+            <p className="mt-2 text-sm text-muted">Purchase featured placement to increase visibility for your listings.</p>
           </div>
           <button
             type="button"
             onClick={() => navigate('/dashboard')}
-            className="rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-900 hover:bg-slate-50 transition"
+            className="rounded-full border border-muted bg-white px-5 py-3 text-sm font-semibold text-text-primary hover:bg-background transition"
           >
             Back to dashboard
           </button>
@@ -131,18 +131,18 @@ const SellerPromotionsPage = () => {
       </header>
 
       {message && (
-        <div className="rounded-3xl border border-sky-200 bg-sky-50 p-4 text-sm text-sky-700">{message}</div>
+        <div className="rounded-3xl border border-primary/30 bg-primary/10 p-4 text-sm text-primary">{message}</div>
       )}
 
       <section className="grid gap-6 lg:grid-cols-[320px_1fr]">
         <div className="space-y-6">
-          <div className="rounded-[2rem] bg-white p-6 shadow-sm ring-1 ring-slate-200">
-            <h2 className="text-xl font-semibold text-slate-900">Select product</h2>
-            <p className="mt-2 text-sm text-slate-500">Choose a listing to promote.</p>
+          <div className="rounded-[2rem] bg-white p-6 shadow-sm ring-1 ring-border">
+            <h2 className="text-xl font-semibold text-text-primary">Select product</h2>
+            <p className="mt-2 text-sm text-muted">Choose a listing to promote.</p>
             <select
               value={selectedProductId}
               onChange={(e) => setSelectedProductId(e.target.value)}
-              className="mt-4 w-full rounded-3xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-500"
+              className="mt-4 w-full rounded-3xl border border-muted bg-white px-4 py-3 text-sm text-text-primary outline-none focus:border-primary"
             >
               {products.length ? (
                 products.map((product) => (
@@ -156,8 +156,8 @@ const SellerPromotionsPage = () => {
             </select>
           </div>
 
-          <div className="rounded-[2rem] bg-white p-6 shadow-sm ring-1 ring-slate-200">
-            <h2 className="text-xl font-semibold text-slate-900">Available plans</h2>
+          <div className="rounded-[2rem] bg-white p-6 shadow-sm ring-1 ring-border">
+            <h2 className="text-xl font-semibold text-text-primary">Available plans</h2>
             <div className="mt-4 space-y-4">
               {plans.map((plan) => (
                 <button
@@ -165,15 +165,15 @@ const SellerPromotionsPage = () => {
                   type="button"
                   onClick={() => setSelectedPlanId(plan.id)}
                   className={`w-full rounded-3xl border px-5 py-5 text-left transition ${
-                    selectedPlanId === plan.id ? 'border-sky-500 bg-sky-50' : 'border-slate-200 bg-white hover:border-slate-300'
+                    selectedPlanId === plan.id ? 'border-primary bg-primary/10' : 'border-muted bg-white hover:border-muted'
                   }`}
                 >
                   <div className="flex items-center justify-between gap-4">
                     <div>
-                      <h3 className="text-lg font-semibold text-slate-900">{plan.label}</h3>
-                      <p className="mt-1 text-sm text-slate-600">Runs for {plan.durationDays} days</p>
+                      <h3 className="text-lg font-semibold text-text-primary">{plan.label}</h3>
+                      <p className="mt-1 text-sm text-text-secondary">Runs for {plan.durationDays} days</p>
                     </div>
-                    <span className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white">{plan.price.toLocaleString()} KHR</span>
+                    <span className="rounded-full bg-text-primary px-4 py-2 text-sm font-semibold text-white">{plan.price.toLocaleString()} KHR</span>
                   </div>
                 </button>
               ))}
@@ -182,7 +182,7 @@ const SellerPromotionsPage = () => {
               type="button"
               onClick={handlePurchase}
               disabled={loading || !selectedProductId || !plans.length}
-              className="mt-6 w-full rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
+              className="mt-6 w-full rounded-full bg-text-primary px-5 py-3 text-sm font-semibold text-white hover:bg-primary-hover disabled:cursor-not-allowed disabled:bg-background"
             >
               {loading ? 'Submitting...' : 'Purchase featured placement'}
             </button>
@@ -190,11 +190,11 @@ const SellerPromotionsPage = () => {
         </div>
 
         <div className="space-y-6">
-          <div className="rounded-[2rem] bg-white p-6 shadow-sm ring-1 ring-slate-200">
+          <div className="rounded-[2rem] bg-white p-6 shadow-sm ring-1 ring-border">
             <div className="flex items-center justify-between gap-4">
               <div>
-                <h2 className="text-xl font-semibold text-slate-900">Promotion status</h2>
-                <p className="mt-2 text-sm text-slate-500">Track active, pending, and expired promotions in one place.</p>
+                <h2 className="text-xl font-semibold text-text-primary">Promotion status</h2>
+                <p className="mt-2 text-sm text-muted">Track active, pending, and expired promotions in one place.</p>
               </div>
             </div>
 
@@ -212,18 +212,18 @@ const SellerPromotionsPage = () => {
 
 const PromotionTable = ({ title, items, formatDate }: { title: string; items: PromotionRecord[]; formatDate: (dateString?: string | null) => string }) => (
   <div>
-    <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
+    <h3 className="text-lg font-semibold text-text-primary">{title}</h3>
     {items.length ? (
-      <div className="mt-4 overflow-hidden rounded-3xl border border-slate-200">
-        <div className="grid grid-cols-[3fr_1fr_1fr_1fr] gap-2 bg-slate-100 px-4 py-3 text-xs uppercase tracking-[0.25em] text-slate-500">
+      <div className="mt-4 overflow-hidden rounded-3xl border border-muted">
+        <div className="grid grid-cols-[3fr_1fr_1fr_1fr] gap-2 bg-background px-4 py-3 text-xs uppercase tracking-[0.25em] text-muted">
           <span>Product</span>
           <span>Status</span>
           <span>End date</span>
           <span>Plan</span>
         </div>
-        <div className="divide-y divide-slate-200 bg-white">
+        <div className="divide-y divide-border bg-white">
           {items.map((promotion) => (
-            <div key={promotion._id} className="grid grid-cols-[3fr_1fr_1fr_1fr] gap-2 px-4 py-4 text-sm text-slate-700">
+            <div key={promotion._id} className="grid grid-cols-[3fr_1fr_1fr_1fr] gap-2 px-4 py-4 text-sm text-text-secondary">
               <div className="truncate">{promotion.product?.title || 'Unknown product'}</div>
               <div>
                 <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] ${getStatusClasses(promotion.status)}`}>
@@ -237,7 +237,7 @@ const PromotionTable = ({ title, items, formatDate }: { title: string; items: Pr
         </div>
       </div>
     ) : (
-      <div className="mt-4 rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-6 text-sm text-slate-600">No {title.toLowerCase()} yet.</div>
+      <div className="mt-4 rounded-3xl border border-dashed border-muted bg-background p-6 text-sm text-text-secondary">No {title.toLowerCase()} yet.</div>
     )}
   </div>
 );
@@ -249,14 +249,16 @@ const getStatusClasses = (status: string) => {
     case 'pending':
       return 'bg-amber-100 text-amber-700';
     case 'expired':
-      return 'bg-slate-100 text-slate-700';
+      return 'bg-background text-text-secondary';
     case 'rejected':
       return 'bg-rose-100 text-rose-700';
     case 'cancelled':
       return 'bg-rose-100 text-rose-700';
     default:
-      return 'bg-slate-100 text-slate-700';
+      return 'bg-background text-text-secondary';
   }
 };
 
 export default SellerPromotionsPage;
+
+

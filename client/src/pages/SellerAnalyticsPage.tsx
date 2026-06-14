@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -145,11 +145,11 @@ const SellerAnalyticsPage = () => {
       case 'Top Seller':
         return 'from-purple-600 to-pink-600';
       case 'Gold Seller':
-        return 'from-yellow-500 to-orange-600';
+        return 'from-warning to-accent-hover';
       case 'Silver Seller':
         return 'from-gray-400 to-gray-600';
       default:
-        return 'from-orange-700 to-amber-600';
+        return 'from-accent-hover to-accent';
     }
   };
 
@@ -211,7 +211,7 @@ const SellerAnalyticsPage = () => {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600"></div>
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
           <p className="mt-4 text-gray-600">Loading your analytics...</p>
         </div>
       </div>
@@ -237,7 +237,7 @@ const SellerAnalyticsPage = () => {
           </div>
           <button
             onClick={exportToCSV}
-            className="flex items-center gap-2 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition"
+            className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition"
           >
             <Download size={20} />
             Export CSV
@@ -265,7 +265,7 @@ const SellerAnalyticsPage = () => {
         {/* Key Metrics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <MetricCard
-            icon={<PackageOpen className="text-blue-600" size={24} />}
+            icon={<PackageOpen className="text-primary" size={24} />}
             label="Active Listings"
             value={metrics.activeListings}
             total={metrics.totalListings}
@@ -293,7 +293,7 @@ const SellerAnalyticsPage = () => {
             value={metrics.soldListings}
           />
           <MetricCard
-            icon={<TrendingUp className="text-sky-600" size={24} />}
+            icon={<TrendingUp className="text-primary" size={24} />}
             label="Avg Performance"
             value={metrics.avgListingPerformance}
             subtext="Views per listing"
@@ -312,7 +312,7 @@ const SellerAnalyticsPage = () => {
                   onClick={() => setChartType(type)}
                   className={`px-3 py-1 rounded transition capitalize ${
                     chartType === type
-                      ? 'bg-sky-600 text-white'
+                      ? 'bg-primary text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
@@ -359,7 +359,7 @@ const SellerAnalyticsPage = () => {
                   onClick={() => setSortBy(type)}
                   className={`px-3 py-1 rounded text-sm transition capitalize ${
                     sortBy === type
-                      ? 'bg-sky-600 text-white'
+                      ? 'bg-primary text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
@@ -385,7 +385,7 @@ const SellerAnalyticsPage = () => {
                   {topProducts.map((product, idx) => (
                     <tr key={product._id} className={idx % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
                       <td className="py-3 px-4 text-gray-900">{product.title}</td>
-                      <td className="py-3 px-4 text-right font-medium text-sky-600">{product.views}</td>
+                      <td className="py-3 px-4 text-right font-medium text-primary">{product.views}</td>
                       <td className="py-3 px-4 text-right">
                         <span
                           className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
@@ -425,8 +425,8 @@ const SellerAnalyticsPage = () => {
             )}
 
             {insights.bestCategory && (
-              <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-blue-900">
+              <div className="mb-4 p-4 bg-background border border-primary/30 rounded-lg">
+                <p className="text-text-primary">
                   📊 <strong>{insights.bestCategory}</strong> is your strongest category, accounting for{' '}
                   {insights.bestCategoryPercent}% of your views.
                 </p>
@@ -438,7 +438,7 @@ const SellerAnalyticsPage = () => {
               <ul className="space-y-2">
                 {insights.suggestedActions.map((action, idx) => (
                   <li key={idx} className="flex items-start gap-2 text-gray-700">
-                    <AlertCircle size={18} className="text-sky-600 mt-0.5 flex-shrink-0" />
+                    <AlertCircle size={18} className="text-primary mt-0.5 flex-shrink-0" />
                     <span>{action}</span>
                   </li>
                 ))}
@@ -472,3 +472,5 @@ const MetricCard = ({ icon, label, value, total, subtext }: MetricCardProps) => 
 );
 
 export default SellerAnalyticsPage;
+
+

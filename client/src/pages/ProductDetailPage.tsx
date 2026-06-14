@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Phone, MessageCircle, ShieldCheck, ArrowUpRight, AlertTriangle, MapPin, CalendarDays, Heart } from 'lucide-react';
 import { getProductById, getProducts, trackProductView, updateProduct, deleteProduct } from '../services/product.api';
@@ -187,7 +187,7 @@ const ProductDetailPage = () => {
   };
 
   if (!product) {
-    return <div className="p-8 text-center text-slate-600">{status || 'Loading product details...'}</div>;
+    return <div className="p-8 text-center text-text-secondary">{status || 'Loading product details...'}</div>;
   }
 
   const sellerPhone = safelyPhone(product.seller?.phoneNumber);
@@ -234,13 +234,13 @@ const ProductDetailPage = () => {
       />
 
       <div className="max-w-7xl mx-auto px-4 py-10 sm:px-6 lg:px-8">
-        <div className="space-y-6 rounded-[2rem] bg-white p-6 shadow-xl ring-1 ring-slate-200 sm:p-10">
+        <div className="space-y-6 rounded-[2rem] bg-white p-6 shadow-xl ring-1 ring-border sm:p-10">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div className="space-y-2">
-              <p className="text-sm uppercase tracking-[0.35em] text-sky-600">Product detail</p>
+              <p className="text-sm uppercase tracking-[0.35em] text-primary">Product detail</p>
               <div className="flex flex-wrap items-center gap-3">
                 <div className="flex items-center gap-3">
-                  <h1 className="text-3xl font-semibold text-slate-900">{product.title}</h1>
+                  <h1 className="text-3xl font-semibold text-text-primary">{product.title}</h1>
                   {(product.featured || product.isFeatured) && (
                     <span className="rounded-full bg-amber-400 px-3 py-1 text-sm font-semibold uppercase tracking-wide text-white shadow">Featured</span>
                   )}
@@ -261,27 +261,27 @@ const ProductDetailPage = () => {
                       console.error('Favorite toggle failed:', err);
                     }
                   }}
-                  className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${isFavorite ? 'bg-red-500 text-white hover:bg-red-600' : 'bg-slate-100 text-slate-800 hover:bg-slate-200'}`}
+                  className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${isFavorite ? 'bg-red-500 text-white hover:bg-red-600' : 'bg-background text-text-primary hover:bg-background'}`}
                 >
                   <Heart className="w-4 h-4" />
                   {isFavorite ? 'Saved' : 'Save'}
                 </button>
               </div>
-              <div className="flex flex-wrap items-center gap-3 text-sm text-slate-500">
+              <div className="flex flex-wrap items-center gap-3 text-sm text-muted">
                 <span>{product.category?.labelKh || product.category?.name || 'General'}</span>
-                <span className="h-1 w-1 rounded-full bg-slate-300" />
+                <span className="h-1 w-1 rounded-full bg-background" />
                 <span>{product.location || 'Local'}</span>
-                <span className="h-1 w-1 rounded-full bg-slate-300" />
+                <span className="h-1 w-1 rounded-full bg-background" />
                 <span>{product.condition || 'Condition not specified'}</span>
-                <span className="h-1 w-1 rounded-full bg-slate-300" />
+                <span className="h-1 w-1 rounded-full bg-background" />
                 <span>{formatViewsCount(product.viewsCount)} views</span>
               </div>
             </div>
-            <div className="flex flex-col items-start gap-2 rounded-3xl bg-slate-100 px-5 py-4 text-left sm:text-right">
-              <span className="text-sm text-slate-500">Price</span>
-              <span className="text-3xl font-semibold text-sky-600">{formatPrice(product.price).usd}</span>
-              <span className="text-sm text-slate-500">{formatPrice(product.price).khr}</span>
-              <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-slate-700">
+            <div className="flex flex-col items-start gap-2 rounded-3xl bg-background px-5 py-4 text-left sm:text-right">
+              <span className="text-sm text-muted">Price</span>
+              <span className="text-3xl font-semibold text-primary">{formatPrice(product.price).usd}</span>
+              <span className="text-sm text-muted">{formatPrice(product.price).khr}</span>
+              <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-text-secondary">
                 {product.status === 'sold' ? 'Sold' : 'Available'}
               </span>
             </div>
@@ -289,7 +289,7 @@ const ProductDetailPage = () => {
 
           <div className="grid gap-6 lg:grid-cols-[minmax(360px,0.5fr)_minmax(480px,0.7fr)]">
             <div className="space-y-6">
-              <div className="overflow-hidden rounded-[2rem] bg-slate-100 shadow-sm">
+              <div className="overflow-hidden rounded-[2rem] bg-background shadow-sm">
                 <img
                   src={selectedImage || product.images?.[0]?.secureUrl || product.images?.[0]?.url || 'https://via.placeholder.com/1000x700.png?text=No+Image'}
                   alt={product.title}
@@ -306,7 +306,7 @@ const ProductDetailPage = () => {
                         key={image._id}
                         type="button"
                         onClick={() => setSelectedImage(src)}
-                        className={`overflow-hidden rounded-3xl border ${selectedImage === src ? 'border-sky-500' : 'border-transparent'} bg-white focus:outline-none focus:ring-2 focus:ring-sky-400`}
+                        className={`overflow-hidden rounded-3xl border ${selectedImage === src ? 'border-primary' : 'border-transparent'} bg-white focus:outline-none focus:ring-2 focus:ring-primary/30`}
                       >
                         <img src={src} alt={product.title} className="h-24 w-full object-cover" />
                       </button>
@@ -315,33 +315,33 @@ const ProductDetailPage = () => {
                 </div>
               )}
 
-              <div className="rounded-[2rem] bg-slate-50 p-6 shadow-sm">
-                <p className="text-sm uppercase tracking-[0.35em] text-slate-500">Quick details</p>
+              <div className="rounded-[2rem] bg-background p-6 shadow-sm">
+                <p className="text-sm uppercase tracking-[0.35em] text-muted">Quick details</p>
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
                   <div className="rounded-3xl bg-white p-4 shadow-sm">
-                    <p className="text-xs uppercase tracking-[0.35em] text-slate-400">Category</p>
-                    <p className="mt-2 text-sm font-semibold text-slate-900">{product.category?.labelKh || product.category?.name || 'General'}</p>
+                    <p className="text-xs uppercase tracking-[0.35em] text-muted">Category</p>
+                    <p className="mt-2 text-sm font-semibold text-text-primary">{product.category?.labelKh || product.category?.name || 'General'}</p>
                   </div>
                   <div className="rounded-3xl bg-white p-4 shadow-sm">
-                    <p className="text-xs uppercase tracking-[0.35em] text-slate-400">Location</p>
-                    <p className="mt-2 text-sm font-semibold text-slate-900">{product.location || 'Not specified'}</p>
+                    <p className="text-xs uppercase tracking-[0.35em] text-muted">Location</p>
+                    <p className="mt-2 text-sm font-semibold text-text-primary">{product.location || 'Not specified'}</p>
                   </div>
                   <div className="rounded-3xl bg-white p-4 shadow-sm">
-                    <p className="text-xs uppercase tracking-[0.35em] text-slate-400">Condition</p>
-                    <p className="mt-2 text-sm font-semibold text-slate-900">{product.condition || 'N/A'}</p>
+                    <p className="text-xs uppercase tracking-[0.35em] text-muted">Condition</p>
+                    <p className="mt-2 text-sm font-semibold text-text-primary">{product.condition || 'N/A'}</p>
                   </div>
                   <div className="rounded-3xl bg-white p-4 shadow-sm">
-                    <p className="text-xs uppercase tracking-[0.35em] text-slate-400">Listed</p>
-                    <p className="mt-2 text-sm font-semibold text-slate-900">{new Date(product.createdAt).toLocaleDateString()}</p>
+                    <p className="text-xs uppercase tracking-[0.35em] text-muted">Listed</p>
+                    <p className="mt-2 text-sm font-semibold text-text-primary">{new Date(product.createdAt).toLocaleDateString()}</p>
                   </div>
                 </div>
               </div>
             </div>
 
             <div className="space-y-6">
-              <div className="rounded-[2rem] bg-slate-50 p-6 shadow-sm">
-                <h2 className="text-xl font-semibold text-slate-900">Product overview</h2>
-                <p className="mt-4 text-sm leading-7 text-slate-600">{product.description}</p>
+              <div className="rounded-[2rem] bg-background p-6 shadow-sm">
+                <h2 className="text-xl font-semibold text-text-primary">Product overview</h2>
+                <p className="mt-4 text-sm leading-7 text-text-secondary">{product.description}</p>
               </div>
 
               <div className="rounded-[2rem] bg-white p-6 shadow-sm">
@@ -349,8 +349,8 @@ const ProductDetailPage = () => {
                   <div>
                     <div className="flex flex-wrap items-center gap-3">
                       <div>
-                        <p className="text-sm uppercase tracking-[0.35em] text-slate-500">Seller information</p>
-                        <h3 className="mt-3 text-xl font-semibold text-slate-900 inline-flex items-center gap-2">
+                        <p className="text-sm uppercase tracking-[0.35em] text-muted">Seller information</p>
+                        <h3 className="mt-3 text-xl font-semibold text-text-primary inline-flex items-center gap-2">
                           {product.seller?.displayName || 'Seller'}
                         </h3>
                       </div>
@@ -365,24 +365,24 @@ const ProductDetailPage = () => {
                       ) : null}
                     </div>
                   </div>
-                  <div className="h-16 w-16 overflow-hidden rounded-3xl bg-slate-100">
+                  <div className="h-16 w-16 overflow-hidden rounded-3xl bg-background">
                     {product.seller?.profileImageUrl ? (
                       <img src={product.seller.profileImageUrl} alt={product.seller.displayName} className="h-full w-full object-cover" />
                     ) : (
-                      <div className="flex h-full items-center justify-center text-slate-400">No Image</div>
+                      <div className="flex h-full items-center justify-center text-muted">No Image</div>
                     )}
                   </div>
                 </div>
 
-                <div className="mt-4 space-y-3 text-sm text-slate-600">
+                <div className="mt-4 space-y-3 text-sm text-text-secondary">
                   {product.seller?.location && (
-                    <p className="flex items-center gap-2"><MapPin className="w-4 h-4 text-slate-400" /> {product.seller.location}</p>
+                    <p className="flex items-center gap-2"><MapPin className="w-4 h-4 text-muted" /> {product.seller.location}</p>
                   )}
                   {sellerJoined && (
-                    <p className="flex items-center gap-2"><CalendarDays className="w-4 h-4 text-slate-400" /> Joined {sellerJoined}</p>
+                    <p className="flex items-center gap-2"><CalendarDays className="w-4 h-4 text-muted" /> Joined {sellerJoined}</p>
                   )}
                   {product.seller?.email && (
-                    <p className="flex items-center gap-2"><MessageCircle className="w-4 h-4 text-slate-400" /> {product.seller.email}</p>
+                    <p className="flex items-center gap-2"><MessageCircle className="w-4 h-4 text-muted" /> {product.seller.email}</p>
                   )}
                 </div>
 
@@ -392,7 +392,7 @@ const ProductDetailPage = () => {
                       <button
                         type="button"
                         onClick={startChatWithSeller}
-                        className="inline-flex w-full items-center justify-center gap-2 rounded-3xl bg-sky-600 px-4 py-3 text-sm font-semibold text-white hover:bg-sky-700 transition"
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-3xl bg-primary px-4 py-3 text-sm font-semibold text-white hover:bg-primary-hover transition"
                       >
                         <MessageCircle className="w-4 h-4" />
                         Message seller
@@ -402,7 +402,7 @@ const ProductDetailPage = () => {
                         onClick={() => {
                           window.open(`mailto:${product.seller?.email}?subject=${encodeURIComponent(`Question about ${product.title}`)}`, '_blank');
                         }}
-                        className="inline-flex w-full items-center justify-center gap-2 rounded-3xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-3xl border border-muted bg-white px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background transition"
                       >
                         <ArrowUpRight className="w-4 h-4" />
                         Email seller
@@ -416,7 +416,7 @@ const ProductDetailPage = () => {
                     telegramHandle={product.seller?.telegramHandle}
                   />
                   {chatStatus && (
-                    <div className="rounded-3xl bg-sky-50 p-4 text-sm text-sky-700">
+                    <div className="rounded-3xl bg-primary/10 p-4 text-sm text-primary">
                       {chatStatus}
                     </div>
                   )}
@@ -426,7 +426,7 @@ const ProductDetailPage = () => {
                       <button
                         type="button"
                         onClick={() => navigate(`/post-product?id=${product._id}`)}
-                        className="inline-flex w-full items-center justify-center gap-2 rounded-3xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-3xl border border-muted bg-white px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background transition"
                       >
                         Edit Product
                       </button>
@@ -457,7 +457,7 @@ const ProductDetailPage = () => {
                               setStatus('Could not update product status.');
                             }
                           }}
-                          className="inline-flex w-full items-center justify-center gap-2 rounded-3xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white hover:bg-slate-800 transition"
+                          className="inline-flex w-full items-center justify-center gap-2 rounded-3xl bg-text-primary px-4 py-3 text-sm font-semibold text-white hover:bg-primary-hover transition"
                         >
                           Mark as Sold
                         </button>
@@ -490,15 +490,15 @@ const ProductDetailPage = () => {
                 </div>
 
                 {reportOpen && (
-                  <div className="mt-5 rounded-3xl border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-sm font-semibold text-slate-700">Report this {reportTargetType === 'product' ? 'listing' : 'seller'}</p>
+                  <div className="mt-5 rounded-3xl border border-muted bg-background p-4">
+                    <p className="text-sm font-semibold text-text-secondary">Report this {reportTargetType === 'product' ? 'listing' : 'seller'}</p>
                     <div className="mt-3 space-y-4">
-                      <label className="block text-sm text-slate-700">
+                      <label className="block text-sm text-text-secondary">
                         Reason
                         <select
                           value={reportReason}
                           onChange={(e) => setReportReason(e.target.value as 'scam' | 'fake_product' | 'duplicate_listing' | 'wrong_category' | 'other' | '')}
-                          className="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-100"
+                          className="mt-2 w-full rounded-2xl border border-muted bg-white px-4 py-3 text-sm text-text-primary outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-100"
                         >
                           <option value="">Select reason</option>
                           <option value="scam">Scam</option>
@@ -508,14 +508,14 @@ const ProductDetailPage = () => {
                           <option value="other">Other</option>
                         </select>
                       </label>
-                      <label className="block text-sm text-slate-700">
+                      <label className="block text-sm text-text-secondary">
                         Message
                         <textarea
                           value={reportMessage}
                           onChange={(e) => setReportMessage(e.target.value)}
                           rows={3}
                           placeholder="Add any additional details"
-                          className="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-100"
+                          className="mt-2 w-full rounded-2xl border border-muted bg-white px-4 py-3 text-sm text-text-primary outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-100"
                         />
                       </label>
                       <button
@@ -536,13 +536,13 @@ const ProductDetailPage = () => {
                 )}
               </div>
 
-              <div className="rounded-[2rem] bg-slate-50 p-6 shadow-sm">
-                <h2 className="text-xl font-semibold text-slate-900">Safety tips for buyers</h2>
-                <ul className="mt-4 space-y-3 text-sm text-slate-600">
-                  <li className="flex items-start gap-3"><span className="mt-1 inline-flex h-2.5 w-2.5 rounded-full bg-sky-500" /> Meet in a safe public place.</li>
-                  <li className="flex items-start gap-3"><span className="mt-1 inline-flex h-2.5 w-2.5 rounded-full bg-sky-500" /> Verify the product before paying.</li>
-                  <li className="flex items-start gap-3"><span className="mt-1 inline-flex h-2.5 w-2.5 rounded-full bg-sky-500" /> Use trusted payment methods where possible.</li>
-                  <li className="flex items-start gap-3"><span className="mt-1 inline-flex h-2.5 w-2.5 rounded-full bg-sky-500" /> Keep conversation on the platform or email for proof.</li>
+              <div className="rounded-[2rem] bg-background p-6 shadow-sm">
+                <h2 className="text-xl font-semibold text-text-primary">Safety tips for buyers</h2>
+                <ul className="mt-4 space-y-3 text-sm text-text-secondary">
+                  <li className="flex items-start gap-3"><span className="mt-1 inline-flex h-2.5 w-2.5 rounded-full bg-primary" /> Meet in a safe public place.</li>
+                  <li className="flex items-start gap-3"><span className="mt-1 inline-flex h-2.5 w-2.5 rounded-full bg-primary" /> Verify the product before paying.</li>
+                  <li className="flex items-start gap-3"><span className="mt-1 inline-flex h-2.5 w-2.5 rounded-full bg-primary" /> Use trusted payment methods where possible.</li>
+                  <li className="flex items-start gap-3"><span className="mt-1 inline-flex h-2.5 w-2.5 rounded-full bg-primary" /> Keep conversation on the platform or email for proof.</li>
                 </ul>
               </div>
             </div>
@@ -553,15 +553,15 @@ const ProductDetailPage = () => {
           <div className="mt-10">
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="text-sm uppercase tracking-[0.35em] text-slate-500">Similar Products</p>
-                <h2 className="text-2xl font-semibold text-slate-900">You might also like</h2>
+                <p className="text-sm uppercase tracking-[0.35em] text-muted">Similar Products</p>
+                <h2 className="text-2xl font-semibold text-text-primary">You might also like</h2>
               </div>
-              <Link to="/products" className="text-sm font-semibold text-sky-600 hover:text-sky-700">Browse all</Link>
+              <Link to="/products" className="text-sm font-semibold text-primary hover:text-primary">Browse all</Link>
             </div>
 
             <div className="mt-6">
               {relatedLoading ? (
-                <div className="rounded-[2rem] border border-slate-200 bg-slate-50 p-8 text-center text-slate-600">
+                <div className="rounded-[2rem] border border-muted bg-background p-8 text-center text-text-secondary">
                   Loading similar products...
                 </div>
               ) : relatedProducts.length > 0 ? (
@@ -581,7 +581,7 @@ const ProductDetailPage = () => {
                   ))}
                 </div>
               ) : (
-                <div className="rounded-[2rem] border border-slate-200 bg-slate-50 p-8 text-center text-slate-600">
+                <div className="rounded-[2rem] border border-muted bg-background p-8 text-center text-text-secondary">
                   No similar products were found in this category.
                 </div>
               )}
@@ -589,10 +589,12 @@ const ProductDetailPage = () => {
           </div>
         )}
 
-        {status && <p className="mt-6 text-sm text-slate-600">{status}</p>}
+        {status && <p className="mt-6 text-sm text-text-secondary">{status}</p>}
       </div>
     </>
   );
 };
 
 export default ProductDetailPage;
+
+

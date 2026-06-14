@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+﻿import { Link } from 'react-router-dom';
 import { useEffect, useState, MouseEvent } from 'react';
 import { MapPin, Heart, Eye } from 'lucide-react';
 import { formatViewsCount } from '../../utils/views';
@@ -50,7 +50,7 @@ const ProductCard = ({ title, price, location, category, id, imageUrl, viewsCoun
         />
         
         {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-text-primary/40 via-transparent to-transparent" />
         
         {/* Category Badge */}
         {category && (
@@ -100,7 +100,7 @@ const ProductCard = ({ title, price, location, category, id, imageUrl, viewsCoun
           aria-label={isSaved ? 'Remove from favorites' : 'Save to favorites'}
         >
           <Heart
-            className={`w-5 h-5 transition ${isSaved ? 'text-red-500 fill-current' : 'text-slate-400'}`}
+            className={`w-5 h-5 transition ${isSaved ? 'text-red-500 fill-current' : 'text-muted'}`}
             fill={isSaved ? 'currentColor' : 'none'}
           />
         </button>
@@ -116,7 +116,7 @@ const ProductCard = ({ title, price, location, category, id, imageUrl, viewsCoun
         {/* Location */}
         {location && (
           <div className="mt-2 flex items-center gap-1 text-sm text-text-secondary">
-            <MapPin className="w-4 h-4 text-slate-400" />
+            <MapPin className="w-4 h-4 text-muted" />
             <span className="truncate">{location}</span>
           </div>
         )}
@@ -131,7 +131,7 @@ const ProductCard = ({ title, price, location, category, id, imageUrl, viewsCoun
               {priceText.khr}
             </span>
           </div>
-          <div className="inline-flex items-center gap-2 rounded-full bg-background px-3 py-1 text-xs font-semibold uppercase tracking-wide text-text-secondary group-hover:bg-slate-100 transition">
+          <div className="inline-flex items-center gap-2 rounded-full bg-background px-3 py-1 text-xs font-semibold uppercase tracking-wide text-text-secondary group-hover:bg-background transition">
             <Eye className="w-4 h-4" />
             {formatViewsCount(viewsCount)} views
           </div>
@@ -142,3 +142,5 @@ const ProductCard = ({ title, price, location, category, id, imageUrl, viewsCoun
 };
 
 export default ProductCard;
+
+

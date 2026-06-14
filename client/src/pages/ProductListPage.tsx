@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import SearchBar from '../components/marketplace/SearchBar';
 import TopAdBanner from '../components/marketplace/TopAdBanner';
@@ -65,9 +65,9 @@ const ProductListPage = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <div className="space-y-6">
-        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h1 className="text-3xl font-bold text-slate-900">Search products</h1>
-          <p className="mt-2 text-sm text-slate-600">
+        <section className="rounded-3xl border border-muted bg-white p-6 shadow-sm">
+          <h1 className="text-3xl font-bold text-text-primary">Search products</h1>
+          <p className="mt-2 text-sm text-text-secondary">
             Use filters to narrow down results by category, province, condition, price and post date.
           </p>
           <div className="mt-6">
@@ -81,17 +81,17 @@ const ProductListPage = () => {
         <section className="space-y-6">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-2xl font-semibold text-slate-900">Products</h2>
-              <p className="text-sm text-slate-600">Showing {products.length} of {total} matching listings.</p>
+              <h2 className="text-2xl font-semibold text-text-primary">Products</h2>
+              <p className="text-sm text-text-secondary">Showing {products.length} of {total} matching listings.</p>
             </div>
           </div>
 
           {loading ? (
-            <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center text-slate-700">Loading products…</div>
+            <div className="rounded-3xl border border-muted bg-white p-8 text-center text-text-secondary">Loading products…</div>
           ) : error ? (
             <div className="rounded-3xl border border-red-200 bg-red-50 p-8 text-center text-red-700">{error}</div>
           ) : products.length === 0 ? (
-            <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center text-slate-700">No products found. Try adjusting your filters.</div>
+            <div className="rounded-3xl border border-muted bg-white p-8 text-center text-text-secondary">No products found. Try adjusting your filters.</div>
           ) : (
             <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
               {products.map((product) => (
@@ -131,3 +131,4 @@ const ProductListPage = () => {
 };
 
 export default ProductListPage;
+

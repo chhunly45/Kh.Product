@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { getActiveBanners } from '../../services/banner.api';
 
 interface TopAdBannerProps {
@@ -27,25 +27,25 @@ const TopAdBanner = ({ imageUrl, link }: TopAdBannerProps) => {
 
   const display = banner
     ? (
-      <div className="rounded-2xl overflow-hidden border border-slate-200 bg-white shadow-sm">
+      <div className="rounded-2xl overflow-hidden border border-muted bg-white shadow-sm">
         <div className="flex items-center gap-4 p-4 sm:p-6">
           <div className="flex-shrink-0">
             {banner.imageUrl ? (
               <img src={banner.imageUrl} alt={banner.title} className="hidden md:block w-48 h-20 object-cover rounded-md" />
             ) : (
-              <div className="hidden md:flex w-48 h-20 bg-slate-100 rounded-md items-center justify-center text-slate-400">Ad image</div>
+              <div className="hidden md:flex w-48 h-20 bg-background rounded-md items-center justify-center text-muted">Ad image</div>
             )}
           </div>
 
           <div className="flex-1 min-w-0">
-            <h3 className="text-lg sm:text-xl font-bold text-slate-900">{banner.title}</h3>
-            <p className="text-sm text-slate-600 truncate">{banner.subtitle}</p>
+            <h3 className="text-lg sm:text-xl font-bold text-text-primary">{banner.title}</h3>
+            <p className="text-sm text-text-secondary truncate">{banner.subtitle}</p>
           </div>
 
           <div className="flex-shrink-0">
             <a
               href={banner.linkUrl || link || '/contact'}
-              className="inline-flex items-center px-4 py-2 rounded-md bg-sky-600 text-white font-semibold hover:bg-sky-700 transition text-sm"
+              className="inline-flex items-center px-4 py-2 rounded-md bg-primary text-white font-semibold hover:bg-primary-hover transition text-sm"
               aria-label="Contact us about advertising"
             >
               Contact us
@@ -55,25 +55,25 @@ const TopAdBanner = ({ imageUrl, link }: TopAdBannerProps) => {
       </div>
     )
     : (
-      <div className="rounded-2xl overflow-hidden border border-slate-200 bg-white shadow-sm">
+      <div className="rounded-2xl overflow-hidden border border-muted bg-white shadow-sm">
         <div className="flex items-center gap-4 p-4 sm:p-6">
           <div className="flex-shrink-0">
             {imageUrl ? (
               <img src={imageUrl} alt="ad" className="hidden md:block w-48 h-20 object-cover rounded-md" />
             ) : (
-              <div className="hidden md:flex w-48 h-20 bg-slate-100 rounded-md items-center justify-center text-slate-400">Ad image</div>
+              <div className="hidden md:flex w-48 h-20 bg-background rounded-md items-center justify-center text-muted">Ad image</div>
             )}
           </div>
 
           <div className="flex-1 min-w-0">
-            <h3 className="text-lg sm:text-xl font-bold text-slate-900">Advertise with Konpuk</h3>
-            <p className="text-sm text-slate-600 truncate">Promote your products to thousands of local buyers</p>
+            <h3 className="text-lg sm:text-xl font-bold text-text-primary">Advertise with Konpuk</h3>
+            <p className="text-sm text-text-secondary truncate">Promote your products to thousands of local buyers</p>
           </div>
 
           <div className="flex-shrink-0">
             <a
               href={link || '/contact'}
-              className="inline-flex items-center px-4 py-2 rounded-md bg-sky-600 text-white font-semibold hover:bg-sky-700 transition text-sm"
+              className="inline-flex items-center px-4 py-2 rounded-md bg-primary text-white font-semibold hover:bg-primary-hover transition text-sm"
               aria-label="Contact us about advertising"
             >
               Contact us
@@ -91,3 +91,4 @@ const TopAdBanner = ({ imageUrl, link }: TopAdBannerProps) => {
 };
 
 export default TopAdBanner;
+

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { requestPasswordReset, resetPassword, resendPasswordResetCode } from '../services/auth.api';
 
@@ -115,16 +115,16 @@ const ForgotPasswordPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-xl rounded-[2rem] bg-white p-10 shadow-2xl ring-1 ring-slate-200">
+    <div className="min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-xl rounded-[2rem] bg-white p-10 shadow-2xl ring-1 ring-border">
         <div className="space-y-3 text-center">
-          <p className="text-sm uppercase tracking-[0.35em] text-sky-600">Forgot password</p>
-          <h1 className="text-3xl font-semibold text-slate-900">Reset your password</h1>
-          <p className="text-sm text-slate-500">Enter your email or phone to receive a reset code and set a new password.</p>
+          <p className="text-sm uppercase tracking-[0.35em] text-primary">Forgot password</p>
+          <h1 className="text-3xl font-semibold text-text-primary">Reset your password</h1>
+          <p className="text-sm text-muted">Enter your email or phone to receive a reset code and set a new password.</p>
         </div>
 
         {status && (
-          <div className="mt-6 rounded-3xl border border-sky-200 bg-sky-50 p-4 text-sm text-sky-700">
+          <div className="mt-6 rounded-3xl border border-primary/30 bg-primary/10 p-4 text-sm text-primary">
             {status}
           </div>
         )}
@@ -137,20 +137,20 @@ const ForgotPasswordPage = () => {
         {stage === 'request' ? (
           <form className="mt-10 space-y-6" onSubmit={handleRequest}>
             <label className="block">
-              <span className="text-sm font-medium text-slate-700">Email or Phone</span>
+              <span className="text-sm font-medium text-text-secondary">Email or Phone</span>
               <input
                 type="text"
                 value={identifier}
                 onChange={(event) => setIdentifier(event.target.value)}
                 placeholder="Email or phone"
-                className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                className="mt-2 w-full rounded-3xl border border-muted bg-background px-4 py-3 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
                 disabled={loading}
               />
             </label>
 
             <button
               type="submit"
-              className="w-full rounded-3xl bg-sky-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-sky-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full rounded-3xl bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loading}
             >
               {loading ? 'Sending code...' : 'Send reset code'}
@@ -159,49 +159,49 @@ const ForgotPasswordPage = () => {
         ) : (
           <form className="mt-10 space-y-6" onSubmit={handleReset}>
             <label className="block">
-              <span className="text-sm font-medium text-slate-700">Email or Phone</span>
+              <span className="text-sm font-medium text-text-secondary">Email or Phone</span>
               <input
                 type="text"
                 value={identifier}
                 onChange={(event) => setIdentifier(event.target.value)}
                 placeholder="Email or phone"
-                className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                className="mt-2 w-full rounded-3xl border border-muted bg-background px-4 py-3 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
                 disabled={loading}
               />
             </label>
 
             <label className="block">
-              <span className="text-sm font-medium text-slate-700">Reset Code</span>
+              <span className="text-sm font-medium text-text-secondary">Reset Code</span>
               <input
                 type="text"
                 value={otpCode}
                 onChange={(event) => setOtpCode(event.target.value.replace(/\D/g, '').slice(0, 6))}
                 placeholder="Enter 6-digit code"
-                className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                className="mt-2 w-full rounded-3xl border border-muted bg-background px-4 py-3 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
                 disabled={loading}
               />
             </label>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="block">
-                <span className="text-sm font-medium text-slate-700">New Password</span>
+                <span className="text-sm font-medium text-text-secondary">New Password</span>
                 <input
                   type="password"
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                   placeholder="New password"
-                  className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                  className="mt-2 w-full rounded-3xl border border-muted bg-background px-4 py-3 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
                   disabled={loading}
                 />
               </label>
               <label className="block">
-                <span className="text-sm font-medium text-slate-700">Confirm Password</span>
+                <span className="text-sm font-medium text-text-secondary">Confirm Password</span>
                 <input
                   type="password"
                   value={confirmPassword}
                   onChange={(event) => setConfirmPassword(event.target.value)}
                   placeholder="Confirm password"
-                  className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                  className="mt-2 w-full rounded-3xl border border-muted bg-background px-4 py-3 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
                   disabled={loading}
                 />
               </label>
@@ -209,7 +209,7 @@ const ForgotPasswordPage = () => {
 
             <button
               type="submit"
-              className="w-full rounded-3xl bg-sky-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-sky-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full rounded-3xl bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loading}
             >
               {loading ? 'Resetting...' : 'Reset password'}
@@ -218,7 +218,7 @@ const ForgotPasswordPage = () => {
             <button
               type="button"
               onClick={handleResend}
-              className="w-full rounded-3xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full rounded-3xl border border-muted bg-white px-5 py-3 text-sm font-semibold text-text-secondary transition hover:bg-background disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loading || resendCooldown > 0}
             >
               {resendCooldown > 0 ? `Resend code in ${resendCooldown}s` : 'Resend reset code'}
@@ -226,8 +226,8 @@ const ForgotPasswordPage = () => {
           </form>
         )}
 
-        <p className="mt-6 text-center text-sm text-slate-500">
-          Remembered your password? <Link to="/login" className="font-semibold text-sky-600 hover:text-sky-700">Sign in</Link>
+        <p className="mt-6 text-center text-sm text-muted">
+          Remembered your password? <Link to="/login" className="font-semibold text-primary hover:text-primary">Sign in</Link>
         </p>
       </div>
     </div>
@@ -235,3 +235,5 @@ const ForgotPasswordPage = () => {
 };
 
 export default ForgotPasswordPage;
+
+

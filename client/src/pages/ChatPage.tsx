@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+﻿import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { connectSocket, disconnectSocket } from '../services/socket';
 import { getChat, listChats, markChatRead } from '../services/chat.api';
@@ -138,11 +138,11 @@ const ChatPage = () => {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[360px_1fr]">
-      <aside className="rounded-[2rem] bg-white p-6 shadow-xl ring-1 ring-slate-200">
+      <aside className="rounded-[2rem] bg-white p-6 shadow-xl ring-1 ring-border">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-slate-900">Inbox</h2>
-            <p className="text-sm text-slate-500">{onlineUsers.length} users online</p>
+            <h2 className="text-xl font-semibold text-text-primary">Inbox</h2>
+            <p className="text-sm text-muted">{onlineUsers.length} users online</p>
           </div>
         </div>
 
@@ -155,41 +155,41 @@ const ChatPage = () => {
                 key={chat._id}
                 type="button"
                 onClick={() => handleSelectChat(chat._id)}
-                className={`w-full rounded-3xl border p-4 text-left transition ${selectedChatId === chat._id ? 'border-sky-500 bg-sky-50' : 'border-slate-200 hover:border-sky-500 hover:bg-slate-50'}`}
+                className={`w-full rounded-3xl border p-4 text-left transition ${selectedChatId === chat._id ? 'border-primary bg-primary/10' : 'border-muted hover:border-primary hover:bg-background'}`}
               >
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <p className="font-semibold text-slate-900">{contact.displayName || 'Conversation'}</p>
-                    <p className="mt-1 text-sm text-slate-500">{chat.product.title}</p>
+                    <p className="font-semibold text-text-primary">{contact.displayName || 'Conversation'}</p>
+                    <p className="mt-1 text-sm text-muted">{chat.product.title}</p>
                   </div>
                   <div className="flex items-center gap-2">
                     {isOnline && <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />}
-                    {chat.unreadCount > 0 && <span className="rounded-full bg-sky-600 px-2 py-1 text-xs font-semibold text-white">{chat.unreadCount}</span>}
+                    {chat.unreadCount > 0 && <span className="rounded-full bg-primary px-2 py-1 text-xs font-semibold text-white">{chat.unreadCount}</span>}
                   </div>
                 </div>
-                {chat.lastMessage?.content && <p className="mt-3 text-sm text-slate-600 truncate">{chat.lastMessage.content}</p>}
+                {chat.lastMessage?.content && <p className="mt-3 text-sm text-text-secondary truncate">{chat.lastMessage.content}</p>}
               </button>
             );
           })}
         </div>
       </aside>
 
-      <section className="rounded-[2rem] bg-white p-6 shadow-xl ring-1 ring-slate-200">
-        <div className="flex items-center justify-between gap-4 border-b border-slate-200 pb-4">
+      <section className="rounded-[2rem] bg-white p-6 shadow-xl ring-1 ring-border">
+        <div className="flex items-center justify-between gap-4 border-b border-muted pb-4">
           <div>
-            <p className="text-sm uppercase tracking-[0.35em] text-sky-600">Live chat</p>
-            <h1 className="text-2xl font-semibold text-slate-900">{activeTitle}</h1>
+            <p className="text-sm uppercase tracking-[0.35em] text-primary">Live chat</p>
+            <h1 className="text-2xl font-semibold text-text-primary">{activeTitle}</h1>
           </div>
-          <span className="rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-700">{selectedChat?.status || 'Active'}</span>
+          <span className="rounded-full bg-background px-4 py-2 text-sm text-text-secondary">{selectedChat?.status || 'Active'}</span>
         </div>
 
         <div className="mt-6 min-h-[420px] space-y-3 overflow-y-auto pr-2">
           {messages.map((message, index) => {
             const isMine = message.sender === currentUserId;
             return (
-              <div key={index} className={`rounded-3xl px-4 py-3 text-sm ${isMine ? 'ml-auto bg-sky-600 text-white' : 'bg-slate-100 text-slate-700'} max-w-[80%]`}>
+              <div key={index} className={`rounded-3xl px-4 py-3 text-sm ${isMine ? 'ml-auto bg-primary text-white' : 'bg-background text-text-secondary'} max-w-[80%]`}>
                 {message.content}
-                <div className="mt-2 text-[11px] text-slate-500">{new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                <div className="mt-2 text-[11px] text-muted">{new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
               </div>
             );
           })}
@@ -201,20 +201,22 @@ const ChatPage = () => {
             value={inputValue}
             onChange={(event) => setInputValue(event.target.value)}
             placeholder="Type your message"
-            className="flex-1 rounded-full border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+            className="flex-1 rounded-full border border-muted bg-background px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
           />
           <button
             type="submit"
-            className="rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+            className="rounded-full bg-text-primary px-6 py-3 text-sm font-semibold text-white transition hover:bg-primary-hover"
           >
             Send
           </button>
         </form>
 
-        {status && <p className="mt-4 text-sm text-slate-600">{status}</p>}
+        {status && <p className="mt-4 text-sm text-text-secondary">{status}</p>}
       </section>
     </div>
   );
 };
 
 export default ChatPage;
+
+
