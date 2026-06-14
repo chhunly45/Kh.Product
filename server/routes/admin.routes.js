@@ -29,6 +29,12 @@ router.patch('/users/:id/status',
 router.get('/products', adminController.listProducts);
 router.patch('/products/:id/status', param('id').isMongoId(), body('status').isIn(['published','sold','archived','flagged']).withMessage('Invalid status'), validate, adminController.updateProductStatus);
 router.patch('/products/:id/featured', param('id').isMongoId(), body('featured').isBoolean(), validate, adminController.updateProductFeatured);
+router.get('/promotions', adminController.listPromotions);
+router.get('/promotions/metrics', adminController.getPromotionMetrics);
+router.patch('/promotions/:id/approve', param('id').isMongoId(), validate, adminController.approvePromotion);
+router.patch('/promotions/:id/reject', param('id').isMongoId(), body('reason').optional().trim(), validate, adminController.rejectPromotion);
+router.patch('/promotions/:id/extend', param('id').isMongoId(), body('extraDays').isInt({ min: 1 }).withMessage('extraDays must be at least 1'), validate, adminController.extendPromotion);
+router.patch('/promotions/:id/cancel', param('id').isMongoId(), validate, adminController.cancelPromotion);
 router.get('/reports', adminController.listReports);
 router.patch('/reports/:id', param('id').isMongoId(), body('status').isIn(['pending','reviewed','resolved','rejected']).withMessage('Invalid report status'), validate, adminController.updateReportStatus);
 router.get('/audit-logs', adminController.listAuditLogs);

@@ -17,6 +17,8 @@ import AdminDashboardPage from '../pages/AdminDashboardPage';
 import AdminBannersPage from '../pages/AdminBannersPage';
 import AdminRevenuePage from '../pages/AdminRevenuePage';
 import AdminTrafficAnalyticsPage from '../pages/AdminTrafficAnalyticsPage';
+import AdminPromotionsPage from '../pages/AdminPromotionsPage';
+import SellerPromotionsPage from '../pages/SellerPromotionsPage';
 import AdminLayout from '../components/layout/AdminLayout';
 import AdminRoute from './AdminRoute';
 import NotificationsPage from '../pages/NotificationsPage';
@@ -43,6 +45,7 @@ const AppRoutes = () => (
     <Route path="/messages/:id" element={<ChatPage />} />
     <Route path="/dashboard" element={<DashboardPage />} />
     <Route path="/seller/analytics" element={<SellerAnalyticsPage />} />
+    <Route path="/seller/promotions" element={<SellerPromotionsPage />} />
     <Route path="/admin" element={<AdminRoute />}>
       <Route element={<AdminLayout />}>
         <Route index element={<AdminDashboardPage />} />
@@ -52,6 +55,7 @@ const AppRoutes = () => (
         <Route path="reports" element={<AdminDashboardPage />} />
         <Route path="revenue" element={<AdminRevenuePage />} />
         <Route path="traffic" element={<AdminTrafficAnalyticsPage />} />
+        <Route path="promotions" element={<AdminPromotionsPage />} />
         <Route path="analytics" element={<AdminDashboardPage />} />
         <Route path="audit" element={<AdminDashboardPage />} />
         <Route path="banners" element={<AdminBannersPage />} />

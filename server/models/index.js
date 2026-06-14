@@ -11,6 +11,7 @@ const Banner = require('./Banner');
 const Review = require('./Review');
 const AuditLog = require('./AuditLog');
 const Transaction = require('./Transaction');
+const Promotion = require('./Promotion');
 const PageView = require('./PageView');
 const Search = require('./Search');
 const Visitor = require('./Visitor');
@@ -29,6 +30,7 @@ module.exports = {
   Review,
   AuditLog,
   Transaction,
+  Promotion,
   PageView,
   Search,
   Visitor

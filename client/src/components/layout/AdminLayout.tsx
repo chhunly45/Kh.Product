@@ -9,6 +9,7 @@ const navItems = [
   { label: 'Reports', to: '/admin/reports', icon: FileText },
   { label: 'Revenue', to: '/admin/revenue', icon: TrendingUp },
   { label: 'Traffic', to: '/admin/traffic', icon: Activity },
+  { label: 'Promotions', to: '/admin/promotions', icon: TrendingUp },
   { label: 'Analytics', to: '/admin/analytics', icon: BarChart3 },
   { label: 'Audit', to: '/admin/audit', icon: ShieldCheck }
 ];

@@ -1,8 +1,37 @@
-const { User, Product, Chat, Report, Image } = require('../models');
+const { User, Product, Chat, Report, Image, AuditLog } = require('../models');
 const mongoose = require('mongoose');
 const notificationService = require('./notification.service');
 
 const sellerBackfillFields = 'displayName profileImageUrl avatar email phoneNumber sellerVerificationStatus';
+
+const createAuditLog = async ({ adminId, reportId, action, targetType, targetId, details, metadata = {} }) => {
+  return AuditLog.create({
+    admin: adminId,
+    report: reportId,
+    action,
+    targetType,
+    targetId,
+    details,
+    metadata
+  });
+};
+
+const listAuditLogs = async ({ page = 1, limit = 25, action, adminId }) => {
+  const query = {};
+  if (action) query.action = action;
+  if (adminId) query.admin = adminId;
+
+  const skip = (Number(page) - 1) * Number(limit);
+  const items = await AuditLog.find(query)
+    .populate('admin', 'displayName email')
+    .populate('report', 'reason status')
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(Number(limit))
+    .lean();
+  const total = await AuditLog.countDocuments(query);
+  return { items, meta: { page: Number(page), limit: Number(limit), total } };
+};
 
 const findFallbackSeller = async (product) => {
   const fallbackUserId = product.createdBy || product.user;
@@ -39,13 +68,18 @@ const listUsers = async ({ role, page = 1, limit = 25 }) => {
   return { items, meta: { page: Number(page), limit: Number(limit), total } };
 };
 
-const updateUserStatus = async (userId, updates) => {
+const updateUserStatus = async (userId, updates, adminId) => {
   const user = await User.findById(userId);
   if (!user) {
     const error = new Error('User not found');
     error.statusCode = 404;
     throw error;
   }
+
+  const previousStatus = user.isActive;
+  const previousRole = user.role;
+  const previousSellerVerification = user.sellerVerificationStatus;
+  const previousVerificationStatus = user.verificationStatus;
 
   if (updates.role) user.role = updates.role;
   if (updates.isActive !== undefined) user.isActive = updates.isActive;
@@ -77,7 +111,27 @@ const updateUserStatus = async (userId, updates) => {
 
   await user.save();
 
-  if (updates.verificationStatus && ['approved', 'rejected'].includes(updates.verificationStatus)) {
+  if (updates.isActive !== undefined && previousStatus !== updates.isActive) {
+    await notificationService.addNotification(user._id, {
+      type: updates.isActive ? 'account_reactivated' : 'account_suspended',
+      title: updates.isActive ? 'Account reactivated' : 'Account suspended',
+      message: updates.isActive
+        ? 'Your account has been reactivated by the moderation team.'
+        : 'Your account has been suspended by the moderation team due to policy concerns.',
+      link: '/profile'
+    });
+  }
+
+  if (updates.role && previousRole !== updates.role) {
+    await notificationService.addNotification(user._id, {
+      type: 'role_change',
+      title: 'Role updated',
+      message: `Your account role has been changed to ${updates.role}.`,
+      link: '/profile'
+    });
+  }
+
+  if (updates.verificationStatus && ['approved', 'rejected'].includes(updates.verificationStatus) && previousVerificationStatus !== updates.verificationStatus) {
     await notificationService.addNotification(user._id, {
       type: 'verification',
       title: `Verification ${updates.verificationStatus}`,
@@ -88,7 +142,7 @@ const updateUserStatus = async (userId, updates) => {
     });
   }
 
-  if (updates.sellerVerificationStatus && ['verified', 'rejected', 'unverified'].includes(updates.sellerVerificationStatus)) {
+  if (updates.sellerVerificationStatus && ['verified', 'rejected', 'unverified'].includes(updates.sellerVerificationStatus) && previousSellerVerification !== updates.sellerVerificationStatus) {
     await notificationService.addNotification(user._id, {
       type: 'seller_verification',
       title: `Seller ${updates.sellerVerificationStatus}`,
@@ -98,6 +152,18 @@ const updateUserStatus = async (userId, updates) => {
         ? 'Your seller verification has been rejected.'
         : 'Your seller verification status has been reset to unverified.',
       link: '/profile'
+    });
+  }
+
+  if (adminId && (updates.isActive !== undefined || updates.role || updates.sellerVerificationStatus || updates.verificationStatus)) {
+    await createAuditLog({
+      adminId,
+      reportId: null,
+      action: 'user.update',
+      targetType: 'user',
+      targetId: user._id,
+      details: `Updated user ${user._id}: ${JSON.stringify(updates)}`,
+      metadata: { updates }
     });
   }
 
@@ -113,29 +179,67 @@ const listProducts = async ({ status, page = 1, limit = 25 }) => {
   return { items, meta: { page: Number(page), limit: Number(limit), total } };
 };
 
-const updateProductStatus = async (productId, status) => {
+const updateProductStatus = async (productId, status, adminId) => {
   const product = await Product.findById(productId);
   if (!product) {
     const error = new Error('Product not found');
     error.statusCode = 404;
     throw error;
   }
+
+  const previousStatus = product.status;
   product.status = status;
   await product.save();
+
+  if (previousStatus !== status && product.seller) {
+    await notificationService.addNotification(product.seller, {
+      type: 'product_moderation',
+      title: 'Listing status updated',
+      message: `Your listing "${product.title}" has been marked ${status} by the moderation team.`,
+      link: `/products/${product._id}`
+    });
+  }
+
+  if (adminId) {
+    await createAuditLog({
+      adminId,
+      reportId: null,
+      action: 'product.update_status',
+      targetType: 'product',
+      targetId: product._id,
+      details: `Product status changed from ${previousStatus} to ${status}`,
+      metadata: { previousStatus, status }
+    });
+  }
+
   return product;
 };
 
-const updateProductFeatured = async (productId, featured) => {
+const updateProductFeatured = async (productId, featured, adminId) => {
   const product = await Product.findById(productId);
   if (!product) {
     const error = new Error('Product not found');
     error.statusCode = 404;
     throw error;
   }
+  const previousFeatured = Boolean(product.featured || product.isFeatured);
   product.featured = Boolean(featured);
   product.isFeatured = Boolean(featured);
   product.featuredAt = product.featured ? new Date() : null;
   await product.save();
+
+  if (adminId && previousFeatured !== Boolean(featured)) {
+    await createAuditLog({
+      adminId,
+      reportId: null,
+      action: 'product.featured_toggle',
+      targetType: 'product',
+      targetId: product._id,
+      details: `Product featured set to ${Boolean(featured)}`,
+      metadata: { featured: Boolean(featured) }
+    });
+  }
+
   return product;
 };
 
@@ -143,7 +247,12 @@ const listReports = async ({ status, page = 1, limit = 25 }) => {
   const query = {};
   if (status) query.status = status;
   const skip = (Number(page) - 1) * Number(limit);
-  const items = await Report.find(query).populate('reporter', 'displayName email').skip(skip).limit(Number(limit)).sort({ createdAt: -1 });
+  const items = await Report.find(query)
+    .populate('reporter', 'displayName email')
+    .populate('handledBy', 'displayName email')
+    .skip(skip)
+    .limit(Number(limit))
+    .sort({ createdAt: -1 });
   const total = await Report.countDocuments(query);
   return { items, meta: { page: Number(page), limit: Number(limit), total } };
 };
@@ -171,9 +280,54 @@ const updateReportStatus = async (reportId, status, adminId) => {
     error.statusCode = 404;
     throw error;
   }
+
   report.status = status;
   report.handledBy = adminId;
   await report.save();
+
+  await createAuditLog({
+    adminId,
+    reportId: report._id,
+    action: `report.${status}`,
+    targetType: report.targetType,
+    targetId: report.targetId,
+    details: `Report status updated to ${status}`
+  });
+
+  const reporter = await User.findById(report.reporter);
+  if (reporter) {
+    await notificationService.addNotification(reporter._id, {
+      type: 'report_update',
+      title: 'Report reviewed',
+      message: `Your report has been marked ${status} by the moderation team.`,
+      link: '/reports/me'
+    });
+  }
+
+  if (report.targetType === 'product') {
+    const product = await Product.findById(report.targetId);
+    if (product) {
+      await notificationService.addNotification(product.seller, {
+        type: 'report',
+        title: 'Listing report reviewed',
+        message: `A report for your listing "${product.title}" has been marked ${status}.`,
+        link: `/products/${product._id}`
+      });
+    }
+  }
+
+  if (report.targetType === 'user') {
+    const targetUser = await User.findById(report.targetId);
+    if (targetUser) {
+      await notificationService.addNotification(targetUser._id, {
+        type: 'report',
+        title: 'Report reviewed',
+        message: `A report filed against your account has been marked ${status}.`,
+        link: '/profile'
+      });
+    }
+  }
+
   return report;
 };
 
@@ -207,5 +361,11 @@ module.exports = {
   listReports,
   backfillProductSellers,
   updateReportStatus,
-  getProductsByProvince
+  getProductsByProvince,
+  listPromotions: require('./promotion.service').listPromotions,
+  getPromotionMetrics: require('./promotion.service').getPromotionMetrics,
+  approvePromotion: require('./promotion.service').approvePromotion,
+  rejectPromotion: require('./promotion.service').rejectPromotion,
+  extendPromotion: require('./promotion.service').extendPromotion,
+  cancelPromotion: require('./promotion.service').cancelPromotion
 };

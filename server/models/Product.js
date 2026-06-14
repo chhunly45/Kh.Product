@@ -20,6 +20,7 @@ const ProductSchema = new Schema({
   isFeatured: { type: Boolean, default: false },
   featured: { type: Boolean, default: false },
   featuredAt: { type: Date, default: null },
+  featuredPromotion: { type: Types.ObjectId, ref: 'Promotion', default: null },
   metaTitle: { type: String, trim: true },
   metaDescription: { type: String, trim: true },
   locationRegion: { type: String, trim: true },
