@@ -37,9 +37,9 @@ const ProductCard = ({ title, price, location, category, id, imageUrl, viewsCoun
   const priceText = formatPrice(price);
 
   return (
-    <Link to={`/products/${id}`} className="group block overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:shadow-xl hover:border-sky-200">
+    <Link to={`/products/${id}`} className="group block overflow-hidden rounded-2xl border border-muted bg-white shadow-sm transition hover:shadow-xl hover:border-primary">
       {/* Image Container */}
-      <div className="relative h-56 overflow-hidden bg-slate-200">
+      <div className="relative h-56 overflow-hidden bg-background">
         <img 
           src={src} 
           alt={title} 
@@ -55,7 +55,7 @@ const ProductCard = ({ title, price, location, category, id, imageUrl, viewsCoun
         {/* Category Badge */}
         {category && (
           <div className="absolute top-3 left-3">
-            <span className="rounded-full bg-sky-500 px-3 py-1 text-xs font-bold uppercase tracking-wide text-white shadow-lg">
+            <span className="rounded-full bg-primary px-3 py-1 text-xs font-bold uppercase tracking-wide text-white shadow-lg">
               {category}
             </span>
           </div>
@@ -63,7 +63,7 @@ const ProductCard = ({ title, price, location, category, id, imageUrl, viewsCoun
         {/* Featured Badge */}
         {featured && (
           <div className="absolute top-3 right-3">
-            <span className="rounded-full bg-amber-400 px-3 py-1 text-xs font-bold uppercase tracking-wide text-white shadow-lg">
+            <span className="rounded-full bg-accent px-3 py-1 text-xs font-bold uppercase tracking-wide text-white shadow-lg">
               Featured
             </span>
           </div>
@@ -71,14 +71,14 @@ const ProductCard = ({ title, price, location, category, id, imageUrl, viewsCoun
         {/* Seller badge */}
         {seller?.sellerVerificationStatus === 'verified' && (
           <div className="absolute top-3 left-3">
-            <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 shadow">
+            <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-text-primary shadow">
               Verified Seller ✓
             </span>
           </div>
         )}
         {seller?.sellerVerificationStatus === 'unverified' && (
           <div className="absolute top-3 left-3">
-            <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700 shadow">
+            <span className="rounded-full bg-muted/10 px-3 py-1 text-xs font-semibold text-text-secondary shadow">
               Unverified Seller
             </span>
           </div>
@@ -96,7 +96,7 @@ const ProductCard = ({ title, price, location, category, id, imageUrl, viewsCoun
               onToggleFavorite(id, isSaved);
             }
           }}
-          className="absolute top-3 right-3 rounded-full bg-white/90 p-2 text-slate-400 hover:text-red-500 hover:bg-white transition shadow-md"
+          className="absolute top-3 right-3 rounded-full bg-white/90 p-2 text-muted hover:text-red-500 hover:bg-white transition shadow-md"
           aria-label={isSaved ? 'Remove from favorites' : 'Save to favorites'}
         >
           <Heart
@@ -109,13 +109,13 @@ const ProductCard = ({ title, price, location, category, id, imageUrl, viewsCoun
       {/* Content */}
       <div className="p-4">
         {/* Title */}
-        <h3 className="line-clamp-2 text-base font-bold text-slate-900 group-hover:text-sky-600 transition">
+        <h3 className="line-clamp-2 text-base font-bold text-text-primary group-hover:text-primary transition">
           {title}
         </h3>
 
         {/* Location */}
         {location && (
-          <div className="mt-2 flex items-center gap-1 text-sm text-slate-500">
+          <div className="mt-2 flex items-center gap-1 text-sm text-text-secondary">
             <MapPin className="w-4 h-4 text-slate-400" />
             <span className="truncate">{location}</span>
           </div>
@@ -124,14 +124,14 @@ const ProductCard = ({ title, price, location, category, id, imageUrl, viewsCoun
         {/* Price & CTA */}
         <div className="mt-4 flex items-end justify-between gap-3">
           <div>
-            <span className="text-lg font-bold text-sky-600 block">
+            <span className="text-lg font-bold text-primary block">
               {priceText.usd}
             </span>
-            <span className="text-xs text-slate-500">
+            <span className="text-xs text-text-secondary">
               {priceText.khr}
             </span>
           </div>
-          <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-600 group-hover:bg-slate-200 transition">
+          <div className="inline-flex items-center gap-2 rounded-full bg-background px-3 py-1 text-xs font-semibold uppercase tracking-wide text-text-secondary group-hover:bg-slate-100 transition">
             <Eye className="w-4 h-4" />
             {formatViewsCount(viewsCount)} views
           </div>

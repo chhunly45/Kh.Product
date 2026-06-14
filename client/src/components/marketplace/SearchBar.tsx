@@ -133,28 +133,28 @@ const SearchBar = ({ initialFilters }: SearchBarProps) => {
     <form onSubmit={handleSearch} className="w-full space-y-4">
       <div className="flex flex-col sm:flex-row gap-3 sm:gap-2">
         <div className="flex-1 relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
           <input
             type="text"
             placeholder="What are you looking for?"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 placeholder-slate-500 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20 transition"
+            className="w-full pl-12 pr-4 py-3 rounded-lg border border-muted bg-white text-text-primary placeholder-text-secondary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition"
           />
         </div>
         <div className="relative">
-          <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+          <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
           <input
             type="text"
             placeholder="Location"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            className="w-full sm:w-44 pl-12 pr-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 placeholder-slate-500 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20 transition"
+            className="w-full sm:w-44 pl-12 pr-4 py-3 rounded-lg border border-muted bg-white text-text-primary placeholder-text-secondary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition"
           />
         </div>
         <button
           type="submit"
-          className="px-6 py-3 rounded-lg bg-sky-500 text-white font-semibold hover:bg-sky-600 transition duration-200 shadow-lg shadow-sky-500/30"
+          className="px-6 py-3 rounded-lg bg-primary text-white font-semibold hover:bg-primary-hover transition duration-200 shadow-lg shadow-primary/30"
         >
           Search
         </button>
@@ -163,7 +163,7 @@ const SearchBar = ({ initialFilters }: SearchBarProps) => {
       <button
         type="button"
         onClick={() => setShowAdvanced(!showAdvanced)}
-        className="inline-flex items-center gap-2 text-sm font-medium text-slate-700 hover:text-slate-900"
+        className="inline-flex items-center gap-2 text-sm font-medium text-text-secondary hover:text-text-primary"
       >
         {showAdvanced ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
         {showAdvanced ? 'Hide advanced filters' : 'Show advanced filters'}
@@ -172,11 +172,11 @@ const SearchBar = ({ initialFilters }: SearchBarProps) => {
       {showAdvanced && (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <label className="space-y-2">
-            <span className="text-sm font-medium text-slate-700">Category</span>
+            <span className="text-sm font-medium text-text-secondary">Category</span>
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+              className="w-full rounded-lg border border-muted bg-white px-4 py-3 text-text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
             >
               <option value="">Any category</option>
               {categories.map((cat) => (
@@ -188,11 +188,11 @@ const SearchBar = ({ initialFilters }: SearchBarProps) => {
           </label>
 
           <label className="space-y-2">
-            <span className="text-sm font-medium text-slate-700">Province</span>
+            <span className="text-sm font-medium text-text-secondary">Province</span>
             <select
               value={province}
               onChange={(e) => setProvince(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+              className="w-full rounded-lg border border-muted bg-white px-4 py-3 text-text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
             >
               <option value="">Any province</option>
               {provinces.map((prov) => (
@@ -204,12 +204,12 @@ const SearchBar = ({ initialFilters }: SearchBarProps) => {
           </label>
 
           <label className="space-y-2">
-            <span className="text-sm font-medium text-slate-700">District</span>
+            <span className="text-sm font-medium text-text-secondary">District</span>
             <select
               value={district}
               onChange={(e) => setDistrict(e.target.value)}
               disabled={!province}
-              className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full rounded-lg border border-muted bg-white px-4 py-3 text-text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <option value="">Any district</option>
               {districts.map((dist) => (
@@ -221,11 +221,11 @@ const SearchBar = ({ initialFilters }: SearchBarProps) => {
           </label>
 
           <label className="space-y-2">
-            <span className="text-sm font-medium text-slate-700">Condition</span>
+            <span className="text-sm font-medium text-text-secondary">Condition</span>
             <select
               value={condition}
               onChange={(e) => setCondition(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+              className="w-full rounded-lg border border-muted bg-white px-4 py-3 text-text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
             >
               <option value="">Any condition</option>
               <option value="new">New</option>
@@ -235,11 +235,11 @@ const SearchBar = ({ initialFilters }: SearchBarProps) => {
           </label>
 
           <label className="space-y-2">
-            <span className="text-sm font-medium text-slate-700">Sort by</span>
+            <span className="text-sm font-medium text-text-secondary">Sort by</span>
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+              className="w-full rounded-lg border border-muted bg-white px-4 py-3 text-text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
             >
               <option value="">Default sort</option>
               {sortOptions.map((option) => (
@@ -251,11 +251,11 @@ const SearchBar = ({ initialFilters }: SearchBarProps) => {
           </label>
 
           <label className="space-y-2">
-            <span className="text-sm font-medium text-slate-700">Posted</span>
+            <span className="text-sm font-medium text-text-secondary">Posted</span>
             <select
               value={datePosted}
               onChange={(e) => setDatePosted(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+              className="w-full rounded-lg border border-muted bg-white px-4 py-3 text-text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
             >
               <option value="">Any time</option>
               <option value="24h">Last 24 hours</option>
@@ -273,7 +273,7 @@ const SearchBar = ({ initialFilters }: SearchBarProps) => {
                 min={0}
                 value={minPrice}
                 onChange={(e) => setMinPrice(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+                className="w-full rounded-lg border border-muted bg-white px-4 py-3 text-text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                 placeholder="Min"
               />
             </label>
@@ -284,7 +284,7 @@ const SearchBar = ({ initialFilters }: SearchBarProps) => {
                 min={0}
                 value={maxPrice}
                 onChange={(e) => setMaxPrice(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+                className="w-full rounded-lg border border-muted bg-white px-4 py-3 text-text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                 placeholder="Max"
               />
             </label>

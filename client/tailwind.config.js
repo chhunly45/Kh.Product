@@ -3,8 +3,13 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#1f2937',
-        accent: '#0ea5e9'
+        primary: '#0F766E',
+        'primary-hover': '#115E59',
+        accent: '#F59E0B',
+        background: '#F8FAFC',
+        'text-primary': '#0F172A',
+        'text-secondary': '#475569',
+        muted: '#94A3B8'
       }
     }
   },

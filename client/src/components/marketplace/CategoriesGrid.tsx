@@ -65,7 +65,7 @@ const CategoriesGrid = () => {
                 <Link
                   key={category._id}
                   to={`/products?category=${category._id}`}
-                  className="group relative overflow-hidden rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-xl hover:border-sky-300 transition-all duration-300 transform hover:scale-105"
+                  className="group relative overflow-hidden rounded-2xl bg-white border border-muted shadow-sm hover:shadow-xl hover:border-primary transition-all duration-300 transform hover:scale-105"
                 >
                   {/* Background Gradient Icon */}
                   <div className={`absolute -top-6 -right-6 w-32 h-32 bg-gradient-to-br ${colorGradient} opacity-10 rounded-full group-hover:opacity-20 transition`}></div>
@@ -79,15 +79,15 @@ const CategoriesGrid = () => {
 
                     {/* Text */}
                     <div className="flex-1 flex flex-col">
-                      <h3 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-sky-600 transition leading-snug">
+                      <h3 className="text-base sm:text-lg font-bold text-text-primary group-hover:text-primary transition leading-snug">
                         {category.labelKh || category.name}
                       </h3>
-                      <p className="text-xs sm:text-sm text-slate-500 mt-1">Browse listings</p>
+                      <p className="text-xs sm:text-sm text-text-secondary mt-1">Browse listings</p>
                     </div>
 
                     {/* Arrow Icon */}
                     <div className="mt-3 opacity-0 group-hover:opacity-100 transition">
-                      <Zap className="w-4 h-4 text-sky-500" />
+                      <Zap className="w-4 h-4 text-primary" />
                     </div>
                   </div>
                 </Link>
