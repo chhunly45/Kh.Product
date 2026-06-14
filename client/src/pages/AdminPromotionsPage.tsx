@@ -16,10 +16,12 @@ const AdminPromotionsPage = () => {
     setMessage('');
     try {
       const [promotionsData, metricsData] = await Promise.all([getAdminPromotions(), getAdminPromotionMetrics()]);
-      setPromotions(promotionsData.items || promotionsData);
-      setMetrics(metricsData);
+      setPromotions(promotionsData.items || promotionsData || []);
+      setMetrics(metricsData || { activePromotions: 0, expiredPromotions: 0, revenueFromPromotions: 0 });
     } catch {
-      setMessage('Unable to load promotions data.');
+      // If promotions data is not available, show empty state instead of error banner
+      setPromotions([]);
+      setMetrics({ activePromotions: 0, expiredPromotions: 0, revenueFromPromotions: 0 });
     } finally {
       setLoading(false);
     }

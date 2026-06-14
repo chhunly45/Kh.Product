@@ -107,14 +107,18 @@ const TrafficAnalyticsPage = () => {
         trafficAnalyticsAPI.getTrafficInsights()
       ]);
 
-      setMetrics(metricsRes);
-      setSearchAnalytics(searchRes);
-      setTopContent(contentRes);
-      setInsights(insightsRes);
+      setMetrics(metricsRes || null);
+      setSearchAnalytics(searchRes || null);
+      setTopContent(contentRes || null);
+      setInsights(insightsRes || []);
 
       await loadCharts();
     } catch (err) {
-      setError('Failed to load traffic analytics. Please try again.');
+      // If traffic analytics are not available, show empty states instead of error banner
+      setMetrics(null);
+      setSearchAnalytics(null);
+      setTopContent(null);
+      setInsights([]);
       console.error(err);
     } finally {
       setLoading(false);
@@ -129,10 +133,14 @@ const TrafficAnalyticsPage = () => {
         trafficAnalyticsAPI.getVisitorGrowth(chartPeriod)
       ]);
 
-      setTrafficTrends(trendsRes);
-      setSearchGrowth(searchRes);
-      setVisitorGrowth(visitorRes);
+      setTrafficTrends(trendsRes || []);
+      setSearchGrowth(searchRes || []);
+      setVisitorGrowth(visitorRes || []);
     } catch (err) {
+      // On failure, show empty chart data instead of error message
+      setTrafficTrends([]);
+      setSearchGrowth([]);
+      setVisitorGrowth([]);
       console.error('Failed to load charts', err);
     }
   };
@@ -210,8 +218,13 @@ const TrafficAnalyticsPage = () => {
 
   if (!metrics) {
     return (
-      <div className="p-6 bg-red-50 rounded-lg border border-red-200">
-        <p className="text-red-700">Failed to load traffic analytics.</p>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="p-8 bg-slate-50 rounded-lg border border-slate-200 text-center">
+            <p className="text-slate-600 text-lg">No traffic data available yet.</p>
+            <p className="text-slate-500 mt-2">Traffic analytics will appear here as users browse the platform.</p>
+          </div>
+        </div>
       </div>
     );
   }

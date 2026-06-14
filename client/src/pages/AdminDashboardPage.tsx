@@ -17,8 +17,14 @@ const statusOptions = ['published', 'sold', 'archived', 'flagged'];
 const reportStatusOptions = ['pending', 'reviewed', 'resolved', 'rejected'];
 
 const AdminDashboardPage = () => {
-  const isSellersPath = useMatch('/admin/sellers');
-  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'products' | 'reports' | 'audit' | 'analytics' | 'sellers'>(isSellersPath ? 'sellers' : 'overview');
+  const matchOverview = useMatch({ path: '/admin', end: true });
+  const matchUsers = useMatch('/admin/users');
+  const matchSellers = useMatch('/admin/sellers');
+  const matchProducts = useMatch('/admin/products');
+  const matchReports = useMatch('/admin/reports');
+  const matchAnalytics = useMatch('/admin/analytics');
+  const matchAudit = useMatch('/admin/audit');
+  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'products' | 'reports' | 'audit' | 'analytics' | 'sellers'>('overview');
   const [overview, setOverview] = useState<Record<string, any>>({});
   const [users, setUsers] = useState<any[]>([]);
   const [sellers, setSellers] = useState<any[]>([]);
@@ -79,7 +85,8 @@ const AdminDashboardPage = () => {
       const data = await getAdminAuditLogs();
       setAuditLogs(data.items || []);
     } catch {
-      setMessage('Unable to load audit logs.');
+      // If audit logs are not available, show empty state instead of error banner
+      setAuditLogs([]);
     }
   };
 
@@ -94,10 +101,14 @@ const AdminDashboardPage = () => {
   }, [activeTab]);
 
   useEffect(() => {
-    if (isSellersPath) {
-      setActiveTab('sellers');
-    }
-  }, [isSellersPath]);
+    if (matchUsers) setActiveTab('users');
+    else if (matchSellers) setActiveTab('sellers');
+    else if (matchProducts) setActiveTab('products');
+    else if (matchReports) setActiveTab('reports');
+    else if (matchAnalytics) setActiveTab('analytics');
+    else if (matchAudit) setActiveTab('audit');
+    else if (matchOverview) setActiveTab('overview');
+  }, [matchOverview, matchUsers, matchSellers, matchProducts, matchReports, matchAnalytics, matchAudit]);
 
   const loadSellers = async () => {
     try {
