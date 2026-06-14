@@ -16,6 +16,7 @@ import SellerAnalyticsPage from '../pages/SellerAnalyticsPage';
 import AdminDashboardPage from '../pages/AdminDashboardPage';
 import AdminBannersPage from '../pages/AdminBannersPage';
 import AdminRevenuePage from '../pages/AdminRevenuePage';
+import AdminTrafficAnalyticsPage from '../pages/AdminTrafficAnalyticsPage';
 import AdminLayout from '../components/layout/AdminLayout';
 import AdminRoute from './AdminRoute';
 import NotificationsPage from '../pages/NotificationsPage';
@@ -49,10 +50,11 @@ const AppRoutes = () => (
         <Route path="sellers" element={<AdminDashboardPage />} />
         <Route path="products" element={<AdminDashboardPage />} />
         <Route path="reports" element={<AdminDashboardPage />} />
+        <Route path="revenue" element={<AdminRevenuePage />} />
+        <Route path="traffic" element={<AdminTrafficAnalyticsPage />} />
         <Route path="analytics" element={<AdminDashboardPage />} />
         <Route path="audit" element={<AdminDashboardPage />} />
         <Route path="banners" element={<AdminBannersPage />} />
-        <Route path="revenue" element={<AdminRevenuePage />} />
       </Route>
     </Route>
     <Route path="*" element={<NotFoundPage />} />

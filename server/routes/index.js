@@ -13,6 +13,7 @@ const userRoutes = require('./user.routes');
 const reviewRoutes = require('./review.routes');
 const locationRoutes = require('./location.routes');
 const sellerAnalyticsRoutes = require('./seller-analytics.routes');
+const trafficAnalyticsRoutes = require('./traffic-analytics.routes');
 
 const router = express.Router();
 
@@ -28,6 +29,7 @@ router.use('/notifications', notificationRoutes);
 router.use('/reviews', reviewRoutes);
 router.use('/locations', locationRoutes);
 router.use('/seller-analytics', sellerAnalyticsRoutes);
+router.use('/traffic-analytics', trafficAnalyticsRoutes);
 router.use('/admin', adminRoutes);
 router.use('/users', userRoutes);
 
