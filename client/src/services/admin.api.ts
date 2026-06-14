@@ -40,6 +40,11 @@ export const updateAdminReportStatus = async (reportId: string, status: string) 
   return response.data.data;
 };
 
+export const getAdminAuditLogs = async (params: Record<string, any> = {}) => {
+  const response = await api.get('/admin/audit-logs', { params });
+  return response.data.data;
+};
+
 export const deleteAdminReview = async (reviewId: string) => {
   const response = await api.delete(`/admin/reviews/${reviewId}`);
   return response.data.data;
