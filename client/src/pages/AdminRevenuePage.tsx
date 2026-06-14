@@ -57,7 +57,8 @@ const AdminRevenuePage = () => {
       const data = await getRevenueMetrics();
       setMetrics(data);
     } catch {
-      setMessage('Unable to load revenue metrics.');
+      // If metrics are not available yet, default to zeroes and avoid showing an error banner
+      setMetrics({ totalRevenue: 0, todayRevenue: 0, weekRevenue: 0, monthRevenue: 0, yearRevenue: 0 });
     }
   };
 
@@ -77,7 +78,10 @@ const AdminRevenuePage = () => {
       setWeeklyData(weekly);
       setMonthlyData(monthly);
     } catch {
-      setMessage('Unable to load revenue charts.');
+      // On failure (or no data), show empty chart data instead of an error banner
+      setDailyData([]);
+      setWeeklyData([]);
+      setMonthlyData([]);
     }
   };
 
@@ -90,7 +94,8 @@ const AdminRevenuePage = () => {
       const data = await getRevenueBySeller(params);
       setSellerData(data);
     } catch {
-      setMessage('Unable to load seller revenue data.');
+      // If seller revenue is not available yet, default to empty list and avoid an error banner
+      setSellerData([]);
     }
   };
 
