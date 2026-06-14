@@ -47,4 +47,38 @@ describe('admin API wrappers', () => {
     expect(reportStatus).toEqual({ status: 'resolved' });
     expect(mockedApi.patch).toHaveBeenCalledWith('/admin/reports/10', { status: 'resolved' });
   });
+
+  it('fetches admin audit logs', async () => {
+    mockedApi.get.mockResolvedValueOnce({ data: { data: [{ id: '100' }] } });
+    const auditLogs = await adminApi.getAdminAuditLogs({ page: 1 });
+    expect(auditLogs).toEqual([{ id: '100' }]);
+    expect(mockedApi.get).toHaveBeenCalledWith('/admin/audit-logs', { params: { page: 1 } });
+  });
+
+  it('updates product featured status', async () => {
+    mockedApi.patch.mockResolvedValueOnce({ data: { data: { featured: true } } });
+    const result = await adminApi.updateAdminProductFeatured('2', true);
+    expect(result).toEqual({ featured: true });
+    expect(mockedApi.patch).toHaveBeenCalledWith('/admin/products/2/featured', { featured: true });
+  });
+
+  it('deletes an admin review', async () => {
+    mockedApi.delete.mockResolvedValueOnce({ data: { data: { success: true } } });
+    const result = await adminApi.deleteAdminReview('5');
+    expect(result).toEqual({ success: true });
+    expect(mockedApi.delete).toHaveBeenCalledWith('/admin/reviews/5');
+  });
+
+  it('fetches products by province analytics', async () => {
+    mockedApi.get.mockResolvedValueOnce({ data: { data: [{ province: 'Phnom Penh', count: 42 }] } });
+    const data = await adminApi.getProductsByProvince();
+    expect(data).toEqual([{ province: 'Phnom Penh', count: 42 }]);
+    expect(mockedApi.get).toHaveBeenCalledWith('/admin/analytics/products-by-province');
+  });
+
+  it('propagates API errors for deleteAdminReview', async () => {
+    mockedApi.delete.mockRejectedValueOnce(new Error('delete failed'));
+    await expect(adminApi.deleteAdminReview('5')).rejects.toThrow('delete failed');
+    expect(mockedApi.delete).toHaveBeenCalledWith('/admin/reviews/5');
+  });
 });

@@ -32,6 +32,33 @@ export const Phone = createIcon('Phone');
 export const Mail = createIcon('Mail');
 export const MapPinOutlined = createIcon('MapPinOutlined');
 
+export const Heart = createIcon('Heart');
+export const Send = createIcon('Send');
+export const Bell = createIcon('Bell');
+export const LogOut = createIcon('LogOut');
+export const Menu = createIcon('Menu');
+export const X = createIcon('X');
+export const Eye = createIcon('Eye');
+export const MessageCircle = createIcon('MessageCircle');
+export const Copy = createIcon('Copy');
+export const ArrowUpRight = createIcon('ArrowUpRight');
+export const Cpu = createIcon('Cpu');
+export const Camera = createIcon('Camera');
+export const Gift = createIcon('Gift');
+export const BookOpen = createIcon('BookOpen');
+export const Palette = createIcon('Palette');
+export const Utensils = createIcon('Utensils');
+export const Users = createIcon('Users');
+export const FileText = createIcon('FileText');
+export const BarChart3 = createIcon('BarChart3');
+export const Activity = createIcon('Activity');
+export const Edit3 = createIcon('Edit3');
+export const Trash2 = createIcon('Trash2');
+export const CheckCircle = createIcon('CheckCircle');
+export const PlusCircle = createIcon('PlusCircle');
+export const DollarSign = createIcon('DollarSign');
+export const Clock = createIcon('Clock');
+
 const MockedIcons = {
   Search,
   MapPin,

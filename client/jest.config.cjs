@@ -12,6 +12,7 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
   testMatch: ['**/__tests__/**/*.+(ts|tsx|js)', '**/?(*.)+(spec|test).+(ts|tsx|js)'],
   collectCoverage: true,
+  coverageProvider: 'v8',
   collectCoverageFrom: [
     'src/components/**/*.{ts,tsx}',
     'src/services/**/*.{ts,tsx}',
@@ -31,3 +32,4 @@ module.exports = {
   },
   moduleDirectories: ['node_modules', 'src']
 };
+

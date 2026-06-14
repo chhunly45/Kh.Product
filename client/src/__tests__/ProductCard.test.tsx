@@ -11,7 +11,7 @@ describe('ProductCard', () => {
     );
 
     expect(screen.getByText('Test Product')).toBeInTheDocument();
-    expect(screen.getByText('KHR 500,000')).toBeInTheDocument();
+    expect(screen.getByText(/KHR\s*500,000/)).toBeInTheDocument();
     expect(screen.getByText('Electronics')).toBeInTheDocument();
     expect(screen.getByRole('link')).toHaveAttribute('href', '/products/123');
   });
