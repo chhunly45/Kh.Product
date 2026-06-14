@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getProfile } from '../services/auth.api';
 import { getProducts, updateProduct, deleteProduct } from '../services/product.api';
-import { Edit3, Trash2, CheckCircle, PlusCircle, Eye, TrendingUp } from 'lucide-react';
+import { getSellerPromotions, PromotionRecord } from '../services/promotion.api';
+import { Edit3, Trash2, CheckCircle, PlusCircle, Eye, TrendingUp, DollarSign, Clock } from 'lucide-react';
 import { formatViewsCount } from '../utils/views';
 import { formatPriceKHR, formatPriceUSD } from '../utils/price';
 
 const DashboardPage = () => {
   const [products, setProducts] = useState<any[]>([]);
+  const [promotions, setPromotions] = useState<PromotionRecord[]>([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [user, setUser] = useState<any>(null);
@@ -21,8 +23,13 @@ const DashboardPage = () => {
       setUser(profile);
 
       if (profile?.id) {
-        const response = await getProducts({ seller: profile.id, page: '1', perPage: '50', sort: 'newest' });
-        setProducts(response.items || []);
+        const [productResponse, promotionResponse] = await Promise.all([
+          getProducts({ seller: profile.id, page: '1', perPage: '50', sort: 'newest' }),
+          getSellerPromotions()
+        ]);
+
+        setProducts(productResponse.items || []);
+        setPromotions(promotionResponse || []);
       }
     } catch (error) {
       setMessage('Unable to load your dashboard. Please try again later.');
@@ -63,6 +70,24 @@ const DashboardPage = () => {
   const mostViewedProducts = [...products]
     .sort((a, b) => (b.viewsCount || 0) - (a.viewsCount || 0))
     .slice(0, 5);
+
+  const activePromotionCount = promotions.filter((promotion) => promotion.status === 'active').length;
+  const pendingPromotionCount = promotions.filter((promotion) => promotion.status === 'pending').length;
+  const expiringSoonCount = promotions.filter((promotion) => {
+    if (promotion.status !== 'active' || !promotion.endDate) return false;
+    const now = Date.now();
+    const endDate = new Date(promotion.endDate).getTime();
+    return endDate > now && endDate - now <= 7 * 24 * 60 * 60 * 1000;
+  }).length;
+  const promotionSpend = promotions
+    .filter((promotion) => promotion.status !== 'rejected')
+    .reduce((sum, promotion) => sum + (promotion.price || 0), 0);
+
+  const formatPromotionDate = (dateString?: string | null) => {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  };
 
   return (
     <div className="space-y-8 px-4 py-10 sm:px-6 lg:px-8">
@@ -123,6 +148,75 @@ const DashboardPage = () => {
             </div>
           </article>
         ))}
+      </section>
+
+      <section className="grid gap-6 xl:grid-cols-4">
+        {[
+          { label: 'Active promotions', value: activePromotionCount, icon: TrendingUp },
+          { label: 'Pending promotions', value: pendingPromotionCount, icon: Clock },
+          { label: 'Expiring soon', value: expiringSoonCount, icon: Clock },
+          { label: 'Spent on promotions', value: promotionSpend.toLocaleString(), icon: DollarSign }
+        ].map((stat) => (
+          <article key={stat.label} className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-xs uppercase tracking-[0.35em] text-slate-500">{stat.label}</p>
+                <p className="mt-3 text-3xl font-semibold text-slate-900">{stat.value}</p>
+              </div>
+              <div className="rounded-2xl bg-sky-50 p-3">
+                <stat.icon className="w-6 h-6 text-sky-600" />
+              </div>
+            </div>
+          </article>
+        ))}
+      </section>
+
+      <section className="rounded-[2rem] bg-white p-6 shadow-xl ring-1 ring-slate-200">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-2xl font-semibold text-slate-900">Promoted Products</h2>
+            <p className="mt-2 text-sm text-slate-500">Review all promotion activity for your products.</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => navigate('/seller/promotions')}
+            className="inline-flex items-center justify-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white hover:bg-slate-800 transition"
+          >
+            Promote Another Product
+          </button>
+        </div>
+
+        {promotions.length ? (
+          <div className="mt-6 overflow-hidden rounded-3xl border border-slate-200">
+            <div className="grid grid-cols-[2.5fr_1fr_1fr_1fr_1fr] gap-2 bg-slate-100 px-4 py-3 text-xs uppercase tracking-[0.25em] text-slate-500">
+              <span>Product</span>
+              <span>Plan</span>
+              <span>Start date</span>
+              <span>Expires</span>
+              <span>Status</span>
+            </div>
+            <div className="divide-y divide-slate-200 bg-white">
+              {promotions.map((promotion) => (
+                <div key={promotion._id} className="grid grid-cols-[2.5fr_1fr_1fr_1fr_1fr] gap-2 px-4 py-4 text-sm text-slate-700">
+                  <div className="truncate">{promotion.product?.title || 'Unknown product'}</div>
+                  <div>{promotion.plan.replace('_', ' ')}</div>
+                  <div>{formatPromotionDate(promotion.startDate)}</div>
+                  <div>{formatPromotionDate(promotion.endDate)}</div>
+                  <div>
+                    <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] ${promotion.status === 'active' ? 'bg-emerald-100 text-emerald-700' : promotion.status === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-700'}`}>
+                      {promotion.status}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="mt-6 rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-slate-600">
+            <p className="text-lg font-semibold">No promoted products yet</p>
+            <p className="mt-2 text-sm">Use the promotion page to feature your listings and boost visibility.</p>
+          </div>
+        )}
       </section>
 
       <section className="rounded-[2rem] bg-white p-6 shadow-xl ring-1 ring-slate-200">

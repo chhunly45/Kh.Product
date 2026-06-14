@@ -1,6 +1,6 @@
 import { useEffect, useState, FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingBag, UploadCloud, LogIn, User, Globe, Search, ChevronDown, MapPin, Menu, X, Heart, Bell, LogOut } from 'lucide-react';
+import { ShoppingBag, UploadCloud, LogIn, User, Globe, Search, ChevronDown, MapPin, Menu, X, Heart, Bell, MessageSquare, LogOut } from 'lucide-react';
 import api from '../../services/api';
 import { getFavoritesCount } from '../../services/favorites.api';
 import { getNotificationsCount } from '../../services/notification.api';
@@ -54,6 +54,10 @@ const Header = () => {
       }
     };
 
+    const handleNotificationsUpdated = () => {
+      fetchNotificationsCount();
+    };
+
     fetchCategories();
     if (user) {
       fetchFavoriteCount();
@@ -62,6 +66,11 @@ const Header = () => {
       setFavoriteCount(0);
       setNotificationCount(0);
     }
+
+    window.addEventListener('notificationsUpdated', handleNotificationsUpdated);
+    return () => {
+      window.removeEventListener('notificationsUpdated', handleNotificationsUpdated);
+    };
   }, [user]);
 
   const handleSearch = (event: FormEvent<HTMLFormElement>) => {
@@ -154,6 +163,13 @@ const Header = () => {
             >
               <UploadCloud className="w-4 h-4" />
               Sell
+            </Link>
+            <Link
+              to="/messages"
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+            >
+              <MessageSquare className="w-4 h-4" />
+              Messages
             </Link>
             <Link
               to="/notifications"

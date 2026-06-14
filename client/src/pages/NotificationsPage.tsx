@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Bell, CheckCircle2 } from 'lucide-react';
 import { getNotifications, markNotificationRead } from '../services/notification.api';
-import { getProfile } from '../services/auth.api';
 
 const NotificationsPage = () => {
   const [notifications, setNotifications] = useState<any[]>([]);
@@ -28,6 +28,7 @@ const NotificationsPage = () => {
     try {
       await markNotificationRead(id);
       setNotifications((current) => current.map((item) => (item._id === id ? { ...item, read: true } : item)));
+      window.dispatchEvent(new Event('notificationsUpdated'));
     } catch (error) {
       setMessage('Unable to mark notification as read.');
     }
@@ -63,9 +64,9 @@ const NotificationsPage = () => {
                   <h2 className="text-lg font-semibold text-slate-900">{notification.title}</h2>
                   <p className="mt-2 text-sm text-slate-600">{notification.message}</p>
                   {notification.link && (
-                    <a href={notification.link} className="mt-3 inline-flex text-sm font-semibold text-sky-600 hover:text-sky-700">
+                    <Link to={notification.link} className="mt-3 inline-flex text-sm font-semibold text-sky-600 hover:text-sky-700">
                       View details
-                    </a>
+                    </Link>
                   )}
                 </div>
                 <button
