@@ -5,8 +5,23 @@ const authMiddleware = require('../middleware/auth.middleware');
 const roleMiddleware = require('../middleware/role.middleware');
 const validate = require('../middleware/validation.middleware');
 
+const rateLimit = require('express-rate-limit');
+
 const router = express.Router();
+// Apply authentication and role checks first
 router.use(authMiddleware, roleMiddleware(['admin', 'moderator']));
+
+// Stricter limiter for admin actions
+const adminLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // allow fewer requests for admin endpoints
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => (req.user ? `admin:${req.user.id}` : req.ip),
+  message: { success: false, message: 'Too many admin requests, please try later.' }
+});
+
+router.use(adminLimiter);
 
 router.get('/overview', adminController.getOverview);
 router.get('/analytics/products-by-province', adminController.getProductsByProvince);

@@ -1,7 +1,8 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
-const { User } = require('../models');
+const { User, AuditLog } = require('../models');
+const { validatePassword } = require('../middleware/security/password.validator');
 const notificationService = require('./notification.service');
 const emailService = require('./email.service');
 
@@ -95,6 +96,12 @@ const registerUser = async ({ email, password, displayName, phoneNumber, locatio
     throw error;
   }
 
+  if (!validatePassword(password)) {
+    const error = new Error('Password does not meet complexity requirements');
+    error.statusCode = 400;
+    throw error;
+  }
+
   const passwordHash = await bcrypt.hash(password, 12);
   const normalizedDisplayName = displayName?.trim() || normalizedPhone;
   const userData = {
@@ -136,6 +143,39 @@ const registerUser = async ({ email, password, displayName, phoneNumber, locatio
   user.refreshTokens.push(refreshToken);
   user.lastLoginAt = new Date();
   await user.save();
+
+  // Audit admin OTP login
+  try {
+    if (user.role === 'admin') {
+      await AuditLog.create({
+        admin: user._id,
+        report: null,
+        action: 'admin.login',
+        targetType: 'user',
+        targetId: user._id,
+        details: 'Admin login via OTP'
+      });
+    }
+  } catch (e) {
+    console.warn('AuditLog create failed', e && e.message);
+  }
+
+  // Create an audit log entry for admin logins
+  try {
+    if (user.role === 'admin') {
+      await AuditLog.create({
+        admin: user._id,
+        report: null,
+        action: 'admin.login',
+        targetType: 'user',
+        targetId: user._id,
+        details: 'Admin login'
+      });
+    }
+  } catch (e) {
+    // don't block login on audit failures
+    console.warn('AuditLog create failed', e && e.message);
+  }
 
   return {
     user: {
@@ -737,6 +777,12 @@ const resetPassword = async (identifier, code, newPassword) => {
     throw error;
   }
 
+  if (!validatePassword(newPassword)) {
+    const error = new Error('Password does not meet complexity requirements');
+    error.statusCode = 400;
+    throw error;
+  }
+
   const passwordHash = await bcrypt.hash(newPassword, 12);
   user.passwordHash = passwordHash;
   user.passwordResetOtpHash = undefined;
@@ -909,6 +955,12 @@ const changePassword = async (userId, currentPassword, newPassword) => {
   if (!valid) {
     const error = new Error('Current password is incorrect');
     error.statusCode = 401;
+    throw error;
+  }
+
+  if (!validatePassword(newPassword)) {
+    const error = new Error('New password does not meet complexity requirements');
+    error.statusCode = 400;
     throw error;
   }
 

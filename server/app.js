@@ -16,6 +16,9 @@ const config = require('./config');
 
 const app = express();
 
+// Hide technology stack
+app.disable('x-powered-by');
+
 app.set('trust proxy', 1);
 
 const corsOptions = {
