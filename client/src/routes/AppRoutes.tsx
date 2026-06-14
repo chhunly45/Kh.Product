@@ -12,9 +12,11 @@ import AccountSettingsPage from '../pages/AccountSettingsPage';
 import FavoritesPage from '../pages/FavoritesPage';
 import ChatPage from '../pages/ChatPage';
 import DashboardPage from '../pages/DashboardPage';
+import SellerAnalyticsPage from '../pages/SellerAnalyticsPage';
 import AdminDashboardPage from '../pages/AdminDashboardPage';
 import AdminBannersPage from '../pages/AdminBannersPage';
 import AdminRevenuePage from '../pages/AdminRevenuePage';
+import AdminLayout from '../components/layout/AdminLayout';
 import AdminRoute from './AdminRoute';
 import NotificationsPage from '../pages/NotificationsPage';
 import NotFoundPage from '../pages/NotFoundPage';
@@ -39,11 +41,19 @@ const AppRoutes = () => (
     <Route path="/messages" element={<ChatPage />} />
     <Route path="/messages/:id" element={<ChatPage />} />
     <Route path="/dashboard" element={<DashboardPage />} />
+    <Route path="/seller/analytics" element={<SellerAnalyticsPage />} />
     <Route path="/admin" element={<AdminRoute />}>
-      <Route index element={<AdminDashboardPage />} />
-      <Route path="sellers" element={<AdminDashboardPage />} />
-      <Route path="banners" element={<AdminBannersPage />} />
-      <Route path="revenue" element={<AdminRevenuePage />} />
+      <Route element={<AdminLayout />}>
+        <Route index element={<AdminDashboardPage />} />
+        <Route path="users" element={<AdminDashboardPage />} />
+        <Route path="sellers" element={<AdminDashboardPage />} />
+        <Route path="products" element={<AdminDashboardPage />} />
+        <Route path="reports" element={<AdminDashboardPage />} />
+        <Route path="analytics" element={<AdminDashboardPage />} />
+        <Route path="audit" element={<AdminDashboardPage />} />
+        <Route path="banners" element={<AdminBannersPage />} />
+        <Route path="revenue" element={<AdminRevenuePage />} />
+      </Route>
     </Route>
     <Route path="*" element={<NotFoundPage />} />
   </Routes>

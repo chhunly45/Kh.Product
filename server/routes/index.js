@@ -12,6 +12,7 @@ const notificationRoutes = require('./notification.routes');
 const userRoutes = require('./user.routes');
 const reviewRoutes = require('./review.routes');
 const locationRoutes = require('./location.routes');
+const sellerAnalyticsRoutes = require('./seller-analytics.routes');
 
 const router = express.Router();
 
@@ -26,6 +27,7 @@ router.use('/reports', reportRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/reviews', reviewRoutes);
 router.use('/locations', locationRoutes);
+router.use('/seller-analytics', sellerAnalyticsRoutes);
 router.use('/admin', adminRoutes);
 router.use('/users', userRoutes);
 
