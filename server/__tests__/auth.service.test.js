@@ -70,7 +70,7 @@ describe('auth.service loginUser', () => {
     assert.equal(result.user.emailVerified, false);
   });
 
-  it('does not request OTP for phone password login when useOtp is omitted', async () => {
+  it('does not request OTP for phone password login when useOtp is explicitly false', async () => {
     process.env.LOGIN_OTP_ENABLED = 'true';
     try {
       const password = 'PhonePass123!';
@@ -83,7 +83,7 @@ describe('auth.service loginUser', () => {
         emailVerified: false
       });
 
-      const result = await authService.loginUser('+85598765432', password);
+      const result = await authService.loginUser('+85598765432', password, { useOtp: false });
 
       assert.ok(result.accessToken, 'accessToken should be present');
       assert.ok(result.refreshToken, 'refreshToken should be present');

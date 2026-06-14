@@ -13,7 +13,9 @@ const register = async (req, res, next) => {
 const login = async (req, res, next) => {
   try {
     const { identifier, password, useOtp } = req.body;
-    const result = await authService.loginUser(identifier, password, { useOtp: useOtp === true });
+    // Default to OTP for additional security (can be disabled by passing useOtp: false)
+    const useOtpFlag = useOtp !== false;
+    const result = await authService.loginUser(identifier, password, { useOtp: useOtpFlag });
     res.json({ success: true, data: result });
   } catch (error) {
     next(error);

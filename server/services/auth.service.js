@@ -11,7 +11,9 @@ const createRefreshToken = (userId) => jwt.sign({ userId }, config.jwtSecret, { 
 
 const { normalizeCambodiaPhone, phoneSearchVariants } = require('../utils/phone');
 
-const loginOtpEnabled = process.env.LOGIN_OTP_ENABLED === 'true';
+const loginOtpEnabled = typeof process.env.LOGIN_OTP_ENABLED !== 'undefined'
+  ? process.env.LOGIN_OTP_ENABLED === 'true'
+  : (process.env.NODE_ENV !== 'production');
 const phoneOtpEnabled = (process.env.PHONE_OTP_ENABLED === 'true') && !!process.env.SMS_PROVIDER;
 
 const normalizeIdentifier = (identifier) => identifier?.toString().trim().toLowerCase();
@@ -226,8 +228,9 @@ const loginUser = async (identifier, password, options = {}) => {
     throw error;
   }
 
-  const useOtp = options.useOtp === true;
-  const requestLoginOtp = useOtp && loginOtpEnabled;
+  // Default to OTP if not explicitly disabled
+  const useOtp = options.useOtp !== false;
+  const requestLoginOtp = useOtp && loginOtpEnabled && !!(user.email || user.phoneNumber);
   if (process.env.NODE_ENV !== 'production') {
     console.log('[LOGIN_FLOW]', {
       useOtp,
