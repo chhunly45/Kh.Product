@@ -24,68 +24,47 @@ const ProductCard = ({ title, price, location, category, id, imageUrl, viewsCoun
   useEffect(() => {
     setIsSaved(Boolean(isFavorite));
   }, [isFavorite]);
+
   const fallback = 'https://via.placeholder.com/600x400.png?text=No+Image';
   const src = imageUrl || fallback;
-  
-  const formatPrice = (p: string | number): { usd: string; khr: string } => {
-    return {
-      usd: formatPriceUSD(p),
-      khr: formatPriceKHR(p)
-    };
-  };
+
+  const formatPrice = (p: string | number): { usd: string; khr: string } => ({
+    usd: formatPriceUSD(p),
+    khr: formatPriceKHR(p)
+  });
 
   const priceText = formatPrice(price);
+  const sellerVerified = seller?.sellerVerificationStatus === 'verified';
 
   return (
-    <Link to={`/products/${id}`} className="group block overflow-hidden rounded-2xl border border-muted bg-white shadow-sm transition hover:shadow-xl hover:border-primary">
-      {/* Image Container */}
-      <div className="relative h-56 overflow-hidden bg-background">
-        <img 
-          src={src} 
-          alt={title} 
-          className="h-full w-full object-cover transition duration-300 group-hover:scale-110" 
+    <Link
+      to={`/products/${id}`}
+      className="group block overflow-hidden rounded-[1.75rem] border border-surface-muted bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-2xl hover:border-primary"
+    >
+      <div className="relative h-64 overflow-hidden bg-surface">
+        <img
+          src={src}
+          alt={title}
+          className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
           onError={(e) => {
             e.currentTarget.src = fallback;
           }}
         />
-        
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-text-primary/40 via-transparent to-transparent" />
-        
-        {/* Category Badge */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+
         {category && (
-          <div className="absolute top-3 left-3">
-            <span className="rounded-full bg-primary px-3 py-1 text-xs font-bold uppercase tracking-wide text-white shadow-lg">
-              {category}
-            </span>
-          </div>
+          <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-text-primary shadow-sm">
+            {category}
+          </span>
         )}
-        {/* Featured Badge */}
+
         {featured && (
-          <div className="absolute top-3 right-3">
-            <span className="rounded-full bg-accent px-3 py-1 text-xs font-bold uppercase tracking-wide text-white shadow-lg">
-              Featured
-            </span>
-          </div>
+          <span className="absolute right-4 top-4 rounded-full bg-accent px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-white shadow-lg">
+            Featured
+          </span>
         )}
-        {/* Seller badge */}
-        {seller?.sellerVerificationStatus === 'verified' && (
-          <div className="absolute top-3 left-3">
-            <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-text-primary shadow">
-              Verified Seller ✓
-            </span>
-          </div>
-        )}
-        {seller?.sellerVerificationStatus === 'unverified' && (
-          <div className="absolute top-3 left-3">
-            <span className="rounded-full bg-muted/10 px-3 py-1 text-xs font-semibold text-text-secondary shadow">
-              Unverified Seller
-            </span>
-          </div>
-        )}
-        
-        {/* Wishlist Button */}
-        <button 
+
+        <button
           type="button"
           onClick={(e: MouseEvent<HTMLButtonElement>) => {
             e.preventDefault();
@@ -96,45 +75,43 @@ const ProductCard = ({ title, price, location, category, id, imageUrl, viewsCoun
               onToggleFavorite(id, isSaved);
             }
           }}
-          className="absolute top-3 right-3 rounded-full bg-white/90 p-2 text-muted hover:text-red-500 hover:bg-white transition shadow-md"
+          className="absolute right-4 bottom-4 inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/95 text-muted shadow-lg transition hover:text-red-500 hover:bg-white"
           aria-label={isSaved ? 'Remove from favorites' : 'Save to favorites'}
         >
-          <Heart
-            className={`w-5 h-5 transition ${isSaved ? 'text-red-500 fill-current' : 'text-muted'}`}
-            fill={isSaved ? 'currentColor' : 'none'}
-          />
+          <Heart className={`w-5 h-5 transition ${isSaved ? 'text-red-500 fill-current' : 'text-muted'}`} fill={isSaved ? 'currentColor' : 'none'} />
         </button>
       </div>
 
-      {/* Content */}
-      <div className="p-4">
-        {/* Title */}
-        <h3 className="line-clamp-2 text-base font-bold text-text-primary group-hover:text-primary transition">
-          {title}
-        </h3>
-
-        {/* Location */}
-        {location && (
-          <div className="mt-2 flex items-center gap-1 text-sm text-text-secondary">
-            <MapPin className="w-4 h-4 text-muted" />
-            <span className="truncate">{location}</span>
+      <div className="p-5">
+        <div className="flex items-start justify-between gap-4">
+          <div className="space-y-2">
+            <h3 className="text-lg font-semibold text-text-primary line-clamp-2 group-hover:text-primary transition">
+              {title}
+            </h3>
+            {location && (
+              <div className="flex items-center gap-2 text-sm text-text-secondary">
+                <MapPin className="w-4 h-4 text-muted" />
+                <span className="truncate">{location}</span>
+              </div>
+            )}
           </div>
-        )}
-
-        {/* Price & CTA */}
-        <div className="mt-4 flex items-end justify-between gap-3">
-          <div>
-            <span className="text-lg font-bold text-primary block">
-              {priceText.usd}
-            </span>
-            <span className="text-xs text-text-secondary">
-              {priceText.khr}
-            </span>
+          <div className="text-right">
+            <p className="text-lg font-bold text-primary">{priceText.usd}</p>
+            <p className="text-xs text-text-secondary">{priceText.khr}</p>
           </div>
-          <div className="inline-flex items-center gap-2 rounded-full bg-background px-3 py-1 text-xs font-semibold uppercase tracking-wide text-text-secondary group-hover:bg-background transition">
-            <Eye className="w-4 h-4" />
+        </div>
+
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          {seller?.sellerVerificationStatus && (
+            <span
+              className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] ${sellerVerified ? 'bg-primary/10 text-primary' : 'bg-muted/10 text-text-secondary'}`}
+            >
+              {sellerVerified ? 'Verified seller' : 'Unverified seller'}
+            </span>
+          )}
+          <span className="rounded-full bg-background px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">
             {formatViewsCount(viewsCount)} views
-          </div>
+          </span>
         </div>
       </div>
     </Link>

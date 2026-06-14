@@ -31,6 +31,8 @@ export const Share2 = createIcon('Share2');
 export const Phone = createIcon('Phone');
 export const Mail = createIcon('Mail');
 export const MapPinOutlined = createIcon('MapPinOutlined');
+export const CalendarDays = createIcon('CalendarDays');
+export const AlertTriangle = createIcon('AlertTriangle');
 
 export const Heart = createIcon('Heart');
 export const Send = createIcon('Send');
@@ -87,6 +89,8 @@ const MockedIcons = {
   Phone,
   Mail,
   MapPinOutlined,
+  CalendarDays,
+  AlertTriangle,
 };
 
 export default MockedIcons;

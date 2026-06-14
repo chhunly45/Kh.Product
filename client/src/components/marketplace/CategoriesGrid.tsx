@@ -42,16 +42,16 @@ const CategoriesGrid = () => {
   const getCategoryColor = (index: number) => {
     const colors = [
       'from-primary to-primary-hover',
-      'from-purple-500 to-pink-400',
-      'from-green-500 to-emerald-400',
-      'from-accent to-accent/80',
-      'from-red-500 to-rose-400',
-      'from-primary to-primary-hover',
-      'from-primary to-primary-hover',
-      'from-teal-500 to-green-400',
+      'from-accent to-accent-hover',
+      'from-emerald-500 to-teal-400',
+      'from-sky-500 to-indigo-500',
+      'from-rose-500 to-fuchsia-500',
+      'from-yellow-500 to-orange-400',
+      'from-cyan-500 to-sky-400',
+      'from-violet-500 to-purple-400',
     ];
     return colors[index % colors.length];
-  }; 
+  };
 
   return (
     <section className="py-4">
@@ -65,38 +65,31 @@ const CategoriesGrid = () => {
                 <Link
                   key={category._id}
                   to={`/products?category=${category._id}`}
-                  className="group relative overflow-hidden rounded-2xl bg-white border border-muted shadow-sm hover:shadow-xl hover:border-primary transition-all duration-300 transform hover:scale-105"
+                  className="group relative overflow-hidden rounded-[1.75rem] bg-white border border-surface-muted shadow-sm transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl"
                 >
-                  {/* Background Gradient Icon */}
-                  <div className={`absolute -top-6 -right-6 w-32 h-32 bg-gradient-to-br ${colorGradient} opacity-10 rounded-full group-hover:opacity-20 transition`}></div>
-                  
-                  {/* Content */}
-                  <div className="relative p-5 sm:p-6 h-full flex flex-col items-start justify-between">
-                    {/* Icon */}
-                    <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br ${colorGradient} flex items-center justify-center text-white shadow-lg group-hover:shadow-xl transition mb-3 sm:mb-4`}>
-                      <Icon className="w-6 h-6 sm:w-7 sm:h-7" />
+                  <div className="absolute -top-8 -right-8 h-36 w-36 rounded-full bg-gradient-to-br opacity-10 group-hover:opacity-20" style={{ backgroundImage: `linear-gradient(135deg, var(--tw-gradient-stops))` }} />
+                  <div className="relative p-6 h-full flex flex-col justify-between">
+                    <div className={`inline-flex h-14 w-14 items-center justify-center rounded-3xl bg-gradient-to-br ${colorGradient} text-white shadow-lg transition-all duration-300 group-hover:scale-105`}>
+                      <Icon className="h-6 w-6" />
                     </div>
-
-                    {/* Text */}
-                    <div className="flex-1 flex flex-col">
-                      <h3 className="text-base sm:text-lg font-bold text-text-primary group-hover:text-primary transition leading-snug">
+                    <div className="mt-6">
+                      <h3 className="text-base font-bold text-text-primary group-hover:text-primary transition leading-snug">
                         {category.labelKh || category.name}
                       </h3>
-                      <p className="text-xs sm:text-sm text-text-secondary mt-1">Browse listings</p>
+                      <p className="mt-2 text-sm text-text-secondary">Browse trusted listings</p>
                     </div>
-
-                    {/* Arrow Icon */}
-                    <div className="mt-3 opacity-0 group-hover:opacity-100 transition">
-                      <Zap className="w-4 h-4 text-primary" />
+                    <div className="mt-6 flex items-center gap-2 text-sm font-semibold text-primary">
+                      <Zap className="h-4 w-4" />
+                      View category
                     </div>
                   </div>
                 </Link>
               );
             })
           ) : (
-            <div className="col-span-full rounded-2xl border border-muted bg-background p-12 text-center text-text-secondary">
+            <div className="col-span-full rounded-[1.75rem] border border-surface-muted bg-background p-12 text-center text-text-secondary">
               Loading categories…
-            </div> 
+            </div>
           )}
         </div>
       </div>

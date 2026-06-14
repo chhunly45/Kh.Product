@@ -52,81 +52,107 @@ const HomePage = () => {
         image="https://via.placeholder.com/1200x630.png?text=Konpuk"
       />
 
-      {/* Hero Banner Section - Modern Konpuk */}
-      <section className="relative overflow-hidden bg-background">
-        {/* Angkor-inspired line art */}
-        <svg className="absolute inset-0 w-full h-full opacity-30" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-          <defs>
-            <linearGradient id="g1" x1="0" x2="1">
-              <stop offset="0%" stopColor="#0F766E" stopOpacity="0.12" />
-              <stop offset="100%" stopColor="#F59E0B" stopOpacity="0.06" />
-            </linearGradient>
-          </defs>
-          <g fill="none" stroke="url(#g1)" strokeWidth="1.5">
-            <path d="M0,200 C150,100 350,300 600,200 C850,100 1050,300 1200,200" />
-            <path d="M0,260 C200,160 400,360 600,260 C800,160 1000,360 1200,260" />
-            <path d="M0,320 C180,220 420,420 600,320 C780,220 1020,420 1200,320" />
-          </g>
-        </svg>
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 lg:py-32">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            <div className="space-y-6 lg:space-y-8">
-              <div className="space-y-3">
-                <p className="text-sm sm:text-base font-semibold uppercase tracking-widest text-text-secondary">
-                  🇰🇭 Welcome to Konpuk
-                </p>
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight text-text-primary">
-                  Buy, Sell & Discover Premium Local Finds
-                </h1>
-              </div>
-
-              <p className="text-lg sm:text-xl text-text-secondary max-w-xl leading-relaxed">
-                A refined marketplace experience for Cambodian buyers and sellers. Trusted listings, beautiful design, and effortless search.
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary to-primary-hover text-white">
+        <div className="absolute -left-24 top-10 h-72 w-72 rounded-full bg-accent/20 blur-3xl" />
+        <div className="absolute right-0 top-0 h-96 w-96 rounded-full bg-white/10 blur-3xl" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24">
+          <div className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] items-center">
+            <div className="space-y-6">
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-white/90">
+                New Konpuk layout v3
+              </span>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight tracking-[-0.03em]">
+                Buy, sell, and discover Cambodia's finest local products.
+              </h1>
+              <p className="max-w-2xl text-lg sm:text-xl text-white/80 leading-relaxed">
+                Konpuk brings a fresh marketplace journey with trusted listings, easy posting, and smarter search designed for Cambodian buyers and sellers.
               </p>
 
-              <div className="mt-6">
-                <div className="rounded-2xl bg-white p-6 shadow-xl">
-                  <SearchBar />
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <Link
+                  to="/products"
+                  className="inline-flex items-center justify-center rounded-3xl bg-white px-6 py-3 text-sm font-semibold text-primary shadow-lg shadow-primary/20 hover:bg-white/90 transition"
+                >
+                  Browse products
+                </Link>
+                <Link
+                  to="/register"
+                  className="inline-flex items-center justify-center rounded-3xl border border-white/20 bg-white/10 px-6 py-3 text-sm font-semibold text-white hover:bg-white/20 transition"
+                >
+                  Start selling
+                </Link>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                <div className="rounded-3xl bg-white/10 p-4 text-center">
+                  <p className="text-2xl font-bold">1.2K+</p>
+                  <p className="text-xs uppercase tracking-[0.2em] text-white/70">Active listings</p>
+                </div>
+                <div className="rounded-3xl bg-white/10 p-4 text-center">
+                  <p className="text-2xl font-bold">95%</p>
+                  <p className="text-xs uppercase tracking-[0.2em] text-white/70">Verified sellers</p>
+                </div>
+                <div className="rounded-3xl bg-white/10 p-4 text-center">
+                  <p className="text-2xl font-bold">24h</p>
+                  <p className="text-xs uppercase tracking-[0.2em] text-white/70">Response time</p>
+                </div>
+                <div className="rounded-3xl bg-white/10 p-4 text-center">
+                  <p className="text-2xl font-bold">Free</p>
+                  <p className="text-xs uppercase tracking-[0.2em] text-white/70">No hidden fees</p>
                 </div>
               </div>
             </div>
 
-            <div className="hidden lg:flex items-center justify-center">
-              <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl border border-muted">
-                <h3 className="text-xl font-bold text-text-primary mb-4">Featured benefits</h3>
-                <ul className="space-y-3 text-text-secondary">
-                  <li>Premium curated listings</li>
-                  <li>Verified sellers and secure messaging</li>
-                  <li>Fast posting and smart recommendations</li>
-                </ul>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="rounded-[2rem] bg-white/10 p-8 shadow-2xl border border-white/10 backdrop-blur-sm">
+                <h3 className="text-lg font-semibold text-white mb-4">Fast local discovery</h3>
+                <p className="text-sm text-white/80 leading-relaxed">
+                  Find top products from trusted sellers across Phnom Penh, Siem Reap, and beyond.
+                </p>
+              </div>
+              <div className="rounded-[2rem] bg-white/10 p-8 shadow-2xl border border-white/10 backdrop-blur-sm">
+                <h3 className="text-lg font-semibold text-white mb-4">Trusted community</h3>
+                <p className="text-sm text-white/80 leading-relaxed">
+                  Verified profiles, secure messaging, and a marketplace built for Cambodian users.
+                </p>
+              </div>
+              <div className="rounded-[2rem] bg-white/10 p-8 shadow-2xl border border-white/10 backdrop-blur-sm">
+                <h3 className="text-lg font-semibold text-white mb-4">Clear category access</h3>
+                <p className="text-sm text-white/80 leading-relaxed">
+                  Browse by category and find the exact product type you need in seconds.
+                </p>
+              </div>
+              <div className="rounded-[2rem] bg-white/10 p-8 shadow-2xl border border-white/10 backdrop-blur-sm">
+                <h3 className="text-lg font-semibold text-white mb-4">Smart posting</h3>
+                <p className="text-sm text-white/80 leading-relaxed">
+                  Create listings quickly with rich details and beautiful previews.
+                </p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Search Bar Section - Sticky */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 -mt-6 relative z-10">
-        <SearchBar />
+      <section className="relative -mt-10 z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="rounded-[2rem] bg-white p-6 shadow-2xl border border-surface-muted">
+          <SearchBar />
+        </div>
       </section>
 
-      {/* Top Advertising Banner */}
       <TopAdBanner />
 
-      {/* Browse By Category */}
       <section className="py-12 sm:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-12">
             <div>
-              <p className="text-sm uppercase tracking-widest text-primary font-bold">Find Anything</p>
-              <h2 className="mt-2 text-3xl sm:text-4xl font-bold text-text-primary">Browse by Category</h2>
+              <p className="text-sm uppercase tracking-widest text-primary font-bold">Find anything</p>
+              <h2 className="mt-2 text-3xl sm:text-4xl font-bold text-text-primary">Browse by category</h2>
             </div>
             <Link
               to="/products"
-              className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-3 text-sm font-bold text-white hover:bg-primary-hover transition group"
+              className="inline-flex items-center justify-center rounded-3xl bg-primary px-6 py-3 text-sm font-bold text-white hover:bg-primary-hover transition group"
             >
-              Explore All
+              Explore all
               <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition" />
             </Link>
           </div>
@@ -134,7 +160,6 @@ const HomePage = () => {
         <CategoriesGrid />
       </section>
 
-      {/* Top Ads Section */}
       <section className="py-12 sm:py-16 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-12">
@@ -144,7 +169,7 @@ const HomePage = () => {
             </div>
             <Link
               to="/products"
-              className="inline-flex items-center justify-center rounded-lg bg-text-primary px-6 py-3 text-sm font-semibold text-white hover:bg-primary-hover transition"
+              className="inline-flex items-center justify-center rounded-3xl bg-primary px-6 py-3 text-sm font-semibold text-white hover:bg-primary-hover transition"
             >
               View all listings
             </Link>
@@ -152,7 +177,7 @@ const HomePage = () => {
 
           <div className="mt-8">
             {loadingTopAds ? (
-              <div className="rounded-2xl border border-muted bg-white p-12 text-center text-text-secondary">Loading featured products…</div>
+              <div className="rounded-3xl border border-muted bg-white p-12 text-center text-text-secondary">Loading featured products…</div>
             ) : (
               <FeaturedSection title="" products={topAds} viewAllLink="/products" />
             )}
@@ -160,7 +185,6 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Latest Products Section */}
       <section className="py-12 sm:py-16 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-12">
@@ -170,7 +194,7 @@ const HomePage = () => {
             </div>
             <Link
               to="/products"
-              className="inline-flex items-center justify-center rounded-full bg-text-primary px-6 py-3 text-sm font-semibold text-white hover:bg-primary-hover transition"
+              className="inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white hover:bg-primary-hover transition"
             >
               Browse latest
             </Link>
@@ -178,7 +202,7 @@ const HomePage = () => {
 
           <div className="mt-8">
             {loadingLatest ? (
-              <div className="rounded-2xl border border-muted bg-background p-12 text-center text-text-secondary">Loading latest products…</div>
+              <div className="rounded-3xl border border-muted bg-background p-12 text-center text-text-secondary">Loading latest products…</div>
             ) : (
               <FeaturedSection title="" products={latestProducts} viewAllLink="/products" />
             )}
@@ -186,68 +210,62 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Why Choose Us Section */}
       <section className="py-12 sm:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl sm:text-4xl font-bold text-text-primary mb-12 text-center">Why Choose Konpuk?</h2>
-          
+          <h2 className="text-3xl sm:text-4xl font-bold text-text-primary mb-12 text-center">Why choose Konpuk?</h2>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-            {/* Feature 1 */}
-            <div className="rounded-2xl border border-muted p-8 hover:shadow-lg hover:border-primary/30 transition">
-              <div className="w-14 h-14 rounded-xl bg-primary/20 flex items-center justify-center mb-4">
+            <div className="rounded-3xl border border-muted p-8 hover:shadow-xl transition">
+              <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
                 <Zap className="w-7 h-7 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold text-text-primary mb-2">Fast & Easy</h3>
+              <h3 className="text-xl font-semibold text-text-primary mb-2">Fast & easy</h3>
               <p className="text-text-secondary">Post your products in minutes. Browse thousands of listings instantly.</p>
             </div>
 
-            {/* Feature 2 */}
-            <div className="rounded-2xl border border-muted p-8 hover:shadow-lg hover:border-green-200 transition">
-              <div className="w-14 h-14 rounded-xl bg-green-100 flex items-center justify-center mb-4">
+            <div className="rounded-3xl border border-muted p-8 hover:shadow-xl transition">
+              <div className="w-14 h-14 rounded-2xl bg-green-100 flex items-center justify-center mb-4">
                 <ShieldCheck className="w-7 h-7 text-green-600" />
               </div>
-              <h3 className="text-xl font-semibold text-text-primary mb-2">Safe & Secure</h3>
+              <h3 className="text-xl font-semibold text-text-primary mb-2">Safe & secure</h3>
               <p className="text-text-secondary">Verified sellers and secure messaging to keep you protected.</p>
             </div>
 
-            {/* Feature 3 */}
-            <div className="rounded-2xl border border-muted p-8 hover:shadow-lg hover:border-purple-200 transition">
-              <div className="w-14 h-14 rounded-xl bg-purple-100 flex items-center justify-center mb-4">
+            <div className="rounded-3xl border border-muted p-8 hover:shadow-xl transition">
+              <div className="w-14 h-14 rounded-2xl bg-purple-100 flex items-center justify-center mb-4">
                 <TrendingUp className="w-7 h-7 text-purple-600" />
               </div>
-              <h3 className="text-xl font-semibold text-text-primary mb-2">Real Results</h3>
+              <h3 className="text-xl font-semibold text-text-primary mb-2">Real results</h3>
               <p className="text-text-secondary">Connect directly with buyers and sellers in your area.</p>
             </div>
 
-            {/* Feature 4 */}
-            <div className="rounded-2xl border border-muted p-8 hover:shadow-lg hover:border-amber-200 transition">
-              <div className="w-14 h-14 rounded-xl bg-amber-100 flex items-center justify-center mb-4">
+            <div className="rounded-3xl border border-muted p-8 hover:shadow-xl transition">
+              <div className="w-14 h-14 rounded-2xl bg-amber-100 flex items-center justify-center mb-4">
                 <Star className="w-7 h-7 text-amber-600" />
               </div>
-              <h3 className="text-xl font-semibold text-text-primary mb-2">Free to Use</h3>
+              <h3 className="text-xl font-semibold text-text-primary mb-2">Free to use</h3>
               <p className="text-text-secondary">No hidden fees. Post, browse, and message completely free.</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
       <section className="py-12 sm:py-16 bg-gradient-to-r from-primary to-primary-hover">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white space-y-6">
-          <h2 className="text-3xl sm:text-4xl font-bold">Ready to Join Konpuk?</h2>
-          <p className="text-lg text-white max-w-2xl mx-auto">Start buying and selling with Cambodia's most trusted community today.</p>
+          <h2 className="text-3xl sm:text-4xl font-bold">Ready to join Konpuk?</h2>
+          <p className="text-lg max-w-2xl mx-auto text-white/90">Start buying and selling with Cambodia's most trusted community today.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <Link
               to="/register"
-              className="inline-flex items-center justify-center px-8 py-3 rounded-lg bg-white text-primary font-bold hover:bg-primary/10 transition"
+              className="inline-flex items-center justify-center rounded-3xl bg-white px-8 py-3 text-sm font-bold text-primary hover:bg-white/90 transition"
             >
-              Sign Up for Free
+              Sign up for free
             </Link>
             <Link
               to="/products"
-              className="inline-flex items-center justify-center px-8 py-3 rounded-lg border-2 border-white text-white font-bold hover:bg-white/10 transition"
+              className="inline-flex items-center justify-center rounded-3xl border border-white px-8 py-3 text-sm font-bold text-white hover:bg-white/10 transition"
             >
-              Browse Products
+              Browse products
             </Link>
           </div>
         </div>

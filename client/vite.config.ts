@@ -8,28 +8,29 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       react(),
-      ...(isProduction
-        ? [
-            viteObfuscateFile({
-              compact: true,
-              controlFlowFlattening: true,
-              controlFlowFlatteningThreshold: 0.75,
-              deadCodeInjection: true,
-              deadCodeInjectionThreshold: 0.4,
-              debugProtection: true,
-              debugProtectionInterval: 0,
-              disableConsoleOutput: true,
-              stringArray: true,
-              stringArrayEncoding: ['rc4'],
-              stringArrayThreshold: 0.75,
-              rotateStringArray: true,
-              transformObjectKeys: true,
-              unicodeEscapeSequence: false,
-              numbersToExpressions: true,
-              simplify: true
-            })
-          ]
-        : [])
+      // Temporarily disabled obfuscation for faster build during testing
+      // ...(isProduction
+      //   ? [
+      //       viteObfuscateFile({
+      //         compact: true,
+      //         controlFlowFlattening: true,
+      //         controlFlowFlatteningThreshold: 0.75,
+      //         deadCodeInjection: true,
+      //         deadCodeInjectionThreshold: 0.4,
+      //         debugProtection: true,
+      //         debugProtectionInterval: 0,
+      //         disableConsoleOutput: true,
+      //         stringArray: true,
+      //         stringArrayEncoding: ['rc4'],
+      //         stringArrayThreshold: 0.75,
+      //         rotateStringArray: true,
+      //         transformObjectKeys: true,
+      //         unicodeEscapeSequence: false,
+      //         numbersToExpressions: true,
+      //         simplify: true
+      //       })
+      //     ]
+      //   : [])
     ],
     build: {
       outDir: 'dist',

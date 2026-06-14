@@ -73,13 +73,22 @@ const ProductDetailPage = () => {
         const data = await getProductById(id);
         setProduct(data);
         setSelectedImage(data.images?.[0]?.secureUrl || data.images?.[0]?.url || '');
-        const favorite = await checkFavorite(id);
-        setIsFavorite(Boolean(favorite));
+        setIsFavorite(false);
+
+        if (isAuthenticated) {
+          try {
+            const favorite = await checkFavorite(id);
+            setIsFavorite(Boolean(favorite));
+          } catch {
+            setIsFavorite(false);
+          }
+        }
+
         setStatus('');
         try {
           const profile = await getProfile();
           setCurrentUser(profile);
-        } catch (err) {
+        } catch {
           setCurrentUser(null);
         }
       } catch (error) {
@@ -87,7 +96,7 @@ const ProductDetailPage = () => {
       }
     };
     loadProduct();
-  }, [id]);
+  }, [id, isAuthenticated]);
 
   useEffect(() => {
     const trackView = async () => {
