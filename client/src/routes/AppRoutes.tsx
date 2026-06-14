@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from '../pages/HomePage';
 import LoginPage from '../pages/LoginPage';
 import RegisterPage from '../pages/RegisterPage';
@@ -14,6 +14,7 @@ import ChatPage from '../pages/ChatPage';
 import DashboardPage from '../pages/DashboardPage';
 import AdminDashboardPage from '../pages/AdminDashboardPage';
 import AdminBannersPage from '../pages/AdminBannersPage';
+import AdminRevenuePage from '../pages/AdminRevenuePage';
 import AdminRoute from './AdminRoute';
 import NotificationsPage from '../pages/NotificationsPage';
 import NotFoundPage from '../pages/NotFoundPage';
@@ -34,12 +35,15 @@ const AppRoutes = () => (
     <Route path="/account-settings" element={<AccountSettingsPage />} />
     <Route path="/notifications" element={<NotificationsPage />} />
     <Route path="/favorites" element={<FavoritesPage />} />
-    <Route path="/chat" element={<ChatPage />} />
+    <Route path="/chat" element={<Navigate replace to="/messages" />} />
+    <Route path="/messages" element={<ChatPage />} />
+    <Route path="/messages/:id" element={<ChatPage />} />
     <Route path="/dashboard" element={<DashboardPage />} />
     <Route path="/admin" element={<AdminRoute />}>
       <Route index element={<AdminDashboardPage />} />
       <Route path="sellers" element={<AdminDashboardPage />} />
       <Route path="banners" element={<AdminBannersPage />} />
+      <Route path="revenue" element={<AdminRevenuePage />} />
     </Route>
     <Route path="*" element={<NotFoundPage />} />
   </Routes>

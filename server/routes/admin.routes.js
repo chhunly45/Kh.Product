@@ -10,6 +10,11 @@ router.use(authMiddleware, roleMiddleware(['admin', 'moderator']));
 
 router.get('/overview', adminController.getOverview);
 router.get('/analytics/products-by-province', adminController.getProductsByProvince);
+router.get('/revenue/metrics', adminController.getRevenueMetrics);
+router.get('/revenue/daily', adminController.getDailyRevenue);
+router.get('/revenue/weekly', adminController.getWeeklyRevenue);
+router.get('/revenue/monthly', adminController.getMonthlyRevenue);
+router.get('/revenue/by-seller', adminController.getRevenueBySeller);
 router.get('/users', adminController.listUsers);
 router.patch('/users/:id/status',
   param('id').isMongoId(),
@@ -26,6 +31,7 @@ router.patch('/products/:id/status', param('id').isMongoId(), body('status').isI
 router.patch('/products/:id/featured', param('id').isMongoId(), body('featured').isBoolean(), validate, adminController.updateProductFeatured);
 router.get('/reports', adminController.listReports);
 router.patch('/reports/:id', param('id').isMongoId(), body('status').isIn(['pending','reviewed','resolved','rejected']).withMessage('Invalid report status'), validate, adminController.updateReportStatus);
+router.get('/audit-logs', adminController.listAuditLogs);
 router.delete('/reviews/:id', param('id').isMongoId(), validate, adminController.deleteReview);
 router.post('/email/test', body('to').isEmail(), validate, adminController.sendTestEmail);
 router.post('/backfill/product-sellers', adminController.backfillProductSellers);

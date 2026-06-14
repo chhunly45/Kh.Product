@@ -9,6 +9,8 @@ const Report = require('./Report');
 const Admin = require('./Admin');
 const Banner = require('./Banner');
 const Review = require('./Review');
+const AuditLog = require('./AuditLog');
+const Transaction = require('./Transaction');
 
 module.exports = {
   User,
@@ -21,5 +23,7 @@ module.exports = {
   Report,
   Admin,
   Banner,
-  Review
+  Review,
+  AuditLog,
+  Transaction
 };

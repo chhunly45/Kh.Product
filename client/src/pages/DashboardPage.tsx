@@ -74,13 +74,22 @@ const DashboardPage = () => {
           </div>
           <div className="flex items-center gap-3">
             {user?.role === 'admin' && (
-              <button
-                type="button"
-                onClick={() => navigate('/admin/banners')}
-                className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-50 transition"
-              >
-                Manage Banners
-              </button>
+              <>
+                <button
+                  type="button"
+                  onClick={() => navigate('/admin/banners')}
+                  className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-50 transition"
+                >
+                  Manage Banners
+                </button>
+                <button
+                  type="button"
+                  onClick={() => navigate('/admin/revenue')}
+                  className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-50 transition"
+                >
+                  Revenue Dashboard
+                </button>
+              </>
             )}
 
             <button

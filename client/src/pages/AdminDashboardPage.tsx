@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useMatch } from 'react-router-dom';
+import { useMatch, useNavigate } from 'react-router-dom';
 import {
   getAdminOverview,
   getAdminUsers,
@@ -9,6 +9,7 @@ import {
   updateAdminProductFeatured,
   getAdminReports,
   updateAdminReportStatus,
+  getAdminAuditLogs,
   getProductsByProvince
 } from '../services/admin.api';
 
@@ -17,12 +18,13 @@ const reportStatusOptions = ['pending', 'reviewed', 'resolved', 'rejected'];
 
 const AdminDashboardPage = () => {
   const isSellersPath = useMatch('/admin/sellers');
-  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'products' | 'reports' | 'analytics' | 'sellers'>(isSellersPath ? 'sellers' : 'overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'products' | 'reports' | 'audit' | 'analytics' | 'sellers'>(isSellersPath ? 'sellers' : 'overview');
   const [overview, setOverview] = useState<Record<string, any>>({});
   const [users, setUsers] = useState<any[]>([]);
   const [sellers, setSellers] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
   const [reports, setReports] = useState<any[]>([]);
+  const [auditLogs, setAuditLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [provinceStats, setProvinceStats] = useState<any[]>([]);
@@ -72,6 +74,15 @@ const AdminDashboardPage = () => {
     }
   };
 
+  const loadAuditLogs = async () => {
+    try {
+      const data = await getAdminAuditLogs();
+      setAuditLogs(data.items || []);
+    } catch {
+      setMessage('Unable to load audit logs.');
+    }
+  };
+
   useEffect(() => {
     if (activeTab === 'overview') loadOverview();
     if (activeTab === 'users') loadUsers();
@@ -79,6 +90,7 @@ const AdminDashboardPage = () => {
     if (activeTab === 'products') loadProducts();
     if (activeTab === 'reports') loadReports();
     if (activeTab === 'analytics') loadAnalytics();
+    if (activeTab === 'audit') loadAuditLogs();
   }, [activeTab]);
 
   useEffect(() => {
@@ -219,6 +231,8 @@ const AdminDashboardPage = () => {
     }
   };
 
+  const navigate = useNavigate();
+
   return (
     <div className="space-y-6">
       <header className="rounded-[2rem] bg-white p-8 shadow-xl ring-1 ring-slate-200">
@@ -228,7 +242,7 @@ const AdminDashboardPage = () => {
             <p className="mt-2 text-sm text-slate-500">Manage users, moderate products, review reports, and monitor platform health.</p>
           </div>
           <div className="flex flex-wrap gap-2">
-            {['overview', 'users', 'sellers', 'products', 'reports', 'analytics'].map((tab) => (
+            {['overview', 'users', 'sellers', 'products', 'reports', 'audit', 'analytics'].map((tab) => (
               <button
                 key={tab}
                 type="button"
@@ -242,6 +256,13 @@ const AdminDashboardPage = () => {
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
               </button>
             ))}
+            <button
+              type="button"
+              onClick={() => navigate('/admin/revenue')}
+              className="rounded-full px-4 py-2 text-sm font-medium bg-emerald-600 text-white hover:bg-emerald-700 transition"
+            >
+              Revenue
+            </button>
           </div>
         </div>
       </header>
@@ -558,6 +579,55 @@ const AdminDashboardPage = () => {
                     </td>
                   </tr>
                 ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
+
+      {activeTab === 'audit' && (
+        <section className="space-y-6">
+          <div className="rounded-[2rem] bg-white p-6 shadow-xl ring-1 ring-slate-200">
+            <h2 className="text-xl font-semibold text-slate-900">Audit logs</h2>
+            <p className="mt-2 text-sm text-slate-500">View recent moderation actions and audit history.</p>
+          </div>
+
+          <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+            <table className="min-w-full divide-y divide-slate-200 text-sm">
+              <thead className="bg-slate-50 text-slate-600">
+                <tr>
+                  <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Action</th>
+                  <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Admin</th>
+                  <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Target</th>
+                  <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">When</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200">
+                {auditLogs.length > 0 ? (
+                  auditLogs.map((log) => (
+                    <tr key={log._id}>
+                      <td className="px-6 py-4">
+                        <div className="font-semibold text-slate-900">{log.action}</div>
+                        <div className="mt-1 text-slate-500">{log.details}</div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="text-slate-900">{log.admin?.displayName || 'Unknown'}</div>
+                        <div className="mt-1 text-slate-500">{log.admin?.email || ''}</div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="text-slate-900">{log.targetType}</div>
+                        <div className="mt-1 text-slate-500">{log.targetId || 'n/a'}</div>
+                      </td>
+                      <td className="px-6 py-4 text-slate-500">{new Date(log.createdAt).toLocaleString()}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={4} className="px-6 py-4 text-center text-slate-500">
+                      No audit logs available.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

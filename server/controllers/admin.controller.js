@@ -1,4 +1,5 @@
 const adminService = require('../services/admin.service');
+const revenueService = require('../services/revenue.service');
 const reviewService = require('../services/review.service');
 const emailService = require('../services/email.service');
 const config = require('../config');
@@ -23,7 +24,7 @@ const listUsers = async (req, res, next) => {
 
 const updateUserStatus = async (req, res, next) => {
   try {
-    const user = await adminService.updateUserStatus(req.params.id, req.body);
+    const user = await adminService.updateUserStatus(req.params.id, req.body, req.user.id);
     res.json({ success: true, data: user });
   } catch (error) {
     next(error);
@@ -41,7 +42,7 @@ const listProducts = async (req, res, next) => {
 
 const updateProductStatus = async (req, res, next) => {
   try {
-    const product = await adminService.updateProductStatus(req.params.id, req.body.status);
+    const product = await adminService.updateProductStatus(req.params.id, req.body.status, req.user.id);
     res.json({ success: true, data: product });
   } catch (error) {
     next(error);
@@ -51,7 +52,7 @@ const updateProductStatus = async (req, res, next) => {
 const updateProductFeatured = async (req, res, next) => {
   try {
     const featured = req.body.featured === true;
-    const product = await adminService.updateProductFeatured(req.params.id, featured);
+    const product = await adminService.updateProductFeatured(req.params.id, featured, req.user.id);
     res.json({ success: true, data: product });
   } catch (error) {
     next(error);
@@ -71,6 +72,15 @@ const updateReportStatus = async (req, res, next) => {
   try {
     const report = await adminService.updateReportStatus(req.params.id, req.body.status, req.user.id);
     res.json({ success: true, data: report });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const listAuditLogs = async (req, res, next) => {
+  try {
+    const logs = await adminService.listAuditLogs(req.query);
+    res.json({ success: true, data: logs });
   } catch (error) {
     next(error);
   }
@@ -149,6 +159,55 @@ const sendTestEmail = async (req, res, next) => {
   }
 };
 
+const getRevenueMetrics = async (req, res, next) => {
+  try {
+    const metrics = await revenueService.getRevenueMetrics();
+    res.json({ success: true, data: metrics });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getDailyRevenue = async (req, res, next) => {
+  try {
+    const { startDate, endDate, limit = 30 } = req.query;
+    const data = await revenueService.getDailyRevenue({ startDate, endDate, limit: Number(limit) });
+    res.json({ success: true, data });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getWeeklyRevenue = async (req, res, next) => {
+  try {
+    const { startDate, endDate, limit = 12 } = req.query;
+    const data = await revenueService.getWeeklyRevenue({ startDate, endDate, limit: Number(limit) });
+    res.json({ success: true, data });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getMonthlyRevenue = async (req, res, next) => {
+  try {
+    const { startDate, endDate, limit = 12 } = req.query;
+    const data = await revenueService.getMonthlyRevenue({ startDate, endDate, limit: Number(limit) });
+    res.json({ success: true, data });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getRevenueBySeller = async (req, res, next) => {
+  try {
+    const { startDate, endDate, limit = 50 } = req.query;
+    const data = await revenueService.getRevenueBySeller({ startDate, endDate, limit: Number(limit) });
+    res.json({ success: true, data });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getOverview,
   listUsers,
@@ -158,8 +217,14 @@ module.exports = {
   updateProductFeatured,
   listReports,
   updateReportStatus,
+  listAuditLogs,
   deleteReview,
   backfillProductSellers,
   sendTestEmail,
-  getProductsByProvince
+  getProductsByProvince,
+  getRevenueMetrics,
+  getDailyRevenue,
+  getWeeklyRevenue,
+  getMonthlyRevenue,
+  getRevenueBySeller
 };
