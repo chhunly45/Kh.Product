@@ -154,7 +154,13 @@ const createProduct = async (sellerId, payload) => {
   const categoryId = payload.category?._id || payload.category;
   await Category.findById(categoryId).orFail();
 
-  let slug = payload.slug || normalizeSlug(payload.title);
+  // Support bilingual titles (Khmer/English)
+  const titleKh = payload.titleKh || payload.title || '';
+  const titleEn = payload.titleEn || '';
+  const fallbackTitle = titleEn || titleKh || payload.title || '';
+
+  // Generate slug preferably from English title, fallback to Khmer
+  let slug = payload.slug || normalizeSlug(titleEn || titleKh || payload.title);
   if (!slug) {
     slug = `product-${Date.now()}`;
   }
@@ -166,7 +172,9 @@ const createProduct = async (sellerId, payload) => {
 
   const product = await Product.create({
     seller: sellerId,
-    title: payload.title,
+    title: fallbackTitle, // Legacy field for backward compatibility
+    titleKh: titleKh,
+    titleEn: titleEn,
     slug,
     description: payload.description,
     price: Number(payload.price),
@@ -175,7 +183,7 @@ const createProduct = async (sellerId, payload) => {
     location: payload.location,
     category: categoryId,
     tags: Array.isArray(payload.tags) ? payload.tags : [],
-    metaTitle: payload.metaTitle || payload.title,
+    metaTitle: payload.metaTitle || fallbackTitle,
     metaDescription: payload.metaDescription || payload.description,
     extraAttributes: payload.extraAttributes || {}
   });
@@ -201,10 +209,15 @@ const updateProduct = async (productId, user, updates) => {
   const previousStatus = product.status;
 
   Object.keys(updates).forEach((key) => {
-    if (['title', 'description', 'price', 'condition', 'location', 'status', 'category', 'tags', 'metaTitle', 'metaDescription', 'extraAttributes'].includes(key)) {
+    if (['title', 'titleKh', 'titleEn', 'description', 'price', 'condition', 'location', 'status', 'category', 'tags', 'metaTitle', 'metaDescription', 'extraAttributes'].includes(key)) {
       product[key] = updates[key];
     }
   });
+
+  // Update title as fallback if titleKh or titleEn changed
+  if (updates.titleKh || updates.titleEn) {
+    product.title = updates.titleEn || updates.titleKh || product.title;
+  }
 
   if (updates.category) {
     await Category.findById(updates.category).orFail();

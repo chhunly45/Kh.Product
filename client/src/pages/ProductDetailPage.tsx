@@ -143,7 +143,12 @@ const ProductDetailPage = () => {
   const getSeoDescription = (product: any) => {
     if (!product) return 'Find great local products on Konpuk.';
 
-    const base = `${product.title} in ${product.location || 'Cambodia'} under ${product.category?.labelKh || product.category?.name || 'General'} priced at ${formatPrice(product.price).usd}.`;
+    // Use bilingual title if available, otherwise fallback to title
+    const displayTitle = (product.titleKh && product.titleEn) 
+      ? `${product.titleKh} / ${product.titleEn}` 
+      : product.titleEn || product.titleKh || product.title;
+
+    const base = `${displayTitle} in ${product.location || 'Cambodia'} under ${product.category?.labelKh || product.category?.name || 'General'} priced at ${formatPrice(product.price).usd}.`;
     const descriptionText = `${base} ${product.description ? product.description.trim() : ''}`.replace(/\s+/g, ' ').trim();
     const maxLength = 160;
     if (descriptionText.length <= maxLength) return descriptionText;
@@ -163,7 +168,7 @@ const ProductDetailPage = () => {
         targetType: reportTargetType,
         targetId: reportTargetType === 'product' ? product._id : product.seller?._id,
         reason,
-        details: reportMessage || `Please review this listing: ${product.title}`
+        details: reportMessage || `Please review this listing: ${displayTitle}`
       });
       setReportSuccess('Your report has been submitted and will be reviewed by our team.');
       setReportOpen(false);
@@ -201,12 +206,17 @@ const ProductDetailPage = () => {
 
   const sellerPhone = safelyPhone(product.seller?.phoneNumber);
   const whatsappLink = sellerPhone ? `https://wa.me/${sellerPhone.replace(/^\+/, '')}` : null;
-  const emailLink = product.seller?.email ? `mailto:${product.seller.email}?subject=Question%20about%20${encodeURIComponent(product.title)}` : null;
+  const emailLink = product.seller?.email ? `mailto:${product.seller.email}?subject=Question%20about%20${encodeURIComponent(product.titleEn || product.titleKh || product.title)}` : null;
   const sellerJoined = product.seller?.createdAt ? new Date(product.seller.createdAt).toLocaleDateString() : null;
 
   console.log('Seller:', product?.seller);
 
-  const seoTitle = `${product.title} for Sale in ${product.location || 'Cambodia'}`;
+  // Build bilingual title for display and SEO
+  const displayTitle = (product.titleKh && product.titleEn) 
+    ? `${product.titleKh} / ${product.titleEn}` 
+    : product.titleEn || product.titleKh || product.title;
+  
+  const seoTitle = `${displayTitle} for Sale in ${product.location || 'Cambodia'}`;
   const seoDescription = getSeoDescription(product);
   const canonicalUrl = `${window.location.origin}/products/${product._id}`;
   const seoImage = product.images?.[0]?.secureUrl || product.images?.[0]?.url || 'https://via.placeholder.com/1200x630.png?text=Marketplace+Kh';
@@ -224,7 +234,7 @@ const ProductDetailPage = () => {
         structuredData={{
           '@context': 'https://schema.org',
           '@type': 'Product',
-          name: product.title,
+          name: displayTitle,
           image: [seoImage],
           description: product.description,
           sku: product._id,
@@ -249,7 +259,7 @@ const ProductDetailPage = () => {
               <p className="text-sm uppercase tracking-[0.35em] text-primary">Product detail</p>
               <div className="flex flex-wrap items-center gap-3">
                 <div className="flex items-center gap-3">
-                  <h1 className="text-3xl font-semibold text-text-primary">{product.title}</h1>
+                  <h1 className="text-3xl font-semibold text-text-primary">{displayTitle}</h1>
                   {(product.featured || product.isFeatured) && (
                     <span className="rounded-full bg-amber-400 px-3 py-1 text-sm font-semibold uppercase tracking-wide text-white shadow">Featured</span>
                   )}
@@ -301,7 +311,7 @@ const ProductDetailPage = () => {
               <div className="overflow-hidden rounded-[2rem] bg-background shadow-sm">
                 <img
                   src={selectedImage || product.images?.[0]?.secureUrl || product.images?.[0]?.url || 'https://via.placeholder.com/1000x700.png?text=No+Image'}
-                  alt={product.title}
+                  alt={displayTitle}
                   className="h-96 w-full object-cover"
                 />
               </div>
@@ -317,7 +327,7 @@ const ProductDetailPage = () => {
                         onClick={() => setSelectedImage(src)}
                         className={`overflow-hidden rounded-3xl border ${selectedImage === src ? 'border-primary' : 'border-transparent'} bg-white focus:outline-none focus:ring-2 focus:ring-primary/30`}
                       >
-                        <img src={src} alt={product.title} className="h-24 w-full object-cover" />
+                        <img src={src} alt={displayTitle} className="h-24 w-full object-cover" />
                       </button>
                     );
                   })}
@@ -409,7 +419,7 @@ const ProductDetailPage = () => {
                       <button
                         type="button"
                         onClick={() => {
-                          window.open(`mailto:${product.seller?.email}?subject=${encodeURIComponent(`Question about ${product.title}`)}`, '_blank');
+                          window.open(`mailto:${product.seller?.email}?subject=${encodeURIComponent(`Question about ${displayTitle}`)}`, '_blank');
                         }}
                         className="inline-flex w-full items-center justify-center gap-2 rounded-3xl border border-muted bg-white px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background transition"
                       >
@@ -580,6 +590,8 @@ const ProductDetailPage = () => {
                       key={item._id}
                       id={item._id}
                       title={item.title}
+                      titleKh={item.titleKh}
+                      titleEn={item.titleEn}
                       price={item.price}
                       location={item.location || 'Unknown'}
                       category={item.category?.labelKh || item.category?.name || 'General'}

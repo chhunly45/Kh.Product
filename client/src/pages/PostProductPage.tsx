@@ -8,6 +8,8 @@ const PostProductPage = () => {
   const [searchParams] = useSearchParams();
   const productId = searchParams.get('id');
   const [title, setTitle] = useState('');
+  const [titleKh, setTitleKh] = useState('');
+  const [titleEn, setTitleEn] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
   const [location, setLocation] = useState('');
@@ -57,6 +59,8 @@ const PostProductPage = () => {
       try {
         const product = await getProductById(productId);
         setTitle(product.title || '');
+        setTitleKh(product.titleKh || '');
+        setTitleEn(product.titleEn || '');
         setDescription(product.description || '');
         setPrice(product.price ? String(product.price) : '');
         setLocation(product.location || '');
@@ -119,7 +123,15 @@ const PostProductPage = () => {
 
   const validateForm = () => {
     const nextErrors: Record<string, string> = {};
-    if (!title.trim()) nextErrors.title = 'Product title is required';
+    const hasTitleKh = titleKh.trim().length > 0;
+    const hasTitleEn = titleEn.trim().length > 0;
+    const hasTitle = title.trim().length > 0;
+    
+    // Require at least one title (Khmer, English, or fallback title)
+    if (!hasTitleKh && !hasTitleEn && !hasTitle) {
+      nextErrors.title = 'Please provide at least one title (Khmer, English, or both)';
+    }
+    
     if (!description.trim()) nextErrors.description = 'Description is required';
     if (!price || Number(price) <= 0) nextErrors.price = 'Price must be a positive number';
     if (!location.trim()) nextErrors.location = 'Location is required';
@@ -143,6 +155,8 @@ const PostProductPage = () => {
 
     const payload = {
       title,
+      titleKh,
+      titleEn,
       description,
       price: Number(price),
       location,
@@ -169,6 +183,8 @@ const PostProductPage = () => {
       setSavedProductId(product?._id || null);
       if (!isEditing) {
         setTitle('');
+        setTitleKh('');
+        setTitleEn('');
         setDescription('');
         setPrice('');
         setLocation('');
@@ -198,13 +214,38 @@ const PostProductPage = () => {
       <form className="mt-10 space-y-6" onSubmit={handleSubmit}>
         <div className="grid gap-6 lg:grid-cols-2">
           <label className="block">
-            <span className="text-sm font-medium text-text-secondary">Product title</span>
+            <span className="text-sm font-medium text-text-secondary">Product title (Khmer)</span>
+            <input
+              value={titleKh}
+              onChange={(event) => setTitleKh(event.target.value)}
+              placeholder="ឈ្មោះផលិតផល"
+              className={`mt-2 w-full rounded-3xl border px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 ${errors.title ? 'border-rose-400 bg-rose-50' : 'border-muted bg-background'}`}
+            />
+          </label>
+
+          <label className="block">
+            <span className="text-sm font-medium text-text-secondary">Product title (English)</span>
+            <input
+              value={titleEn}
+              onChange={(event) => setTitleEn(event.target.value)}
+              placeholder="Product name"
+              className={`mt-2 w-full rounded-3xl border px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 ${errors.title ? 'border-rose-400 bg-rose-50' : 'border-muted bg-background'}`}
+            />
+          </label>
+        </div>
+
+        {errors.title && <p className="text-sm text-rose-600">{errors.title}</p>}
+
+        <div className="grid gap-6 lg:grid-cols-2">
+          <label className="block">
+            <span className="text-sm font-medium text-text-secondary">Fallback title (legacy)</span>
             <input
               value={title}
               onChange={(event) => setTitle(event.target.value)}
-              className={`mt-2 w-full rounded-3xl border px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 ${errors.title ? 'border-rose-400 bg-rose-50' : 'border-muted bg-background'}`}
+              placeholder="(Optional - used if no Khmer/English titles)"
+              className={`mt-2 w-full rounded-3xl border px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 border-muted bg-background opacity-75`}
             />
-            {errors.title && <p className="mt-2 text-sm text-rose-600">{errors.title}</p>}
+            <p className="mt-2 text-xs text-muted">Optional. The system will use Khmer or English titles if available.</p>
           </label>
 
           <label className="block">

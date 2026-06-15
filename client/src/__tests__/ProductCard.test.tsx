@@ -6,7 +6,7 @@ describe('ProductCard', () => {
   it('renders the product card with title, price, and category', () => {
     render(
       <MemoryRouter>
-        <ProductCard id="123" title="Test Product" price="KHR 500,000" location="Phnom Penh" category="Electronics" />
+        <ProductCard id="123" titleEn="Test Product" price="KHR 500,000" location="Phnom Penh" category="Electronics" />
       </MemoryRouter>
     );
 
@@ -14,5 +14,25 @@ describe('ProductCard', () => {
     expect(screen.getByText(/KHR\s*500,000/)).toBeInTheDocument();
     expect(screen.getByText('Electronics')).toBeInTheDocument();
     expect(screen.getByRole('link')).toHaveAttribute('href', '/products/123');
+  });
+
+  it('renders bilingual title when both titleKh and titleEn are provided', () => {
+    render(
+      <MemoryRouter>
+        <ProductCard id="456" titleKh="ផលិតផល" titleEn="Product" price={1000} location="Phnom Penh" category="General" />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText('ផលិតផល / Product')).toBeInTheDocument();
+  });
+
+  it('falls back to fallback title when no title is provided', () => {
+    render(
+      <MemoryRouter>
+        <ProductCard id="789" price={500} location="Phnom Penh" />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText('Product')).toBeInTheDocument();
   });
 });

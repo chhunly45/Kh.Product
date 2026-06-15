@@ -5,7 +5,9 @@ import { formatViewsCount } from '../../utils/views';
 import { formatPriceKHR, formatPriceUSD } from '../../utils/price';
 
 interface ProductCardProps {
-  title: string;
+  title?: string;
+  titleKh?: string;
+  titleEn?: string;
   price: string | number;
   location?: string;
   category?: string;
@@ -18,8 +20,12 @@ interface ProductCardProps {
   seller?: { displayName?: string; sellerVerificationStatus?: string };
 }
 
-const ProductCard = ({ title, price, location, category, id, imageUrl, viewsCount = 0, featured = false, isFavorite = false, onToggleFavorite, seller }: ProductCardProps) => {
+const ProductCard = ({ title, titleKh, titleEn, price, location, category, id, imageUrl, viewsCount = 0, featured = false, isFavorite = false, onToggleFavorite, seller }: ProductCardProps) => {
   const [isSaved, setIsSaved] = useState<boolean>(isFavorite);
+
+  // Determine display title: prefer bilingual (Kh / En), fallback to whichever is available
+  const displayTitle = titleKh && titleEn ? `${titleKh} / ${titleEn}` : titleEn || titleKh || title || 'Product';
+  const altText = title || displayTitle;
 
   useEffect(() => {
     setIsSaved(Boolean(isFavorite));
@@ -44,7 +50,7 @@ const ProductCard = ({ title, price, location, category, id, imageUrl, viewsCoun
       <div className="relative h-64 overflow-hidden bg-surface">
         <img
           src={src}
-          alt={title}
+          alt={altText}
           className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
           onError={(e) => {
             e.currentTarget.src = fallback;
@@ -86,7 +92,7 @@ const ProductCard = ({ title, price, location, category, id, imageUrl, viewsCoun
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-2">
             <h3 className="text-lg font-semibold text-text-primary line-clamp-2 group-hover:text-primary transition">
-              {title}
+              {displayTitle}
             </h3>
             {location && (
               <div className="flex items-center gap-2 text-sm text-text-secondary">

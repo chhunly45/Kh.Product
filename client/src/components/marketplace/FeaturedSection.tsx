@@ -5,7 +5,9 @@ import { ArrowRight } from 'lucide-react';
 interface Product {
   _id?: string;
   id?: string;
-  title: string;
+  title?: string;
+  titleKh?: string;
+  titleEn?: string;
   price: number | string;
   location?: string;
   category?: { name?: string; labelKh?: string } | string;
@@ -52,6 +54,8 @@ const FeaturedSection = ({ title, description, products, viewAllLink = '/' }: Fe
                 key={id}
                 id={id}
                 title={product.title}
+                titleKh={product.titleKh}
+                titleEn={product.titleEn}
                 price={product.price}
                 location={product.location || 'Unknown'}
                 category={categoryLabel}

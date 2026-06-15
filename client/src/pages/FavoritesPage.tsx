@@ -74,6 +74,8 @@ const FavoritesPage = () => {
                 <ProductCard
                   id={product._id}
                   title={product.title}
+                  titleKh={product.titleKh}
+                  titleEn={product.titleEn}
                   price={product.price}
                   location={product.location}
                   category={product.category?.labelKh || product.category?.name}

@@ -4,7 +4,9 @@ const { Schema, model, Types } = mongoose;
 const ProductSchema = new Schema({
   seller: { type: Types.ObjectId, ref: 'User', required: true },
   category: { type: Types.ObjectId, ref: 'Category', required: true },
-  title: { type: String, required: true, trim: true },
+  title: { type: String, required: true, trim: true }, // Legacy field; fallback if titleKh/titleEn not set
+  titleKh: { type: String, trim: true, default: '' }, // Khmer title for bilingual support
+  titleEn: { type: String, trim: true, default: '' }, // English title for bilingual support
   slug: { type: String, required: true, unique: true, lowercase: true, trim: true },
   description: { type: String, required: true, trim: true },
   price: { type: Number, required: true, min: 0 },
@@ -30,7 +32,7 @@ const ProductSchema = new Schema({
   autoIndex: false
 });
 
-ProductSchema.index({ title: 'text', description: 'text' }, { background: true });
+ProductSchema.index({ titleKh: 'text', titleEn: 'text', title: 'text', description: 'text' }, { background: true, weights: { titleKh: 10, titleEn: 10, title: 5, description: 2 } });
 ProductSchema.index({ category: 1, location: 1, status: 1, condition: 1, price: 1 }, { background: true });
 ProductSchema.index({ province: 1, district: 1, status: 1 }, { background: true });
 ProductSchema.index({ createdAt: -1 }, { background: true });

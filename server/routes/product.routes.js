@@ -28,7 +28,9 @@ router.post('/:id/views', param('id').isMongoId(), validate, productController.a
 router.post(
   '/',
   authMiddleware,
-  body('title').notEmpty().withMessage('Product title is required'),
+  body('title').optional().trim().isString(),
+  body('titleKh').optional().trim().isString(),
+  body('titleEn').optional().trim().isString(),
   body('description').notEmpty().withMessage('Description is required'),
   body('price').isFloat({ min: 0 }).withMessage('Price must be a positive number'),
   body('category').isMongoId().withMessage('Valid category is required'),
