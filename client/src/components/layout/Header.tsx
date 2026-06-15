@@ -100,103 +100,117 @@ const Header = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <img src="/logo.png" alt="Konpuk" className="h-16 w-auto" />
+          <Link to="/" className="flex items-center gap-2 flex-shrink-0">
+            <img src="/logo.png" alt="Konpuk" className="h-20 w-auto" />
           </Link>
+
+          <form onSubmit={handleSearch} className="hidden lg:flex flex-1 items-center gap-3 mx-8">
+            <div className="flex-1 flex items-center gap-3 rounded-3xl bg-white border border-muted px-4 py-3 shadow-sm">
+              <Search className="w-5 h-5 text-muted flex-shrink-0" />
+              <input
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                placeholder="Search products..."
+                className="w-full border-none bg-transparent text-sm text-text-primary outline-none placeholder:text-muted"
+              />
+            </div>
+            <button
+              type="submit"
+              className="rounded-3xl bg-gradient-to-r from-primary to-accent px-6 py-3 text-sm font-bold text-white shadow-lg hover:shadow-primary/30 transition flex-shrink-0"
+            >
+              Search
+            </button>
+          </form>
 
           <div className="hidden lg:flex items-center gap-2">
             <Link
               to="/post-product"
-              className="inline-flex items-center gap-2 rounded-3xl bg-accent px-4 py-3 text-sm font-semibold text-white hover:bg-amber-500 transition"
+              className="inline-flex items-center gap-2 rounded-3xl bg-accent px-5 py-3 text-sm font-semibold text-white hover:bg-amber-500 transition"
             >
               <UploadCloud className="w-4 h-4" />
               Sell
             </Link>
-            <Link
-              to="/messages"
-              className="inline-flex items-center gap-2 rounded-3xl border border-muted bg-white px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-white/90 transition"
-            >
-              <MessageSquare className="w-4 h-4" />
-              Messages
-            </Link>
-            <Link
-              to="/notifications"
-              className="inline-flex items-center gap-2 rounded-3xl border border-muted bg-white px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-white/90 transition"
-            >
-              <Bell className="w-4 h-4" />
-              Notifications
-              {notificationCount > 0 && (
-                <span className="ml-1 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-accent px-2 text-[0.65rem] font-semibold text-white">
-                  {notificationCount}
-                </span>
-              )}
-            </Link>
-            <Link
-              to="/favorites"
-              className="inline-flex items-center gap-2 rounded-3xl border border-muted bg-white px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-white/90 transition"
-            >
-              <Heart className="w-4 h-4" />
-              Favorites ({favoriteCount})
-            </Link>
+
             {user ? (
-              <>
+              <div className="relative group">
                 <button
                   type="button"
-                  onClick={() => navigate('/profile')}
                   className="inline-flex items-center gap-2 rounded-3xl border border-muted bg-white px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-white/90 transition"
-                  title="View your profile"
-                  aria-label="Open profile"
+                  title="User menu"
                 >
                   {user.profileImageUrl ? (
-                    <img src={user.profileImageUrl} alt="avatar" className="w-6 h-6 rounded-full object-cover" />
+                    <img src={user.profileImageUrl} alt="avatar" className="w-5 h-5 rounded-full object-cover" />
                   ) : (
                     <User className="w-4 h-4" />
                   )}
-                  <span>{user?.displayName?.split(' ')[0] || user?.phoneNumber || 'Account'}</span>
+                  <span>{user?.displayName?.split(' ')[0] || 'Account'}</span>
                 </button>
-                {user?.role === 'admin' && (
+
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-3xl shadow-xl border border-muted opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <Link
+                    to="/profile"
+                    className="block px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background rounded-t-3xl"
+                  >
+                    My Profile
+                  </Link>
+                  <Link
+                    to="/messages"
+                    className="block px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background border-t border-muted"
+                  >
+                    Messages
+                  </Link>
+                  <Link
+                    to="/notifications"
+                    className="block px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background border-t border-muted"
+                  >
+                    Notifications {notificationCount > 0 && `(${notificationCount})`}
+                  </Link>
+                  <Link
+                    to="/favorites"
+                    className="block px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background border-t border-muted"
+                  >
+                    Favorites ({favoriteCount})
+                  </Link>
+                  {user?.role === 'admin' && (
+                    <Link
+                      to="/admin"
+                      className="block px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background border-t border-muted"
+                    >
+                      Admin Dashboard
+                    </Link>
+                  )}
                   <button
                     type="button"
-                    onClick={() => navigate('/admin')}
-                    className="inline-flex items-center gap-2 rounded-3xl border border-muted bg-white px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-white/90 transition"
+                    onClick={async () => {
+                      try {
+                        await logout();
+                      } catch {
+                        localStorage.removeItem('authToken');
+                        localStorage.removeItem('refreshToken');
+                        localStorage.removeItem('user');
+                      }
+                      navigate('/');
+                    }}
+                    className="w-full text-left px-4 py-3 text-sm font-semibold text-rose-600 hover:bg-background border-t border-muted rounded-b-3xl"
                   >
-                    Admin Dashboard
+                    Logout
                   </button>
-                )}
-                <button
-                  type="button"
-                  onClick={async () => {
-                    try {
-                      await logout();
-                    } catch {
-                      localStorage.removeItem('authToken');
-                      localStorage.removeItem('refreshToken');
-                      localStorage.removeItem('user');
-                    }
-                    navigate('/');
-                  }}
-                  className="inline-flex items-center gap-2 rounded-3xl border border-muted bg-white px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-white/90 transition"
-                >
-                  <LogOut className="w-4 h-4" />
-                  Logout
-                </button>
-              </>
+                </div>
+              </div>
             ) : (
               <>
                 <Link
                   to="/login"
                   className="inline-flex items-center gap-2 rounded-3xl border border-muted bg-white px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-white/90 transition"
                 >
-                  <LogIn className="w-4 h-4" />
                   Login
                 </Link>
                 <Link
                   to="/register"
                   className="inline-flex items-center gap-2 rounded-3xl bg-primary px-4 py-3 text-sm font-semibold text-white hover:bg-primary-hover transition"
                 >
-                  <User className="w-4 h-4" />
                   Register
                 </Link>
               </>
@@ -212,167 +226,125 @@ const Header = () => {
           </button>
         </div>
 
-        <form onSubmit={handleSearch} className="hidden lg:flex items-center gap-3 rounded-3xl border border-surface-muted bg-surface p-3 shadow-sm mt-4">
-          <div className="flex-1 flex items-center gap-3 rounded-3xl bg-white px-4 py-3 border border-muted shadow-sm">
-            <Search className="w-5 h-5 text-muted" />
+        <form onSubmit={handleSearch} className="lg:hidden mt-4">
+          <div className="flex items-center gap-2 rounded-3xl border border-muted bg-white px-3 py-3 shadow-sm">
+            <Search className="w-4 h-4 text-muted" />
             <input
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder="Search products, categories, locations..."
-              className="w-full border-none bg-transparent text-sm text-text-primary outline-none placeholder:text-muted"
+              placeholder="Search products..."
+              className="flex-1 border-none bg-transparent text-sm text-text-primary outline-none placeholder:text-muted"
             />
-          </div>
-          <div className="relative min-w-[220px]">
-            <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
-            <select
-              value={category}
-              onChange={(event) => setCategory(event.target.value)}
-              className="w-full rounded-3xl border border-muted bg-white px-12 py-3 text-sm text-text-secondary outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition"
+            <button
+              type="submit"
+              className="rounded-2xl bg-primary px-3 py-2 text-xs font-semibold text-white hover:bg-primary-hover transition"
             >
-              <option value="">All Categories</option>
-              {categories.map((item) => (
-                <option key={item._id} value={item._id}>
-                  {item.labelKh || item.name}
-                </option>
-              ))}
-            </select>
+              Search
+            </button>
           </div>
-          <button
-            type="submit"
-            className="rounded-3xl bg-gradient-to-r from-primary to-accent px-6 py-3 text-sm font-bold text-white shadow-lg hover:shadow-primary/30 transition"
-          >
-            Search
-          </button>
         </form>
 
-        <div className="lg:hidden mt-4">
-          <form onSubmit={handleSearch} className="space-y-3">
-            <div className="flex items-center gap-2 rounded-3xl border border-muted bg-white px-3 py-3 shadow-sm">
-              <Search className="w-4 h-4 text-muted" />
-              <input
-                value={searchTerm}
-                onChange={(event) => setSearchTerm(event.target.value)}
-                placeholder="Search products..."
-                className="w-full border-none bg-transparent text-sm text-text-primary outline-none placeholder:text-muted"
-              />
-            </div>
-            <div className="flex gap-2">
-              <select
-                value={category}
-                onChange={(event) => setCategory(event.target.value)}
-                className="flex-1 rounded-3xl border border-muted bg-white px-4 py-3 text-sm text-text-secondary outline-none"
+        {mobileMenuOpen && (
+          <div className="mt-4 space-y-3 rounded-3xl border border-surface-muted bg-white p-4 shadow-lg">
+            <div className="grid gap-2 sm:grid-cols-2">
+              <Link
+                to="/post-product"
+                className="inline-flex items-center justify-center rounded-3xl bg-accent px-4 py-3 text-sm font-semibold text-white hover:bg-amber-500 transition"
+                onClick={() => setMobileMenuOpen(false)}
               >
-                <option value="">All Categories</option>
-                {categories.map((item) => (
-                  <option key={item._id} value={item._id}>
-                    {item.labelKh || item.name}
-                  </option>
-                ))}
-              </select>
-              <button
-                type="submit"
-                className="rounded-3xl bg-primary px-4 py-3 text-sm font-semibold text-white hover:bg-primary-hover transition"
+                Sell
+              </Link>
+              <Link
+                to="/products"
+                className="inline-flex items-center justify-center rounded-3xl border border-muted bg-white px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background transition"
+                onClick={() => setMobileMenuOpen(false)}
               >
-                Search
-              </button>
+                Discover
+              </Link>
             </div>
-          </form>
-
-          {mobileMenuOpen && (
-            <div className="mt-4 space-y-3 rounded-3xl border border-surface-muted bg-white p-4 shadow-lg">
-              <div className="grid gap-2 sm:grid-cols-2">
+            {user ? (
+              <>
+                <button
+                  onClick={() => {
+                    navigate('/profile');
+                    setMobileMenuOpen(false);
+                  }}
+                  className="w-full rounded-3xl border border-muted bg-white px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background transition"
+                  type="button"
+                >
+                  My Profile
+                </button>
                 <Link
-                  to="/post-product"
-                  className="inline-flex items-center justify-center rounded-3xl bg-accent px-4 py-3 text-sm font-semibold text-white hover:bg-amber-500 transition"
+                  to="/messages"
+                  className="block rounded-3xl border border-muted bg-white px-4 py-3 text-center text-sm font-semibold text-text-secondary hover:bg-background transition"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Sell
+                  Messages
                 </Link>
                 <Link
-                  to="/products"
-                  className="inline-flex items-center justify-center rounded-3xl border border-muted bg-white px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background transition"
+                  to="/notifications"
+                  className="block rounded-3xl border border-muted bg-white px-4 py-3 text-center text-sm font-semibold text-text-secondary hover:bg-background transition"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Discover
+                  Notifications{notificationCount > 0 ? ` (${notificationCount})` : ''}
                 </Link>
-              </div>
-              {user ? (
-                <>
+                <Link
+                  to="/favorites"
+                  className="block rounded-3xl border border-muted bg-white px-4 py-3 text-center text-sm font-semibold text-text-secondary hover:bg-background transition"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Favorites ({favoriteCount})
+                </Link>
+                {user?.role === 'admin' && (
                   <button
+                    type="button"
                     onClick={() => {
-                      navigate('/profile');
+                      navigate('/admin');
                       setMobileMenuOpen(false);
                     }}
                     className="w-full rounded-3xl border border-muted bg-white px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background transition"
-                    type="button"
                   >
-                    {user?.displayName ? `Hi, ${user.displayName.split(' ')[0]}` : user?.phoneNumber ? `Hi, ${user.phoneNumber}` : 'Profile'}
+                    Admin Dashboard
                   </button>
-                  {user?.role === 'admin' && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        navigate('/admin');
-                        setMobileMenuOpen(false);
-                      }}
-                      className="w-full rounded-3xl border border-muted bg-white px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background transition"
-                    >
-                      Admin Dashboard
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      try {
-                        await logout();
-                      } catch {
-                        localStorage.removeItem('authToken');
-                        localStorage.removeItem('refreshToken');
-                        localStorage.removeItem('user');
-                      }
-                      setMobileMenuOpen(false);
-                      navigate('/');
-                    }}
-                    className="w-full rounded-3xl border border-muted bg-white px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background transition"
-                  >
-                    Logout
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Link
-                    to="/login"
-                    className="block rounded-3xl border border-muted bg-white px-4 py-3 text-center text-sm font-semibold text-text-secondary hover:bg-background transition"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Login
-                  </Link>
-                  <Link
-                    to="/register"
-                    className="block rounded-3xl bg-primary px-4 py-3 text-center text-sm font-semibold text-white hover:bg-primary-hover transition"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Register
-                  </Link>
-                </>
-              )}
-              <Link
-                to="/notifications"
-                className="block rounded-3xl border border-muted bg-white px-4 py-3 text-center text-sm font-semibold text-text-secondary hover:bg-background transition"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Notifications{notificationCount > 0 ? ` (${notificationCount})` : ''}
-              </Link>
-              <Link
-                to="/favorites"
-                className="block rounded-3xl border border-muted bg-white px-4 py-3 text-center text-sm font-semibold text-text-secondary hover:bg-background transition"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Favorites ({favoriteCount})
-              </Link>
-            </div>
-          )}
-        </div>
+                )}
+                <button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      await logout();
+                    } catch {
+                      localStorage.removeItem('authToken');
+                      localStorage.removeItem('refreshToken');
+                      localStorage.removeItem('user');
+                    }
+                    setMobileMenuOpen(false);
+                    navigate('/');
+                  }}
+                  className="w-full rounded-3xl border border-muted bg-white px-4 py-3 text-sm font-semibold text-rose-600 hover:bg-background transition"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="block rounded-3xl border border-muted bg-white px-4 py-3 text-center text-sm font-semibold text-text-secondary hover:bg-background transition"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  className="block rounded-3xl bg-primary px-4 py-3 text-center text-sm font-semibold text-white hover:bg-primary-hover transition"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Register
+                </Link>
+              </>
+            )}
+          </div>
+        )}
       </div>
     </header>
   );
