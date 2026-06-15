@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Globe, Share2, Phone, Mail, MapPin, ShoppingBag, Heart, Send } from 'lucide-react';
+import { Globe, Share2, Phone, Mail, MapPin, Heart, Send } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -11,11 +11,8 @@ const Footer = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary-hover flex items-center justify-center shadow-md">
-                <ShoppingBag className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-lg font-bold text-white">Konpuk</span>
+            <div className="mb-4">
+              <img src="/logo.png" alt="Konpuk" className="h-12 w-auto" />
             </div>
             <p className="text-sm text-white/80 mb-4">
               Cambodia's #1 online marketplace for buying and selling products locally.

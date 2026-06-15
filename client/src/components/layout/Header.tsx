@@ -1,6 +1,6 @@
 ﻿import { useEffect, useState, FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingBag, UploadCloud, LogIn, User, Globe, Search, MapPin, Menu, X, Heart, Bell, MessageSquare, LogOut } from 'lucide-react';
+import { UploadCloud, LogIn, User, Globe, Search, MapPin, Menu, X, Heart, Bell, MessageSquare, LogOut } from 'lucide-react';
 import api from '../../services/api';
 import { getFavoritesCount } from '../../services/favorites.api';
 import { getNotificationsCount } from '../../services/notification.api';
@@ -102,14 +102,8 @@ const Header = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <Link to="/" className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-gradient-to-br from-primary to-primary-hover shadow-lg">
-              <ShoppingBag className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <p className="text-xs uppercase tracking-[0.35em] text-text-secondary font-semibold">Cambodia's marketplace</p>
-              <p className="text-2xl font-bold text-text-primary">Konpuk</p>
-            </div>
+          <Link to="/" className="flex items-center gap-2">
+            <img src="/logo.png" alt="Konpuk" className="h-16 w-auto" />
           </Link>
 
           <div className="hidden lg:flex items-center gap-2">
