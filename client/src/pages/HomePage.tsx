@@ -2,11 +2,29 @@
 import { Link } from 'react-router-dom';
 import SearchBar from '../components/marketplace/SearchBar';
 import TopAdBanner from '../components/marketplace/TopAdBanner';
-import CategoriesGrid from '../components/marketplace/CategoriesGrid';
 import FeaturedSection from '../components/marketplace/FeaturedSection';
 import SEO from '../components/SEO';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ChevronRight } from 'lucide-react';
 import { getProducts, getFeaturedProducts } from '../services/product.api';
+import ProductCard from '../components/marketplace/ProductCard';
+
+const categories = [
+  { name: 'ម្ហូប / Food', icon: '🍜', slug: 'food' },
+  { name: 'ឈានឈប់ / Clothing', icon: '👕', slug: 'clothing' },
+  { name: 'ឯកសារ / Electronics', icon: '📱', slug: 'electronics' },
+  { name: 'វាង / Home', icon: '🏠', slug: 'home' },
+  { name: 'ពលុង / Sports', icon: '⚽', slug: 'sports' },
+  { name: 'សៃលក្ខ័ / Beauty', icon: '💄', slug: 'beauty' },
+  { name: 'សៃលក្ខ័ / Books', icon: '📚', slug: 'books' },
+  { name: 'ឥលាស / Auto', icon: '🚗', slug: 'auto' },
+];
+
+const verifiedSellers = [
+  { name: 'Phnom Penh Electronics', rating: 4.8, sales: '2.4K' },
+  { name: 'Siem Reap Fashion Hub', rating: 4.9, sales: '1.8K' },
+  { name: 'Kampong Cham Goods', rating: 4.7, sales: '1.2K' },
+  { name: 'Battambang Premium', rating: 4.9, sales: '980' },
+];
 
 const HomePage = () => {
   const [topAds, setTopAds] = useState<any[]>([]);
@@ -18,7 +36,7 @@ const HomePage = () => {
     const loadTopAds = async () => {
       setLoadingTopAds(true);
       try {
-        const { items } = await getFeaturedProducts({ page: '1', perPage: '8' });
+        const { items } = await getFeaturedProducts({ page: '1', perPage: '12' });
         setTopAds(items || []);
       } catch (error) {
         setTopAds([]);
@@ -30,7 +48,7 @@ const HomePage = () => {
     const loadLatest = async () => {
       setLoadingLatest(true);
       try {
-        const { items } = await getProducts({ page: '1', perPage: '8' });
+        const { items } = await getProducts({ page: '1', perPage: '12' });
         setLatestProducts(items || []);
       } catch (error) {
         setLatestProducts([]);
@@ -52,229 +70,254 @@ const HomePage = () => {
         image="https://via.placeholder.com/1200x630.png?text=Konpuk+Cambodia"
       />
 
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary via-primary to-primary-hover text-white">
-        {/* Angkor-inspired decorative elements */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-amber-400 rounded-full mix-blend-multiply filter blur-3xl"></div>
-          <div className="absolute -bottom-8 right-0 w-96 h-96 bg-accent rounded-full mix-blend-multiply filter blur-3xl"></div>
-          <div className="absolute bottom-1/3 left-1/3 w-96 h-96 bg-yellow-300 rounded-full mix-blend-multiply filter blur-3xl"></div>
-        </div>
-
-        {/* Subtle pattern */}
+      {/* Compact Hero Section */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#0F766E] via-[#0F766E] to-teal-800 text-white">
         <div className="absolute inset-0 opacity-5" style={{
           backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.2) 35px, rgba(255,255,255,.2) 70px)'
         }}></div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
-          <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] items-center">
-            <div className="space-y-8">
-              <div className="space-y-2">
-                <p className="text-sm font-bold uppercase tracking-[0.3em] text-amber-200">វេលាដែលបានរង់ចាំរបស់អ្នក</p>
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight tracking-[-0.02em]">
-                  ស្វាគមន៍ការទិញ និងលក់នៅ
-                  <br />
-                  <span className="bg-gradient-to-r from-amber-200 via-yellow-200 to-amber-200 bg-clip-text text-transparent">កម្ពុជា</span>
-                </h1>
-              </div>
-              <p className="text-lg sm:text-xl text-white/90 leading-relaxed max-w-2xl">
-                ស្វាគមន៍ទៅក្នុង Konpuk - ផ្សារលក់ឡើងវិញលើអ៊ីនធឺណេតស្វាគមន៍របស់កម្ពុជា។ ស្វាគមន៍ផ្សារលើអ៊ីនធឺណេតដែលសម្រាប់មនុស្សកម្ពុជា។
-                <br />
-                <span className="text-sm text-white/80 mt-2 block">
-                  Welcome to Cambodia's leading online marketplace with trusted sellers and easy buying.
-                </span>
-              </p>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+          <div className="max-w-2xl">
+            <h1 className="text-3xl sm:text-4xl font-black leading-tight tracking-[-0.02em]">
+              ស្វាគមន៍ការទិញ និងលក់នៅ
+              <br />
+              <span className="text-[#F59E0B]">កម្ពុជា</span>
+            </h1>
+            <p className="mt-3 text-sm sm:text-base text-white/90">
+              ផ្សារលេលិក ដែលរលាក់ដោយផ្ទាល់ - អ្នកលក់ផ្ទៀងផ្ទាត់ ឥតគិតថ្លៃ និងលឿន
+              <br className="hidden sm:block" />
+              <span className="text-xs text-white/70">Cambodia's trusted marketplace - Find & sell locally</span>
+            </p>
 
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <Link
-                  to="/products"
-                  className="inline-flex items-center justify-center rounded-3xl bg-white px-8 py-4 text-sm font-bold text-primary shadow-xl shadow-primary/30 hover:bg-white/95 transition"
-                >
-                  <span className="mr-2">🔍</span>
-                  ស្វាគមន៍ផលិតផល / Browse Products
-                </Link>
-                <Link
-                  to="/register"
-                  className="inline-flex items-center justify-center rounded-3xl border-2 border-white/50 bg-white/10 px-8 py-4 text-sm font-bold text-white hover:bg-white/20 transition backdrop-blur-sm"
-                >
-                  <span className="mr-2">📝</span>
-                  ចាប់ផ្តើមលក់ / Start Selling
-                </Link>
-              </div>
-
-              <div className="grid grid-cols-3 gap-4 pt-4">
-                <div className="rounded-2xl bg-white/10 p-3 backdrop-blur-sm border border-white/20">
-                  <p className="text-2xl font-bold">1.2K+</p>
-                  <p className="text-xs uppercase tracking-[0.15em] text-white/70 mt-1">ម្ហូប / Listings</p>
-                </div>
-                <div className="rounded-2xl bg-white/10 p-3 backdrop-blur-sm border border-white/20">
-                  <p className="text-2xl font-bold">95%</p>
-                  <p className="text-xs uppercase tracking-[0.15em] text-white/70 mt-1">ផ្ទៀង / Verified</p>
-                </div>
-                <div className="rounded-2xl bg-white/10 p-3 backdrop-blur-sm border border-white/20">
-                  <p className="text-2xl font-bold">24h</p>
-                  <p className="text-xs uppercase tracking-[0.15em] text-white/70 mt-1">ឆ្លើយតប / Response</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Hero visual - Cambodia/Angkor inspired */}
-            <div className="relative h-96 hidden lg:block">
-              <div className="absolute inset-0 bg-gradient-to-br from-amber-300/30 via-yellow-200/20 to-orange-300/30 rounded-[3rem] backdrop-blur-sm border border-white/20 overflow-hidden">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="text-6xl mb-4">🏛️</div>
-                    <p className="text-white font-semibold text-lg">កម្ពុជា</p>
-                    <p className="text-white/80 text-sm">Cambodia Marketplace</p>
-                    <div className="mt-6 text-3xl">💼 🏘️ 🚗 📱 👕</div>
-                  </div>
-                </div>
-              </div>
+            <div className="flex flex-col gap-2 sm:flex-row sm:gap-3 mt-4">
+              <Link
+                to="/products"
+                className="inline-flex items-center justify-center rounded-full bg-white px-5 py-2 text-xs sm:text-sm font-bold text-[#0F766E] shadow-lg hover:bg-white/95 transition"
+              >
+                🔍 Browse
+              </Link>
+              <Link
+                to="/register"
+                className="inline-flex items-center justify-center rounded-full border border-white/50 bg-white/10 px-5 py-2 text-xs sm:text-sm font-bold text-white hover:bg-white/20 transition"
+              >
+                📝 Sell
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="relative -mt-10 z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
-        <div className="rounded-[2rem] bg-white p-6 shadow-2xl border border-surface-muted">
+      {/* Search Bar */}
+      <section className="relative -mt-8 z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+        <div className="rounded-2xl bg-white p-4 shadow-xl border border-muted">
           <SearchBar />
         </div>
       </section>
 
       <TopAdBanner />
 
-      <section className="py-12 sm:py-16 bg-white">
+      {/* Main Content - Featured Products with Categories Sidebar */}
+      <section className="py-8 sm:py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-12">
-            <div>
-              <p className="text-sm uppercase tracking-widest text-primary font-bold">🏷️ ស្វាគមន៍ក្រុម</p>
-              <h2 className="mt-2 text-3xl sm:text-4xl font-bold text-text-primary">ស្វាគមន៍តាមក្រុម / Browse by Category</h2>
+          <div className="grid gap-8 lg:grid-cols-4">
+            {/* Desktop Categories Sidebar */}
+            <div className="hidden lg:block">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-[#0F766E] mb-4">Categories</h3>
+              <div className="space-y-2">
+                {categories.map((cat) => (
+                  <Link
+                    key={cat.slug}
+                    to={`/products?category=${cat.slug}`}
+                    className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-text-primary hover:bg-background transition group"
+                  >
+                    <span className="text-lg">{cat.icon}</span>
+                    <span className="flex-1">{cat.name}</span>
+                    <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition" />
+                  </Link>
+                ))}
+              </div>
             </div>
-            <Link
-              to="/products"
-              className="inline-flex items-center justify-center rounded-3xl bg-primary px-6 py-3 text-sm font-bold text-white hover:bg-primary-hover transition group"
-            >
-              Explore all
-              <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition" />
-            </Link>
+
+            {/* Products Grid */}
+            <div className="lg:col-span-3">
+              <div className="flex items-end justify-between mb-6">
+                <div>
+                  <p className="text-sm uppercase tracking-wider text-[#F59E0B] font-bold">⭐ Featured</p>
+                  <h2 className="text-2xl sm:text-3xl font-bold text-text-primary">Featured Products</h2>
+                </div>
+                <Link
+                  to="/products"
+                  className="hidden sm:inline-flex items-center gap-2 text-sm font-semibold text-[#0F766E] hover:text-[#0F766E]/80 transition"
+                >
+                  View all
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+
+              {loadingTopAds ? (
+                <div className="rounded-2xl border border-muted bg-background p-12 text-center text-text-secondary">
+                  Loading featured products…
+                </div>
+              ) : topAds.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {topAds.map((product) => (
+                    <ProductCard key={product._id} {...product} />
+                  ))}
+                </div>
+              ) : (
+                <div className="rounded-2xl border border-muted bg-background p-12 text-center text-text-secondary">
+                  No featured products yet
+                </div>
+              )}
+            </div>
           </div>
         </div>
-        <CategoriesGrid />
       </section>
 
-      <section className="py-12 sm:py-16 bg-background">
+      {/* Mobile Categories - Horizontally Scrollable */}
+      <section className="lg:hidden py-6 sm:py-8 bg-background border-b border-muted">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <h3 className="text-sm font-bold uppercase tracking-wider text-[#0F766E] mb-4">Browse Categories</h3>
+          <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+            {categories.map((cat) => (
+              <Link
+                key={cat.slug}
+                to={`/products?category=${cat.slug}`}
+                className="flex flex-col items-center gap-2 px-4 py-3 rounded-xl bg-white border border-muted hover:bg-[#0F766E]/5 transition flex-shrink-0"
+              >
+                <span className="text-2xl">{cat.icon}</span>
+                <span className="text-xs font-semibold text-text-primary text-center whitespace-nowrap">{cat.name.split(' /')[0]}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Latest Products */}
+      <section className="py-8 sm:py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-12">
+          <div className="flex items-end justify-between mb-6">
             <div>
-              <p className="text-sm uppercase tracking-widest text-muted font-bold">⭐ ផលិតផលលក់ដាច់ស្បើយ</p>
-              <h2 className="mt-2 text-3xl sm:text-4xl font-bold text-text-primary">Featured in Your Area / ផលិតផលលក់ដាច់ស្បើយនៅតំបន់របស់អ្នក</h2>
+              <p className="text-sm uppercase tracking-wider text-[#F59E0B] font-bold">🆕 Latest</p>
+              <h2 className="text-2xl sm:text-3xl font-bold text-text-primary">Latest Additions</h2>
             </div>
             <Link
               to="/products"
-              className="inline-flex items-center justify-center rounded-3xl bg-primary px-6 py-3 text-sm font-bold text-white hover:bg-primary-hover transition group"
+              className="hidden sm:inline-flex items-center gap-2 text-sm font-semibold text-[#0F766E] hover:text-[#0F766E]/80 transition"
             >
               View all
-              <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition" />
+              <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
 
-          <div className="mt-8">
-            {loadingTopAds ? (
-              <div className="rounded-3xl border border-muted bg-white p-12 text-center text-text-secondary">Loading featured products…</div>
-            ) : (
-              <FeaturedSection title="" products={topAds} viewAllLink="/products" />
-            )}
-          </div>
+          {loadingLatest ? (
+            <div className="rounded-2xl border border-muted bg-background p-12 text-center text-text-secondary">
+              Loading latest products…
+            </div>
+          ) : latestProducts.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {latestProducts.map((product) => (
+                <ProductCard key={product._id} {...product} />
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-muted bg-background p-12 text-center text-text-secondary">
+              No products yet
+            </div>
+          )}
         </div>
       </section>
 
-      <section className="py-12 sm:py-16 bg-background">
+      {/* Popular Categories */}
+      <section className="py-8 sm:py-12 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-12">
+          <div className="flex items-end justify-between mb-6">
             <div>
-              <p className="text-sm uppercase tracking-widest text-muted font-bold">🆕 ឯកសារថ្មីៗ</p>
-              <h2 className="mt-2 text-3xl sm:text-4xl font-bold text-text-primary">Latest Additions / ផលិតផលថ្មីៗបំផុត</h2>
+              <p className="text-sm uppercase tracking-wider text-[#F59E0B] font-bold">🏷️ Browse</p>
+              <h2 className="text-2xl sm:text-3xl font-bold text-text-primary">Popular Categories</h2>
             </div>
             <Link
               to="/products"
-              className="inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white hover:bg-primary-hover transition"
+              className="hidden sm:inline-flex items-center gap-2 text-sm font-semibold text-[#0F766E] hover:text-[#0F766E]/80 transition"
             >
-              Browse latest
+              View all
+              <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
 
-          <div className="mt-8">
-            {loadingLatest ? (
-              <div className="rounded-3xl border border-muted bg-background p-12 text-center text-text-secondary">Loading latest products…</div>
-            ) : (
-              <FeaturedSection title="" products={latestProducts} viewAllLink="/products" />
-            )}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {categories.map((cat) => (
+              <Link
+                key={cat.slug}
+                to={`/products?category=${cat.slug}`}
+                className="group relative rounded-2xl border border-muted bg-white p-6 hover:shadow-lg transition overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-[#0F766E]/5 to-[#F59E0B]/5 opacity-0 group-hover:opacity-100 transition"></div>
+                <div className="relative text-center">
+                  <div className="text-4xl mb-3">{cat.icon}</div>
+                  <h3 className="font-semibold text-text-primary text-sm">{cat.name.split(' /')[0]}</h3>
+                  <p className="text-xs text-muted mt-1">{cat.name.split(' / ')[1]}</p>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
 
-      <section className="py-12 sm:py-16 bg-white">
+      {/* Verified Sellers */}
+      <section className="py-8 sm:py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl sm:text-4xl font-bold text-text-primary mb-4 text-center">
-            ហេតុអ្វីជ្រើសរើស Konpuk? / Why Choose Konpuk?
-          </h2>
-          <p className="text-center text-text-secondary mb-12 max-w-2xl mx-auto">
-            ផ្សារលើអ៊ីនធឺណេតដែលសម្រាប់មនុស្សកម្ពុជា - ទាក់ទងដោយផ្ទាល់ ធានា និងលឿន។
-          </p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-            <div className="rounded-3xl border border-muted p-8 hover:shadow-xl transition">
-              <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 text-2xl">
-                ⚡
-              </div>
-              <h3 className="text-xl font-semibold text-text-primary mb-2">លឿន និងងាយ</h3>
-              <p className="text-text-secondary text-sm">ដាក់ម្ហូបរបស់អ្នកក្នុងរយៈពេលប្រាំនាទី។ ស្វាគមន៍ម្ហូបរាប់ពាន់ភ្លាមៗ។</p>
-              <p className="text-text-secondary text-xs mt-2">Fast & easy - Post in minutes, browse instantly.</p>
+          <div className="flex items-end justify-between mb-6">
+            <div>
+              <p className="text-sm uppercase tracking-wider text-[#F59E0B] font-bold">✅ Verified</p>
+              <h2 className="text-2xl sm:text-3xl font-bold text-text-primary">Verified Sellers</h2>
             </div>
+            <Link
+              to="/products"
+              className="hidden sm:inline-flex items-center gap-2 text-sm font-semibold text-[#0F766E] hover:text-[#0F766E]/80 transition"
+            >
+              Browse all
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
 
-            <div className="rounded-3xl border border-muted p-8 hover:shadow-xl transition">
-              <div className="w-14 h-14 rounded-2xl bg-green-100 flex items-center justify-center mb-4 text-2xl">
-                🛡️
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {verifiedSellers.map((seller, idx) => (
+              <div key={idx} className="rounded-2xl border border-muted bg-gradient-to-br from-white to-background p-6 hover:shadow-lg transition">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#0F766E] to-[#F59E0B] flex items-center justify-center text-white font-bold">
+                    {seller.name.charAt(0)}
+                  </div>
+                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#F59E0B]">
+                    ⭐ {seller.rating}
+                  </span>
+                </div>
+                <h3 className="font-semibold text-text-primary text-sm mb-2 line-clamp-2">{seller.name}</h3>
+                <p className="text-xs text-muted">{seller.sales} sales</p>
+                <button className="w-full mt-4 rounded-lg bg-[#0F766E]/10 px-3 py-2 text-xs font-semibold text-[#0F766E] hover:bg-[#0F766E]/20 transition">
+                  View Store
+                </button>
               </div>
-              <h3 className="text-xl font-semibold text-text-primary mb-2">안전និងបង្ហាញគ្រឹម្ភន្ធ</h3>
-              <p className="text-text-secondary text-sm">អ្នកលក់ផ្ទៀងផ្ទាត់ និងសារលាក់កម្រិត ដើម្បីរក្សាលោកអ្នក។</p>
-              <p className="text-text-secondary text-xs mt-2">Safe & secure - Verified sellers, protected messaging.</p>
-            </div>
-
-            <div className="rounded-3xl border border-muted p-8 hover:shadow-xl transition">
-              <div className="w-14 h-14 rounded-2xl bg-purple-100 flex items-center justify-center mb-4 text-2xl">
-                📈
-              </div>
-              <h3 className="text-xl font-semibold text-text-primary mb-2">លទ្ធផលពិតប្រាកដ</h3>
-              <p className="text-text-secondary text-sm">ត្រាប់ដងយ៉ាងដោះស្រាយលក្ខ័ណ្ឌ និងអ្នកលក់នៅតំបន់របស់អ្នក។</p>
-              <p className="text-text-secondary text-xs mt-2">Real results - Connect with local buyers & sellers.</p>
-            </div>
-
-            <div className="rounded-3xl border border-muted p-8 hover:shadow-xl transition">
-              <div className="w-14 h-14 rounded-2xl bg-amber-100 flex items-center justify-center mb-4 text-2xl">
-                💰
-              </div>
-              <h3 className="text-xl font-semibold text-text-primary mb-2">ឥតគិតថ្លៃរំដោះ</h3>
-              <p className="text-text-secondary text-sm">គ្មានថ្លៃលាក់កម្រិត។ ដាក់ ស្វាគមន៍ និងសារទាំងងាយដោយឥតគិតថ្លៃ។</p>
-              <p className="text-text-secondary text-xs mt-2">Free to use - No hidden fees, completely free.</p>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      <section className="py-12 sm:py-16 bg-gradient-to-r from-primary to-primary-hover">
+      {/* CTA Section */}
+      <section className="py-12 sm:py-16 bg-gradient-to-r from-[#0F766E] to-teal-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white space-y-6">
           <h2 className="text-3xl sm:text-4xl font-bold">Ready to join Konpuk?</h2>
           <p className="text-lg max-w-2xl mx-auto text-white/90">Start buying and selling with Cambodia's most trusted community today.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <Link
               to="/register"
-              className="inline-flex items-center justify-center rounded-3xl bg-white px-8 py-3 text-sm font-bold text-primary hover:bg-white/90 transition"
+              className="inline-flex items-center justify-center rounded-full bg-white px-8 py-3 text-sm font-bold text-[#0F766E] hover:bg-white/90 transition"
             >
               Sign up for free
             </Link>
             <Link
               to="/products"
-              className="inline-flex items-center justify-center rounded-3xl border border-white px-8 py-3 text-sm font-bold text-white hover:bg-white/10 transition"
+              className="inline-flex items-center justify-center rounded-full border border-white px-8 py-3 text-sm font-bold text-white hover:bg-white/10 transition"
             >
               Browse products
             </Link>
