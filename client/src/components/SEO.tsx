@@ -15,7 +15,7 @@ const safeImportMetaEnv = () => {
 };
 
 const defaultSiteUrl = getViteEnv('VITE_SITE_URL', 'https://konpuk.com');
-const defaultImage = `${defaultSiteUrl}/og-image.png`;
+const defaultImage = `${defaultSiteUrl}/logo.png`;
 
 interface SEOProps {
   title?: string;

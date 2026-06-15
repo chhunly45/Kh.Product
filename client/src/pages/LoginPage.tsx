@@ -214,6 +214,9 @@ const LoginPage = () => {
 
   return (
     <div className="mx-auto max-w-2xl rounded-[2rem] bg-white p-10 shadow-xl ring-1 ring-border">
+      <div className="flex justify-center mb-8">
+        <img src="/logo.png" alt="Konpuk" className="h-16 w-auto" />
+      </div>
       <div className="space-y-3 text-center">
         <p className="text-sm uppercase tracking-[0.35em] text-primary">Welcome back</p>
         <h1 className="text-3xl font-semibold text-text-primary">Log in to your account</h1>

@@ -97,6 +97,9 @@ const RegisterPage = () => {
   return (
     <div className="min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-3xl rounded-[2rem] bg-white p-10 shadow-2xl ring-1 ring-border">
+        <div className="flex justify-center mb-8">
+          <img src="/logo.png" alt="Konpuk" className="h-16 w-auto" />
+        </div>
         <div className="space-y-3 text-center">
           <p className="text-sm uppercase tracking-[0.35em] text-primary">Create your seller account</p>
           <h1 className="text-3xl font-semibold text-text-primary">Register to sell locally</h1>
