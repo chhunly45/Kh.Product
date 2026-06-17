@@ -39,7 +39,7 @@ interface TrafficMetrics {
 interface SearchAnalytics {
   mostSearchedKeywords: Array<{ keyword: string; searches: number; avgResults: number }>;
   noResultsSearches: Array<{ keyword: string; count: number }>;
-  categorySearchTrends: Array<{ category: string; searches: number }>;
+  categorySearchTrends: Array<{ category: string | { name?: string; labelKh?: string }; searches: number }>;
 }
 
 interface TopContent {
@@ -381,12 +381,15 @@ const TrafficAnalyticsPage = () => {
             <div className="bg-white rounded-lg shadow p-6">
               <h3 className="text-lg font-semibold mb-4 text-gray-900">Categories Searched</h3>
               <div className="space-y-3">
-                {searchAnalytics.categorySearchTrends.slice(0, 5).map((item, idx) => (
-                  <div key={idx} className="flex justify-between items-center pb-3 border-b border-gray-200">
-                    <p className="font-medium text-gray-900 text-sm">{item.category}</p>
-                    <span className="text-lg font-bold text-primary">{item.searches}</span>
-                  </div>
-                ))}
+                {searchAnalytics.categorySearchTrends.slice(0, 5).map((item, idx) => {
+                  const categoryLabel = typeof item.category === 'string' ? item.category : (item.category as any)?.labelKh || (item.category as any)?.name || 'Unknown';
+                  return (
+                    <div key={idx} className="flex justify-between items-center pb-3 border-b border-gray-200">
+                      <p className="font-medium text-gray-900 text-sm">{categoryLabel}</p>
+                      <span className="text-lg font-bold text-primary">{item.searches}</span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>

@@ -209,7 +209,7 @@ const ProductDetailPage = () => {
   const emailLink = product.seller?.email ? `mailto:${product.seller.email}?subject=Question%20about%20${encodeURIComponent(product.titleEn || product.titleKh || product.title)}` : null;
   const sellerJoined = product.seller?.createdAt ? new Date(product.seller.createdAt).toLocaleDateString() : null;
 
-  console.log('Seller:', product?.seller);
+  // Seller details available in `product.seller` (no debug logging in production)
 
   // Build bilingual title for display and SEO
   const displayTitle = (product.titleKh && product.titleEn) 
@@ -219,7 +219,7 @@ const ProductDetailPage = () => {
   const seoTitle = `${displayTitle} for Sale in ${product.location || 'Cambodia'}`;
   const seoDescription = getSeoDescription(product);
   const canonicalUrl = `${window.location.origin}/products/${product._id}`;
-  const seoImage = product.images?.[0]?.secureUrl || product.images?.[0]?.url || 'https://via.placeholder.com/1200x630.png?text=Marketplace+Kh';
+  const seoImage = product.images?.[0]?.secureUrl || product.images?.[0]?.url || '/no-image.png';
   const robotsTag = product.status === 'deleted' ? 'noindex' : 'index, follow';
 
   return (
@@ -310,7 +310,7 @@ const ProductDetailPage = () => {
             <div className="space-y-6">
               <div className="overflow-hidden rounded-[2rem] bg-background shadow-sm">
                 <img
-                  src={selectedImage || product.images?.[0]?.secureUrl || product.images?.[0]?.url || 'https://via.placeholder.com/1000x700.png?text=No+Image'}
+                  src={selectedImage || product.images?.[0]?.secureUrl || product.images?.[0]?.url || '/no-image.png'}
                   alt={displayTitle}
                   className="h-96 w-full object-cover"
                 />

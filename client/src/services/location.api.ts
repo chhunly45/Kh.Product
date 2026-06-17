@@ -1,9 +1,10 @@
 import api from './api';
 
 export interface Province {
-  id: number;
+  id?: number | string;
+  _id?: string;
   name: string;
-  nameKh: string;
+  nameKh?: string;
   districts?: District[];
 }
 

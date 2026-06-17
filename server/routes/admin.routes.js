@@ -1,6 +1,7 @@
 const express = require('express');
 const { body, param, query } = require('express-validator');
 const adminController = require('../controllers/admin.controller');
+const verificationController = require('../controllers/verification.controller');
 const authMiddleware = require('../middleware/auth.middleware');
 const roleMiddleware = require('../middleware/role.middleware');
 const validate = require('../middleware/validation.middleware');
@@ -52,6 +53,7 @@ router.patch('/promotions/:id/extend', param('id').isMongoId(), body('extraDays'
 router.patch('/promotions/:id/cancel', param('id').isMongoId(), validate, adminController.cancelPromotion);
 router.get('/reports', adminController.listReports);
 router.patch('/reports/:id', param('id').isMongoId(), body('status').isIn(['pending','reviewed','resolved','rejected']).withMessage('Invalid report status'), validate, adminController.updateReportStatus);
+router.patch('/verification/:id', param('id').isMongoId(), body('status').isIn(['approved','rejected']).withMessage('Invalid verification status'), validate, verificationController.reviewVerification);
 router.get('/audit-logs', adminController.listAuditLogs);
 router.delete('/reviews/:id', param('id').isMongoId(), validate, adminController.deleteReview);
 router.post('/email/test', body('to').isEmail(), validate, adminController.sendTestEmail);

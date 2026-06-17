@@ -84,8 +84,8 @@ const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 border-b border-surface-muted bg-white/95 backdrop-blur shadow-sm">
-      <div className="bg-primary text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between text-sm">
+      <div className="bg-primary text-white hidden sm:block">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1 flex items-center justify-between text-xs sm:text-sm">
           <p className="font-medium">Fast, trusted local shopping across Cambodia.</p>
           <div className="flex flex-wrap items-center gap-3 text-white/90">
             <Link to="/help" className="hover:text-white">Help</Link>
@@ -100,10 +100,10 @@ const Header = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <Link to="/" className="flex items-center gap-2 flex-shrink-0">
-            <img src="/logo.png" alt="Konpuk" className="h-20 w-auto" />
+            <img src="/logo.png" alt="Konpuk" className="h-12 md:h-14 w-auto" />
           </Link>
 
           <form onSubmit={handleSearch} className="hidden lg:flex flex-1 items-center gap-3 mx-8">
@@ -127,7 +127,7 @@ const Header = () => {
           <div className="hidden lg:flex items-center gap-2">
             <Link
               to="/post-product"
-              className="inline-flex items-center gap-2 rounded-3xl bg-accent px-5 py-3 text-sm font-semibold text-white hover:bg-amber-500 transition"
+              className="inline-flex items-center gap-2 rounded-3xl bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-amber-500 transition"
             >
               <UploadCloud className="w-4 h-4" />
               Sell
@@ -218,11 +218,12 @@ const Header = () => {
           </div>
 
           <button
+            type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden inline-flex h-12 w-12 items-center justify-center rounded-3xl border border-muted bg-white text-text-primary shadow-sm"
+            className="lg:hidden inline-flex h-10 w-10 items-center justify-center rounded-3xl border border-muted bg-white text-text-primary shadow-sm"
             aria-label="Toggle mobile menu"
           >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
 
@@ -245,18 +246,18 @@ const Header = () => {
         </form>
 
         {mobileMenuOpen && (
-          <div className="mt-4 space-y-3 rounded-3xl border border-surface-muted bg-white p-4 shadow-lg">
+          <div className="mt-3 space-y-3 rounded-3xl border border-surface-muted bg-white p-3 shadow-lg">
             <div className="grid gap-2 sm:grid-cols-2">
               <Link
                 to="/post-product"
-                className="inline-flex items-center justify-center rounded-3xl bg-accent px-4 py-3 text-sm font-semibold text-white hover:bg-amber-500 transition"
+                className="inline-flex items-center justify-center rounded-3xl bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-amber-500 transition"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Sell
               </Link>
               <Link
                 to="/products"
-                className="inline-flex items-center justify-center rounded-3xl border border-muted bg-white px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background transition"
+                className="inline-flex items-center justify-center rounded-3xl border border-muted bg-white px-4 py-2 text-sm font-semibold text-text-secondary hover:bg-background transition"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Discover
@@ -265,32 +266,32 @@ const Header = () => {
             {user ? (
               <>
                 <button
+                  type="button"
                   onClick={() => {
                     navigate('/profile');
                     setMobileMenuOpen(false);
                   }}
-                  className="w-full rounded-3xl border border-muted bg-white px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background transition"
-                  type="button"
+                  className="w-full rounded-3xl border border-muted bg-white px-4 py-2 text-sm font-semibold text-text-secondary hover:bg-background transition"
                 >
                   My Profile
                 </button>
                 <Link
                   to="/messages"
-                  className="block rounded-3xl border border-muted bg-white px-4 py-3 text-center text-sm font-semibold text-text-secondary hover:bg-background transition"
+                  className="block rounded-3xl border border-muted bg-white px-4 py-2 text-center text-sm font-semibold text-text-secondary hover:bg-background transition"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Messages
                 </Link>
                 <Link
                   to="/notifications"
-                  className="block rounded-3xl border border-muted bg-white px-4 py-3 text-center text-sm font-semibold text-text-secondary hover:bg-background transition"
+                  className="block rounded-3xl border border-muted bg-white px-4 py-2 text-center text-sm font-semibold text-text-secondary hover:bg-background transition"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Notifications{notificationCount > 0 ? ` (${notificationCount})` : ''}
                 </Link>
                 <Link
                   to="/favorites"
-                  className="block rounded-3xl border border-muted bg-white px-4 py-3 text-center text-sm font-semibold text-text-secondary hover:bg-background transition"
+                  className="block rounded-3xl border border-muted bg-white px-4 py-2 text-center text-sm font-semibold text-text-secondary hover:bg-background transition"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Favorites ({favoriteCount})
@@ -302,7 +303,7 @@ const Header = () => {
                       navigate('/admin');
                       setMobileMenuOpen(false);
                     }}
-                    className="w-full rounded-3xl border border-muted bg-white px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background transition"
+                    className="w-full rounded-3xl border border-muted bg-white px-4 py-2 text-sm font-semibold text-text-secondary hover:bg-background transition"
                   >
                     Admin Dashboard
                   </button>
@@ -320,7 +321,7 @@ const Header = () => {
                     setMobileMenuOpen(false);
                     navigate('/');
                   }}
-                  className="w-full rounded-3xl border border-muted bg-white px-4 py-3 text-sm font-semibold text-rose-600 hover:bg-background transition"
+                  className="w-full rounded-3xl border border-muted bg-white px-4 py-2 text-sm font-semibold text-rose-600 hover:bg-background transition"
                 >
                   Logout
                 </button>
@@ -329,14 +330,14 @@ const Header = () => {
               <>
                 <Link
                   to="/login"
-                  className="block rounded-3xl border border-muted bg-white px-4 py-3 text-center text-sm font-semibold text-text-secondary hover:bg-background transition"
+                  className="block rounded-3xl border border-muted bg-white px-4 py-2 text-center text-sm font-semibold text-text-secondary hover:bg-background transition"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Login
                 </Link>
                 <Link
                   to="/register"
-                  className="block rounded-3xl bg-primary px-4 py-3 text-center text-sm font-semibold text-white hover:bg-primary-hover transition"
+                  className="block rounded-3xl bg-primary px-4 py-2 text-center text-sm font-semibold text-white hover:bg-primary-hover transition"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Register

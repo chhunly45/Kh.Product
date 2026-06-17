@@ -327,6 +327,15 @@ const ProfilePage = () => {
                       Unverified Seller
                     </div>
                   ) : null}
+                  {profile?.sellerVerificationStatus === 'unverified' && authUser?.id === profile?.id && (
+                    <button
+                      type="button"
+                      onClick={() => window.location.assign('/verification/request')}
+                      className="ml-2 inline-flex rounded-full bg-primary px-4 py-2 text-xs font-semibold text-white hover:bg-primary-hover transition"
+                    >
+                      Request verification
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -376,6 +385,19 @@ const ProfilePage = () => {
                       : 'Not verified'}
                   </p>
                 </div>
+                {profile?.sellerVerificationStatus === 'unverified' && authUser?.id === profile?.id && (
+                  <div className="rounded-3xl border border-muted bg-white p-4 text-sm text-text-secondary">
+                    <p className="font-semibold text-text-primary">Want higher buyer trust?</p>
+                    <p className="mt-2">Submit your verification request to get a verified seller badge.</p>
+                    <button
+                      type="button"
+                      onClick={() => window.location.assign('/verification/request')}
+                      className="mt-4 inline-flex rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-hover transition"
+                    >
+                      Request verification
+                    </button>
+                  </div>
+                )}
                 <div className="flex flex-wrap gap-2 text-text-secondary">
                   <span className="inline-flex items-center gap-2 rounded-3xl bg-background px-3 py-2">
                     <Shield className="h-4 w-4 text-green-500" /> Secure transactions

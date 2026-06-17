@@ -195,11 +195,14 @@ const SearchBar = ({ initialFilters }: SearchBarProps) => {
               className="w-full rounded-lg border border-muted bg-white px-4 py-3 text-text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
             >
               <option value="">Any province</option>
-              {provinces.map((prov) => (
-                <option key={prov.id} value={prov.id}>
-                  {prov.name}
-                </option>
-              ))}
+              {provinces.map((prov) => {
+                const provinceValue = prov.id ?? prov._id;
+                return (
+                  <option key={provinceValue} value={provinceValue}>
+                    {prov.name}
+                  </option>
+                );
+              })}
             </select>
           </label>
 

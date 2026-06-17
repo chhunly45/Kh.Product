@@ -23,3 +23,18 @@ beforeAll(() => {
     originalWarn(message, ...args);
   });
 });
+
+// Globally mock location API used by SearchBar and other components to prevent real XHR in tests
+jest.mock('./services/location.api', () => ({
+  __esModule: true,
+  getProvinces: jest.fn().mockResolvedValue([]),
+  getDistricts: jest.fn().mockResolvedValue([])
+}));
+
+// Stub geolocation
+Object.defineProperty(global.navigator, 'geolocation', {
+  value: {
+    getCurrentPosition: jest.fn().mockImplementation((success) => success({ coords: { latitude: 0, longitude: 0 } }))
+  },
+  configurable: true
+});

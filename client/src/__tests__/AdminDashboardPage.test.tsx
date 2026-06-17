@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import AdminDashboardPage from '../pages/AdminDashboardPage';
 import * as adminApi from '../services/admin.api';
@@ -347,11 +347,22 @@ describe('AdminDashboardPage', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /products/i }));
     await waitFor(() => expect(screen.getByText(/Archived Product/i)).toBeInTheDocument());
-    expect(screen.getByText(/archived/i)).toBeInTheDocument();
+    const productRow = screen.getByText(/Archived Product/i).closest('tr');
+    expect(productRow).not.toBeNull();
+    const cells = within(productRow!).getAllByRole('cell');
+    // status is the 3rd cell in the row
+    expect(within(cells[2]).getByText(/^archived$/i)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: /reports/i }));
     await waitFor(() => expect(screen.getByText(/No details provided/i)).toBeInTheDocument());
-    expect(screen.getByText(/Anonymous/i)).toBeInTheDocument();
-    expect(screen.getByText(/rejected/i)).toBeInTheDocument();
+    // scope reporter and status assertions to the report row
+    const flaggedEls = screen.getAllByText(/Flagged content/i);
+    const flaggedEl = flaggedEls.find((el) => el.closest('tr') !== null);
+    expect(flaggedEl).toBeDefined();
+    const reportRow = flaggedEl!.closest('tr');
+    expect(reportRow).not.toBeNull();
+    expect(within(reportRow!).getByText(/Anonymous/i)).toBeInTheDocument();
+    const reportCells = within(reportRow!).getAllByRole('cell');
+    expect(within(reportCells[2]).getByText(/^rejected$/i)).toBeInTheDocument();
   });
 });

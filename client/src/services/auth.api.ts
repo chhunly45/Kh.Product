@@ -50,6 +50,13 @@ export interface PasswordResetRequestResponse {
   resendCooldownSeconds: number;
 }
 
+export interface SellerVerificationRequestPayload {
+  idCardImage: string;
+  selfieImage: string;
+  businessDocument?: string;
+  details?: string;
+}
+
 export const register = async (payload: RegisterPayload): Promise<AuthResponse | EmailVerificationResponse> => {
   const response = await api.post('/auth/register', payload);
   if (response.data.success && response.data.data && 'requiresEmailVerification' in response.data.data) {
@@ -192,8 +199,13 @@ export const updateProfile = async (payload: Record<string, any>) => {
   return response.data.data;
 };
 
-export const requestVerification = async (details?: string) => {
-  const response = await api.post('/auth/verification-request', { details });
+export const requestVerification = async (payload: SellerVerificationRequestPayload) => {
+  const response = await api.post('/auth/verification-request', payload);
+  return response.data.data;
+};
+
+export const getVerificationStatus = async () => {
+  const response = await api.get('/verification/status');
   return response.data.data;
 };
 

@@ -15,6 +15,7 @@ const Promotion = require('./Promotion');
 const PageView = require('./PageView');
 const Search = require('./Search');
 const Visitor = require('./Visitor');
+const SellerVerification = require('./SellerVerification');
 
 module.exports = {
   User,
@@ -33,5 +34,6 @@ module.exports = {
   Promotion,
   PageView,
   Search,
-  Visitor
+  Visitor,
+  SellerVerification
 };

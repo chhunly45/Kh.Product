@@ -1,12 +1,11 @@
 ﻿import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import SearchBar from '../components/marketplace/SearchBar';
-import TopAdBanner from '../components/marketplace/TopAdBanner';
-import FeaturedSection from '../components/marketplace/FeaturedSection';
 import SEO from '../components/SEO';
 import { ArrowRight, ChevronRight } from 'lucide-react';
 import { getProducts, getFeaturedProducts } from '../services/product.api';
 import ProductCard from '../components/marketplace/ProductCard';
+import { getCategoryLabel } from '../utils/category';
 
 const categories = [
   { name: 'ម្ហូប / Food', icon: '🍜', slug: 'food' },
@@ -31,6 +30,43 @@ const HomePage = () => {
   const [latestProducts, setLatestProducts] = useState<any[]>([]);
   const [loadingTopAds, setLoadingTopAds] = useState(false);
   const [loadingLatest, setLoadingLatest] = useState(false);
+
+  const getSafeString = (value: unknown) => {
+    if (typeof value === 'string') return value;
+    if (typeof value === 'number') return String(value);
+    return '';
+  };
+
+  const normalizeSeller = (seller: any) => {
+    if (!seller || typeof seller !== 'object') return undefined;
+    return {
+      displayName:
+        typeof seller.displayName === 'string'
+          ? seller.displayName
+          : typeof seller.name === 'string'
+          ? seller.name
+          : undefined,
+      sellerVerificationStatus:
+        typeof seller.sellerVerificationStatus === 'string'
+          ? seller.sellerVerificationStatus
+          : undefined,
+    };
+  };
+
+  const normalizeProductCardProps = (product: any) => ({
+    id: product._id,
+    title: getSafeString(product.title),
+    titleKh: getSafeString(product.titleKh),
+    titleEn: getSafeString(product.titleEn),
+    price: typeof product.price === 'string' || typeof product.price === 'number' ? product.price : '',
+    location: getSafeString(product.location),
+    category: getCategoryLabel(product.category, 'General'),
+    imageUrl: getSafeString(product.imageUrl),
+    viewsCount: product.viewsCount,
+    featured: product.featured,
+    isFavorite: product.isFavorite,
+    seller: normalizeSeller(product.seller),
+  });
 
   useEffect(() => {
     const loadTopAds = async () => {
@@ -67,7 +103,7 @@ const HomePage = () => {
         title="Konpuk - ផ្សារលើអ៊ីនធឺណេតកម្ពុជា | Cambodia Marketplace"
         description="ស្វាគមន៍ទៅក្នុង Konpuk - ផ្សារលក់ឡើងវិញលើអ៊ីនធឺណេតសម្រាប់ម៉ាន់ចនិក្សកម្ពុជា។ ស្វាគមន៍ផលិតផល ផ្សារលក់ដាច់ស្បើយ ដើម្បីឱ្យងាយស្រួល | Find and sell local products across Cambodia with trusted sellers."
         url="https://konpuk.com/"
-        image="https://via.placeholder.com/1200x630.png?text=Konpuk+Cambodia"
+        image="/logo.png"
       />
 
       {/* Compact Hero Section */}
@@ -108,102 +144,89 @@ const HomePage = () => {
       </section>
 
       {/* Search Bar */}
-      <section className="relative -mt-8 z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
-        <div className="rounded-2xl bg-white p-4 shadow-xl border border-muted">
+      <section className="relative -mt-8 z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+        <div className="rounded-2xl bg-white p-3 sm:p-4 shadow-xl border border-muted">
           <SearchBar />
         </div>
       </section>
 
-      <TopAdBanner />
-
-      {/* Main Content - Featured Products with Categories Sidebar */}
-      <section className="py-8 sm:py-12 bg-white">
+      {/* Popular Categories */}
+      <section className="py-4 sm:py-6 bg-background border-b border-muted">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-8 lg:grid-cols-4">
-            {/* Desktop Categories Sidebar */}
-            <div className="hidden lg:block">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-[#0F766E] mb-4">Categories</h3>
-              <div className="space-y-2">
-                {categories.map((cat) => (
-                  <Link
-                    key={cat.slug}
-                    to={`/products?category=${cat.slug}`}
-                    className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-text-primary hover:bg-background transition group"
-                  >
-                    <span className="text-lg">{cat.icon}</span>
-                    <span className="flex-1">{cat.name}</span>
-                    <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition" />
-                  </Link>
-                ))}
-              </div>
+          <div className="flex items-center justify-between gap-4 mb-3">
+            <div>
+              <p className="text-xs uppercase tracking-[0.24em] text-[#0F766E] font-bold">Popular Categories</p>
+              <h2 className="text-xl sm:text-2xl font-bold text-text-primary">Browse categories</h2>
             </div>
-
-            {/* Products Grid */}
-            <div className="lg:col-span-3">
-              <div className="flex items-end justify-between mb-6">
-                <div>
-                  <p className="text-sm uppercase tracking-wider text-[#F59E0B] font-bold">⭐ Featured</p>
-                  <h2 className="text-2xl sm:text-3xl font-bold text-text-primary">Featured Products</h2>
-                </div>
-                <Link
-                  to="/products"
-                  className="hidden sm:inline-flex items-center gap-2 text-sm font-semibold text-[#0F766E] hover:text-[#0F766E]/80 transition"
-                >
-                  View all
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
-
-              {loadingTopAds ? (
-                <div className="rounded-2xl border border-muted bg-background p-12 text-center text-text-secondary">
-                  Loading featured products…
-                </div>
-              ) : topAds.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {topAds.map((product) => (
-                    <ProductCard key={product._id} {...product} />
-                  ))}
-                </div>
-              ) : (
-                <div className="rounded-2xl border border-muted bg-background p-12 text-center text-text-secondary">
-                  No featured products yet
-                </div>
-              )}
-            </div>
+            <Link
+              to="/products"
+              className="hidden sm:inline-flex items-center gap-1 text-sm font-semibold text-[#0F766E] hover:text-[#0F766E]/80 transition"
+            >
+              View all
+              <ArrowRight className="w-4 h-4" />
+            </Link>
           </div>
-        </div>
-      </section>
-
-      {/* Mobile Categories - Horizontally Scrollable */}
-      <section className="lg:hidden py-6 sm:py-8 bg-background border-b border-muted">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <h3 className="text-sm font-bold uppercase tracking-wider text-[#0F766E] mb-4">Browse Categories</h3>
-          <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+          <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
             {categories.map((cat) => (
               <Link
                 key={cat.slug}
                 to={`/products?category=${cat.slug}`}
-                className="flex flex-col items-center gap-2 px-4 py-3 rounded-xl bg-white border border-muted hover:bg-[#0F766E]/5 transition flex-shrink-0"
+                className="flex-shrink-0 rounded-full border border-muted bg-white px-4 py-2 text-xs font-semibold text-text-primary shadow-sm transition hover:bg-[#0F766E]/5"
               >
-                <span className="text-2xl">{cat.icon}</span>
-                <span className="text-xs font-semibold text-text-primary text-center whitespace-nowrap">{cat.name.split(' /')[0]}</span>
+                {cat.name.split(' /')[0]}
               </Link>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Latest Products */}
-      <section className="py-8 sm:py-12 bg-white">
+      {/* Featured Products */}
+      <section className="py-6 sm:py-8 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-end justify-between mb-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between mb-4">
             <div>
-              <p className="text-sm uppercase tracking-wider text-[#F59E0B] font-bold">🆕 Latest</p>
+              <p className="text-xs uppercase tracking-[0.24em] text-[#F59E0B] font-bold">Featured</p>
+              <h2 className="text-2xl sm:text-3xl font-bold text-text-primary">Featured Products</h2>
+            </div>
+            <Link
+              to="/products"
+              className="hidden sm:inline-flex items-center gap-1 text-sm font-semibold text-[#0F766E] hover:text-[#0F766E]/80 transition"
+            >
+              View all
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          {loadingTopAds ? (
+            <div className="rounded-2xl border border-muted bg-background p-8 text-center text-text-secondary">
+              Loading featured products…
+            </div>
+          ) : topAds.length > 0 ? (
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {topAds.map((product) => {
+                const props = normalizeProductCardProps(product);
+                return <ProductCard key={product._id} {...props} />;
+              })}
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-muted bg-background p-8 text-center text-text-secondary">
+              No featured products yet
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Latest Products */}
+      <section className="py-6 sm:py-8 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between mb-4">
+            <div>
+              <p className="text-xs uppercase tracking-[0.24em] text-[#0F766E] font-bold">Latest</p>
               <h2 className="text-2xl sm:text-3xl font-bold text-text-primary">Latest Additions</h2>
             </div>
             <Link
               to="/products"
-              className="hidden sm:inline-flex items-center gap-2 text-sm font-semibold text-[#0F766E] hover:text-[#0F766E]/80 transition"
+              className="hidden sm:inline-flex items-center gap-1 text-sm font-semibold text-[#0F766E] hover:text-[#0F766E]/80 transition"
             >
               View all
               <ArrowRight className="w-4 h-4" />
@@ -211,56 +234,21 @@ const HomePage = () => {
           </div>
 
           {loadingLatest ? (
-            <div className="rounded-2xl border border-muted bg-background p-12 text-center text-text-secondary">
+            <div className="rounded-2xl border border-muted bg-background p-8 text-center text-text-secondary">
               Loading latest products…
             </div>
           ) : latestProducts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {latestProducts.map((product) => (
-                <ProductCard key={product._id} {...product} />
-              ))}
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {latestProducts.map((product) => {
+                const props = normalizeProductCardProps(product);
+                return <ProductCard key={product._id} {...props} />;
+              })}
             </div>
           ) : (
-            <div className="rounded-2xl border border-muted bg-background p-12 text-center text-text-secondary">
+            <div className="rounded-2xl border border-muted bg-background p-8 text-center text-text-secondary">
               No products yet
             </div>
           )}
-        </div>
-      </section>
-
-      {/* Popular Categories */}
-      <section className="py-8 sm:py-12 bg-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-end justify-between mb-6">
-            <div>
-              <p className="text-sm uppercase tracking-wider text-[#F59E0B] font-bold">🏷️ Browse</p>
-              <h2 className="text-2xl sm:text-3xl font-bold text-text-primary">Popular Categories</h2>
-            </div>
-            <Link
-              to="/products"
-              className="hidden sm:inline-flex items-center gap-2 text-sm font-semibold text-[#0F766E] hover:text-[#0F766E]/80 transition"
-            >
-              View all
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {categories.map((cat) => (
-              <Link
-                key={cat.slug}
-                to={`/products?category=${cat.slug}`}
-                className="group relative rounded-2xl border border-muted bg-white p-6 hover:shadow-lg transition overflow-hidden"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-[#0F766E]/5 to-[#F59E0B]/5 opacity-0 group-hover:opacity-100 transition"></div>
-                <div className="relative text-center">
-                  <div className="text-4xl mb-3">{cat.icon}</div>
-                  <h3 className="font-semibold text-text-primary text-sm">{cat.name.split(' /')[0]}</h3>
-                  <p className="text-xs text-muted mt-1">{cat.name.split(' / ')[1]}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
         </div>
       </section>
 

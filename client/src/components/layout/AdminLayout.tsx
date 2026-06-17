@@ -7,6 +7,7 @@ const navItems = [
   { label: 'Sellers', to: '/admin/sellers', icon: Users },
   { label: 'Products', to: '/admin/products', icon: ShoppingBag },
   { label: 'Reports', to: '/admin/reports', icon: FileText },
+  { label: 'Verifications', to: '/admin/verification', icon: ShieldCheck },
   { label: 'Revenue', to: '/admin/revenue', icon: TrendingUp },
   { label: 'Traffic', to: '/admin/traffic', icon: Activity },
   { label: 'Promotions', to: '/admin/promotions', icon: TrendingUp },

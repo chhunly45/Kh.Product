@@ -3,6 +3,7 @@ import { useEffect, useState, MouseEvent } from 'react';
 import { MapPin, Heart, Eye } from 'lucide-react';
 import { formatViewsCount } from '../../utils/views';
 import { formatPriceKHR, formatPriceUSD } from '../../utils/price';
+import { getCategoryLabel } from '../../utils/category';
 
 interface ProductCardProps {
   title?: string;
@@ -10,7 +11,7 @@ interface ProductCardProps {
   titleEn?: string;
   price: string | number;
   location?: string;
-  category?: string;
+  category?: string | { name?: string; labelKh?: string };
   id: string;
   imageUrl?: string;
   viewsCount?: number;
@@ -23,6 +24,8 @@ interface ProductCardProps {
 const ProductCard = ({ title, titleKh, titleEn, price, location, category, id, imageUrl, viewsCount = 0, featured = false, isFavorite = false, onToggleFavorite, seller }: ProductCardProps) => {
   const [isSaved, setIsSaved] = useState<boolean>(isFavorite);
 
+  const categoryLabel = getCategoryLabel(category, '');
+
   // Determine display title: prefer bilingual (Kh / En), fallback to whichever is available
   const displayTitle = titleKh && titleEn ? `${titleKh} / ${titleEn}` : titleEn || titleKh || title || 'Product';
   const altText = title || displayTitle;
@@ -31,7 +34,7 @@ const ProductCard = ({ title, titleKh, titleEn, price, location, category, id, i
     setIsSaved(Boolean(isFavorite));
   }, [isFavorite]);
 
-  const fallback = 'https://via.placeholder.com/600x400.png?text=No+Image';
+  const fallback = '/no-image.png';
   const src = imageUrl || fallback;
 
   const formatPrice = (p: string | number): { usd: string; khr: string } => ({
@@ -58,9 +61,9 @@ const ProductCard = ({ title, titleKh, titleEn, price, location, category, id, i
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
 
-        {category && (
+        {categoryLabel && (
           <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-text-primary shadow-sm">
-            {category}
+            {categoryLabel}
           </span>
         )}
 

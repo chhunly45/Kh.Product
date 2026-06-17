@@ -23,6 +23,8 @@ import AdminLayout from '../components/layout/AdminLayout';
 import AdminRoute from './AdminRoute';
 import NotificationsPage from '../pages/NotificationsPage';
 import NotFoundPage from '../pages/NotFoundPage';
+import VerificationRequestPage from '../pages/VerificationRequestPage';
+import AdminVerificationReviewPage from '../pages/AdminVerificationReviewPage';
 
 const AppRoutes = () => (
   <Routes>
@@ -46,11 +48,13 @@ const AppRoutes = () => (
     <Route path="/dashboard" element={<DashboardPage />} />
     <Route path="/seller/analytics" element={<SellerAnalyticsPage />} />
     <Route path="/seller/promotions" element={<SellerPromotionsPage />} />
+    <Route path="/verification/request" element={<VerificationRequestPage />} />
     <Route path="/admin" element={<AdminRoute />}>
       <Route element={<AdminLayout />}>
         <Route index element={<AdminDashboardPage />} />
         <Route path="users" element={<AdminDashboardPage />} />
         <Route path="sellers" element={<AdminDashboardPage />} />
+        <Route path="verification" element={<AdminVerificationReviewPage />} />
         <Route path="products" element={<AdminDashboardPage />} />
         <Route path="reports" element={<AdminDashboardPage />} />
         <Route path="revenue" element={<AdminRevenuePage />} />

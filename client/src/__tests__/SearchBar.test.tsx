@@ -2,6 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import SearchBar from '../components/marketplace/SearchBar';
 import api from '../services/api';
+import { getProvinces, getDistricts } from '../services/location.api';
 
 const mockedNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
@@ -10,13 +11,21 @@ jest.mock('react-router-dom', () => ({
 }));
 
 jest.mock('../services/api');
+jest.mock('../services/location.api', () => ({
+  getProvinces: jest.fn(),
+  getDistricts: jest.fn()
+}));
 
 const mockedApi = api as jest.Mocked<typeof api>;
+const mockedGetProvinces = getProvinces as jest.MockedFunction<typeof getProvinces>;
+const mockedGetDistricts = getDistricts as jest.MockedFunction<typeof getDistricts>;
 
 describe('SearchBar', () => {
   beforeEach(() => {
     mockedNavigate.mockClear();
     mockedApi.get.mockResolvedValue({ data: { data: [{ _id: '1', name: 'Electronics' }] } });
+    mockedGetProvinces.mockResolvedValue([{ id: 1, name: 'Phnom Penh' } as any]);
+    mockedGetDistricts.mockResolvedValue([] as any);
   });
 
   it('renders search inputs and toggles advanced filters', async () => {
@@ -52,14 +61,14 @@ describe('SearchBar', () => {
     await waitFor(() => expect(screen.getByLabelText(/category/i)).toBeInTheDocument());
 
     fireEvent.change(screen.getByLabelText(/category/i), { target: { value: '1' } });
-    fireEvent.change(screen.getByLabelText(/province/i), { target: { value: 'Phnom Penh' } });
+    fireEvent.change(screen.getByLabelText(/province/i), { target: { value: '1' } });
     fireEvent.change(screen.getByLabelText(/condition/i), { target: { value: 'used' } });
     fireEvent.change(screen.getByLabelText(/posted/i), { target: { value: '7d' } });
     fireEvent.change(screen.getByPlaceholderText(/min/i), { target: { value: '100' } });
     fireEvent.change(screen.getByPlaceholderText(/max/i), { target: { value: '500' } });
 
     expect((screen.getByLabelText(/category/i) as HTMLSelectElement).value).toBe('1');
-    expect((screen.getByLabelText(/province/i) as HTMLSelectElement).value).toBe('Phnom Penh');
+    expect((screen.getByLabelText(/province/i) as HTMLSelectElement).value).toBe('1');
     expect((screen.getByLabelText(/condition/i) as HTMLSelectElement).value).toBe('used');
     expect((screen.getByLabelText(/posted/i) as HTMLSelectElement).value).toBe('7d');
     expect((screen.getByPlaceholderText(/min/i) as HTMLInputElement).value).toBe('100');
@@ -74,7 +83,7 @@ describe('SearchBar', () => {
             search: 'bike',
             location: 'Phnom Penh',
             category: '1',
-            province: 'Phnom Penh',
+            province: '1',
             condition: 'used',
             minPrice: '100',
             maxPrice: '500',
@@ -86,7 +95,7 @@ describe('SearchBar', () => {
 
     await waitFor(() => expect(screen.getByRole('button', { name: /hide advanced filters/i })).toBeInTheDocument());
     expect((screen.getByLabelText(/category/i) as HTMLSelectElement).value).toBe('1');
-    expect((screen.getByLabelText(/province/i) as HTMLSelectElement).value).toBe('Phnom Penh');
+    expect((screen.getByLabelText(/province/i) as HTMLSelectElement).value).toBe('1');
     expect((screen.getByLabelText(/condition/i) as HTMLSelectElement).value).toBe('used');
     expect((screen.getByLabelText(/posted/i) as HTMLSelectElement).value).toBe('7d');
   });
@@ -121,7 +130,7 @@ describe('SearchBar', () => {
     await waitFor(() => expect(screen.getByLabelText(/category/i)).toBeInTheDocument());
 
     fireEvent.change(screen.getByLabelText(/category/i), { target: { value: '1' } });
-    fireEvent.change(screen.getByLabelText(/province/i), { target: { value: 'Kampot' } });
+    fireEvent.change(screen.getByLabelText(/province/i), { target: { value: '1' } });
     fireEvent.change(screen.getByLabelText(/condition/i), { target: { value: 'used' } });
     fireEvent.change(screen.getByLabelText(/posted/i), { target: { value: '30d' } });
     fireEvent.change(screen.getByPlaceholderText(/min/i), { target: { value: '100' } });
@@ -130,7 +139,7 @@ describe('SearchBar', () => {
     fireEvent.click(screen.getByRole('button', { name: /search/i }));
 
     expect(mockedNavigate).toHaveBeenCalledWith(
-      '/products?search=phone&location=Kampot&category=1&province=Kampot&condition=used&minPrice=100&maxPrice=500&datePosted=30d'
+      '/products?search=phone&location=Kampot&category=1&province=1&condition=used&minPrice=100&maxPrice=500&datePosted=30d'
     );
   });
 });
