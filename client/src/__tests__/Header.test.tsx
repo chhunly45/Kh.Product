@@ -47,13 +47,13 @@ describe('Header component', () => {
 
     render(<Header /> , { wrapper: require('react-router-dom').MemoryRouter });
 
-    expect((await screen.findAllByText(/Login/i)).length).toBeGreaterThanOrEqual(1);
-    expect((await screen.findAllByText(/Register/i)).length).toBeGreaterThanOrEqual(1);
+    expect((await screen.findAllByText(/ចូលគណនី/i)).length).toBeGreaterThanOrEqual(1);
+    expect((await screen.findAllByText(/បង្កើតគណនី/i)).length).toBeGreaterThanOrEqual(1);
 
     // open mobile menu and ensure Login/Register shown there too
     const toggle = screen.getByLabelText(/Toggle mobile menu/i);
     fireEvent.click(toggle);
-    expect((await screen.findAllByText(/Login/i)).length).toBeGreaterThanOrEqual(1);
+    expect((await screen.findAllByText(/ចូលគណនី/i)).length).toBeGreaterThanOrEqual(1);
   });
 
   it('renders authenticated state with favorite/notification counts', async () => {
@@ -65,17 +65,15 @@ describe('Header component', () => {
 
     render(<Header /> , { wrapper: require('react-router-dom').MemoryRouter });
 
-    // open mobile menu to reveal counts
+    // open mobile menu to reveal account links
     const toggle = screen.getByLabelText(/Toggle mobile menu/i);
     fireEvent.click(toggle);
 
     await waitFor(() => expect(favApi.getFavoritesCount).toHaveBeenCalled());
     await waitFor(() => expect(notifApi.getNotificationsCount).toHaveBeenCalled());
 
-    const favEls = screen.getAllByText(/Favorites/i);
-    expect(favEls.some((el) => el.textContent && el.textContent.includes('5'))).toBe(true);
-    const notifEls = screen.getAllByText(/Notifications/i);
-    expect(notifEls.some((el) => el.textContent && el.textContent.includes('2'))).toBe(true);
+    expect(screen.getAllByText(/ពត៌មានគណនី/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText(/ចេញពីប្រព័ន្ធ/i)).toBeInTheDocument();
   });
 
   it('handles categories fetch error gracefully', async () => {
@@ -85,7 +83,7 @@ describe('Header component', () => {
 
     render(<Header /> , { wrapper: require('react-router-dom').MemoryRouter });
 
-    // should not throw and Login remains
-    expect(await screen.findByText(/Login/i)).toBeInTheDocument();
+    // should not throw and login remains
+    expect(await screen.findByText(/ចូលគណនី/i)).toBeInTheDocument();
   });
 });

@@ -35,16 +35,16 @@ describe('SearchBar', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByPlaceholderText(/what are you looking for/i)).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/location/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/ស្វែងរកផលិតផល/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/ទីតាំង/i)).toBeInTheDocument();
 
-    const toggleButton = screen.getByRole('button', { name: /show advanced filters/i });
+    const toggleButton = screen.getByRole('button', { name: /បង្ហាញតម្រងជម្រៅ/i });
     fireEvent.click(toggleButton);
 
     await waitFor(() => {
-      expect(screen.getByLabelText(/category/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/province/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/condition/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/ប្រភេទ/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/ខេត្ត/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/លក្ខខណ្ឌ/i)).toBeInTheDocument();
     });
   });
 
@@ -55,22 +55,22 @@ describe('SearchBar', () => {
       </MemoryRouter>
     );
 
-    const toggleButton = screen.getByRole('button', { name: /show advanced filters/i });
+    const toggleButton = screen.getByRole('button', { name: /បង្ហាញតម្រងជម្រៅ/i });
     fireEvent.click(toggleButton);
 
-    await waitFor(() => expect(screen.getByLabelText(/category/i)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByLabelText(/ប្រភេទ/i)).toBeInTheDocument());
 
-    fireEvent.change(screen.getByLabelText(/category/i), { target: { value: '1' } });
-    fireEvent.change(screen.getByLabelText(/province/i), { target: { value: '1' } });
-    fireEvent.change(screen.getByLabelText(/condition/i), { target: { value: 'used' } });
-    fireEvent.change(screen.getByLabelText(/posted/i), { target: { value: '7d' } });
+    fireEvent.change(screen.getByLabelText(/ប្រភេទ/i), { target: { value: '1' } });
+    fireEvent.change(screen.getByLabelText(/ខេត្ត/i), { target: { value: '1' } });
+    fireEvent.change(screen.getByLabelText(/លក្ខខណ្ឌ/i), { target: { value: 'used' } });
+    fireEvent.change(screen.getByLabelText(/ពេលដែលបានផុស/i), { target: { value: '7d' } });
     fireEvent.change(screen.getByPlaceholderText(/min/i), { target: { value: '100' } });
     fireEvent.change(screen.getByPlaceholderText(/max/i), { target: { value: '500' } });
 
-    expect((screen.getByLabelText(/category/i) as HTMLSelectElement).value).toBe('1');
-    expect((screen.getByLabelText(/province/i) as HTMLSelectElement).value).toBe('1');
-    expect((screen.getByLabelText(/condition/i) as HTMLSelectElement).value).toBe('used');
-    expect((screen.getByLabelText(/posted/i) as HTMLSelectElement).value).toBe('7d');
+    expect((screen.getByLabelText(/ប្រភេទ/i) as HTMLSelectElement).value).toBe('1');
+    expect((screen.getByLabelText(/ខេត្ត/i) as HTMLSelectElement).value).toBe('1');
+    expect((screen.getByLabelText(/លក្ខខណ្ឌ/i) as HTMLSelectElement).value).toBe('used');
+    expect((screen.getByLabelText(/ពេលដែលបានផុស/i) as HTMLSelectElement).value).toBe('7d');
     expect((screen.getByPlaceholderText(/min/i) as HTMLInputElement).value).toBe('100');
     expect((screen.getByPlaceholderText(/max/i) as HTMLInputElement).value).toBe('500');
   });
@@ -93,11 +93,11 @@ describe('SearchBar', () => {
       </MemoryRouter>
     );
 
-    await waitFor(() => expect(screen.getByRole('button', { name: /hide advanced filters/i })).toBeInTheDocument());
-    expect((screen.getByLabelText(/category/i) as HTMLSelectElement).value).toBe('1');
-    expect((screen.getByLabelText(/province/i) as HTMLSelectElement).value).toBe('1');
-    expect((screen.getByLabelText(/condition/i) as HTMLSelectElement).value).toBe('used');
-    expect((screen.getByLabelText(/posted/i) as HTMLSelectElement).value).toBe('7d');
+    await waitFor(() => expect(screen.getByRole('button', { name: /លាក់តម្រងជម្រៅ/i })).toBeInTheDocument());
+    expect((screen.getByLabelText(/ប្រភេទ/i) as HTMLSelectElement).value).toBe('1');
+    expect((screen.getByLabelText(/ខេត្ត/i) as HTMLSelectElement).value).toBe('1');
+    expect((screen.getByLabelText(/លក្ខខណ្ឌ/i) as HTMLSelectElement).value).toBe('used');
+    expect((screen.getByLabelText(/ពេលដែលបានផុស/i) as HTMLSelectElement).value).toBe('7d');
   });
 
   it('handles category fetch failures gracefully', async () => {
@@ -109,11 +109,11 @@ describe('SearchBar', () => {
       </MemoryRouter>
     );
 
-    const toggleButton = screen.getByRole('button', { name: /show advanced filters/i });
+    const toggleButton = screen.getByRole('button', { name: /បង្ហាញតម្រងជម្រៅ/i });
     fireEvent.click(toggleButton);
 
-    await waitFor(() => expect(screen.getByLabelText(/category/i)).toBeInTheDocument());
-    expect((screen.getByLabelText(/category/i) as HTMLSelectElement).children.length).toBeGreaterThanOrEqual(1);
+    await waitFor(() => expect(screen.getByLabelText(/ប្រភេទ/i)).toBeInTheDocument());
+    expect((screen.getByLabelText(/ប្រភេទ/i) as HTMLSelectElement).children.length).toBeGreaterThanOrEqual(1);
   });
 
   it('submits advanced search filters and navigates with query params', async () => {
@@ -123,20 +123,20 @@ describe('SearchBar', () => {
       </MemoryRouter>
     );
 
-    fireEvent.change(screen.getByPlaceholderText(/what are you looking for/i), { target: { value: 'phone' } });
-    fireEvent.change(screen.getByPlaceholderText(/location/i), { target: { value: 'Kampot' } });
+    fireEvent.change(screen.getByPlaceholderText(/ស្វែងរកផលិតផល/i), { target: { value: 'phone' } });
+    fireEvent.change(screen.getByPlaceholderText(/ទីតាំង/i), { target: { value: 'Kampot' } });
 
-    fireEvent.click(screen.getByRole('button', { name: /show advanced filters/i }));
-    await waitFor(() => expect(screen.getByLabelText(/category/i)).toBeInTheDocument());
+    fireEvent.click(screen.getByRole('button', { name: /បង្ហាញតម្រងជម្រៅ/i }));
+    await waitFor(() => expect(screen.getByLabelText(/ប្រភេទ/i)).toBeInTheDocument());
 
-    fireEvent.change(screen.getByLabelText(/category/i), { target: { value: '1' } });
-    fireEvent.change(screen.getByLabelText(/province/i), { target: { value: '1' } });
-    fireEvent.change(screen.getByLabelText(/condition/i), { target: { value: 'used' } });
-    fireEvent.change(screen.getByLabelText(/posted/i), { target: { value: '30d' } });
+    fireEvent.change(screen.getByLabelText(/ប្រភេទ/i), { target: { value: '1' } });
+    fireEvent.change(screen.getByLabelText(/ខេត្ត/i), { target: { value: '1' } });
+    fireEvent.change(screen.getByLabelText(/លក្ខខណ្ឌ/i), { target: { value: 'used' } });
+    fireEvent.change(screen.getByLabelText(/ពេលដែលបានផុស/i), { target: { value: '30d' } });
     fireEvent.change(screen.getByPlaceholderText(/min/i), { target: { value: '100' } });
     fireEvent.change(screen.getByPlaceholderText(/max/i), { target: { value: '500' } });
 
-    fireEvent.click(screen.getByRole('button', { name: /search/i }));
+    fireEvent.click(screen.getByRole('button', { name: /ស្វែងរក/i }));
 
     expect(mockedNavigate).toHaveBeenCalledWith(
       '/products?search=phone&location=Kampot&category=1&province=1&condition=used&minPrice=100&maxPrice=500&datePosted=30d'

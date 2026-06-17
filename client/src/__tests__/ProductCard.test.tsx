@@ -23,16 +23,18 @@ describe('ProductCard', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText('ផលិតផល / Product')).toBeInTheDocument();
+    expect(screen.getByText('ផលិតផល')).toBeInTheDocument();
+    expect(screen.getByText('Product')).toBeInTheDocument();
   });
 
-  it('falls back to fallback title when no title is provided', () => {
+  it('renders without a visible title when no title is provided', () => {
     render(
       <MemoryRouter>
         <ProductCard id="789" price={500} location="Phnom Penh" />
       </MemoryRouter>
     );
 
-    expect(screen.getByText('Product')).toBeInTheDocument();
+    expect(screen.getByRole('link')).toHaveAttribute('href', '/products/789');
+    expect(screen.queryByText('Product')).not.toBeInTheDocument();
   });
 });

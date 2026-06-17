@@ -8,14 +8,14 @@ import ProductCard from '../components/marketplace/ProductCard';
 import { getCategoryLabel } from '../utils/category';
 
 const categories = [
-  { name: 'ម្ហូប / Food', icon: '🍜', slug: 'food' },
-  { name: 'ឈានឈប់ / Clothing', icon: '👕', slug: 'clothing' },
-  { name: 'ឯកសារ / Electronics', icon: '📱', slug: 'electronics' },
-  { name: 'វាង / Home', icon: '🏠', slug: 'home' },
-  { name: 'ពលុង / Sports', icon: '⚽', slug: 'sports' },
-  { name: 'សៃលក្ខ័ / Beauty', icon: '💄', slug: 'beauty' },
-  { name: 'សៃលក្ខ័ / Books', icon: '📚', slug: 'books' },
-  { name: 'ឥលាស / Auto', icon: '🚗', slug: 'auto' },
+  { name: 'ម្ហូប', icon: '🍜', slug: 'food', count: 125 },
+  { name: 'ឈានឈប់', icon: '👕', slug: 'clothing', count: 89 },
+  { name: 'ឯកសារ', icon: '📱', slug: 'electronics', count: 234 },
+  { name: 'វាង', icon: '🏠', slug: 'home', count: 156 },
+  { name: 'ពលុង', icon: '⚽', slug: 'sports', count: 42 },
+  { name: 'សេង', icon: '💄', slug: 'beauty', count: 178 },
+  { name: 'សៀវភៅ', icon: '📚', slug: 'books', count: 95 },
+  { name: 'ឥលាស', icon: '🚗', slug: 'auto', count: 67 },
 ];
 
 const verifiedSellers = [
@@ -30,6 +30,7 @@ const HomePage = () => {
   const [latestProducts, setLatestProducts] = useState<any[]>([]);
   const [loadingTopAds, setLoadingTopAds] = useState(false);
   const [loadingLatest, setLoadingLatest] = useState(false);
+  const [verifiedSellersList, setVerifiedSellersList] = useState<any[]>([]);
 
   const getSafeString = (value: unknown) => {
     if (typeof value === 'string') return value;
@@ -106,190 +107,159 @@ const HomePage = () => {
         image="/logo.png"
       />
 
-      {/* Compact Hero Section */}
+      {/* Hero Section - Reduced height */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#0F766E] via-[#0F766E] to-teal-800 text-white">
         <div className="absolute inset-0 opacity-5" style={{
           backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.2) 35px, rgba(255,255,255,.2) 70px)'
         }}></div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
           <div className="max-w-2xl">
-            <h1 className="text-3xl sm:text-4xl font-black leading-tight tracking-[-0.02em]">
-              ស្វាគមន៍ការទិញ និងលក់នៅ
-              <br />
-              <span className="text-[#F59E0B]">កម្ពុជា</span>
+            <h1 className="text-2xl sm:text-3xl font-black leading-snug tracking-tight">
+              ទិញ និង លក់<br />ទំនិញទូទាំងកម្ពុជា
             </h1>
-            <p className="mt-3 text-sm sm:text-base text-white/90">
-              ផ្សារលេលិក ដែលរលាក់ដោយផ្ទាល់ - អ្នកលក់ផ្ទៀងផ្ទាត់ ឥតគិតថ្លៃ និងលឿន
-              <br className="hidden sm:block" />
-              <span className="text-xs text-white/70">Cambodia's trusted marketplace - Find & sell locally</span>
+            <p className="mt-2 text-sm sm:text-base text-white/95 leading-relaxed">
+              ស្វែងរកផលិតផល និងអ្នកលក់ដែលអាចទុកចិត្តបានទូទាំងប្រទេស
             </p>
 
-            <div className="flex flex-col gap-2 sm:flex-row sm:gap-3 mt-4">
-              <Link
-                to="/products"
-                className="inline-flex items-center justify-center rounded-full bg-white px-5 py-2 text-xs sm:text-sm font-bold text-[#0F766E] shadow-lg hover:bg-white/95 transition"
-              >
-                🔍 Browse
-              </Link>
-              <Link
-                to="/register"
-                className="inline-flex items-center justify-center rounded-full border border-white/50 bg-white/10 px-5 py-2 text-xs sm:text-sm font-bold text-white hover:bg-white/20 transition"
-              >
-                📝 Sell
-              </Link>
+            <div className="mt-3">
+              <div className="rounded-2xl bg-white p-3 sm:p-4 shadow-lg border border-muted">
+                <SearchBar />
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Search Bar */}
-      <section className="relative -mt-8 z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
-        <div className="rounded-2xl bg-white p-3 sm:p-4 shadow-xl border border-muted">
-          <SearchBar />
-        </div>
-      </section>
-
-      {/* Popular Categories */}
-      <section className="py-4 sm:py-6 bg-background border-b border-muted">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between gap-4 mb-3">
-            <div>
-              <p className="text-xs uppercase tracking-[0.24em] text-[#0F766E] font-bold">Popular Categories</p>
-              <h2 className="text-xl sm:text-2xl font-bold text-text-primary">Browse categories</h2>
-            </div>
-            <Link
-              to="/products"
-              className="hidden sm:inline-flex items-center gap-1 text-sm font-semibold text-[#0F766E] hover:text-[#0F766E]/80 transition"
-            >
-              View all
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-          <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
-            {categories.map((cat) => (
-              <Link
-                key={cat.slug}
-                to={`/products?category=${cat.slug}`}
-                className="flex-shrink-0 rounded-full border border-muted bg-white px-4 py-2 text-xs font-semibold text-text-primary shadow-sm transition hover:bg-[#0F766E]/5"
-              >
-                {cat.name.split(' /')[0]}
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Products */}
+      {/* Latest Products - Moved up */}
       <section className="py-6 sm:py-8 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between mb-4">
             <div>
-              <p className="text-xs uppercase tracking-[0.24em] text-[#F59E0B] font-bold">Featured</p>
-              <h2 className="text-2xl sm:text-3xl font-bold text-text-primary">Featured Products</h2>
+              <p className="text-xs uppercase tracking-[0.24em] text-[#0F766E] font-bold">ថ្មីបង្ហាញ</p>
+              <h2 className="text-2xl sm:text-3xl font-bold text-text-primary">ផលិតផលថ្មីបង្ហាញខ្លួន</h2>
             </div>
             <Link
               to="/products"
               className="hidden sm:inline-flex items-center gap-1 text-sm font-semibold text-[#0F766E] hover:text-[#0F766E]/80 transition"
             >
-              View all
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-
-          {loadingTopAds ? (
-            <div className="rounded-2xl border border-muted bg-background p-8 text-center text-text-secondary">
-              Loading featured products…
-            </div>
-          ) : topAds.length > 0 ? (
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {topAds.map((product) => {
-                const props = normalizeProductCardProps(product);
-                return <ProductCard key={product._id} {...props} />;
-              })}
-            </div>
-          ) : (
-            <div className="rounded-2xl border border-muted bg-background p-8 text-center text-text-secondary">
-              No featured products yet
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Latest Products */}
-      <section className="py-6 sm:py-8 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between mb-4">
-            <div>
-              <p className="text-xs uppercase tracking-[0.24em] text-[#0F766E] font-bold">Latest</p>
-              <h2 className="text-2xl sm:text-3xl font-bold text-text-primary">Latest Additions</h2>
-            </div>
-            <Link
-              to="/products"
-              className="hidden sm:inline-flex items-center gap-1 text-sm font-semibold text-[#0F766E] hover:text-[#0F766E]/80 transition"
-            >
-              View all
+              មើលបន្ថែម
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
 
           {loadingLatest ? (
             <div className="rounded-2xl border border-muted bg-background p-8 text-center text-text-secondary">
-              Loading latest products…
+              កំពុងផ្ទុកផលិតផល…
             </div>
           ) : latestProducts.length > 0 ? (
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {latestProducts.map((product) => {
                 const props = normalizeProductCardProps(product);
                 return <ProductCard key={product._id} {...props} />;
               })}
             </div>
-          ) : (
-            <div className="rounded-2xl border border-muted bg-background p-8 text-center text-text-secondary">
-              No products yet
-            </div>
-          )}
+          ) : null}
         </div>
       </section>
 
-      {/* Verified Sellers */}
-      <section className="py-8 sm:py-12 bg-white">
+      {/* Popular Categories */}
+      <section className="py-6 sm:py-8 bg-background border-b border-muted">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-end justify-between mb-6">
-            <div>
-              <p className="text-sm uppercase tracking-wider text-[#F59E0B] font-bold">✅ Verified</p>
-              <h2 className="text-2xl sm:text-3xl font-bold text-text-primary">Verified Sellers</h2>
-            </div>
-            <Link
-              to="/products"
-              className="hidden sm:inline-flex items-center gap-2 text-sm font-semibold text-[#0F766E] hover:text-[#0F766E]/80 transition"
-            >
-              Browse all
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+          <div className="mb-4">
+            <p className="text-xs uppercase tracking-[0.24em] text-[#0F766E] font-bold">ក្រុមផលិតផល</p>
+            <h2 className="text-2xl sm:text-3xl font-bold text-text-primary">ស្វែងរកតាមក្រុម</h2>
           </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {verifiedSellers.map((seller, idx) => (
-              <div key={idx} className="rounded-2xl border border-muted bg-gradient-to-br from-white to-background p-6 hover:shadow-lg transition">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#0F766E] to-[#F59E0B] flex items-center justify-center text-white font-bold">
-                    {seller.name.charAt(0)}
-                  </div>
-                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#F59E0B]">
-                    ⭐ {seller.rating}
-                  </span>
-                </div>
-                <h3 className="font-semibold text-text-primary text-sm mb-2 line-clamp-2">{seller.name}</h3>
-                <p className="text-xs text-muted">{seller.sales} sales</p>
-                <button className="w-full mt-4 rounded-lg bg-[#0F766E]/10 px-3 py-2 text-xs font-semibold text-[#0F766E] hover:bg-[#0F766E]/20 transition">
-                  View Store
-                </button>
-              </div>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
+            {categories.map((cat) => (
+              <Link
+                key={cat.slug}
+                to={`/products?category=${cat.slug}`}
+                className="rounded-2xl border border-muted bg-white p-4 text-center shadow-sm transition hover:shadow-md hover:border-[#0F766E]"
+              >
+                <div className="text-3xl mb-2">{cat.icon}</div>
+                <h3 className="text-sm font-semibold text-text-primary leading-tight mb-1">{cat.name}</h3>
+                <p className="text-xs text-text-secondary">{cat.count} ផលិតផល</p>
+              </Link>
             ))}
           </div>
         </div>
       </section>
+
+      {/* Verified Sellers - Only if data exists */}
+      {verifiedSellersList.length > 0 && (
+        <section className="py-8 sm:py-12 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-end justify-between mb-6">
+              <div>
+                <p className="text-sm uppercase tracking-wider text-[#F59E0B] font-bold">✅ បានផ្ទៀងផ្ទាត់</p>
+                <h2 className="text-2xl sm:text-3xl font-bold text-text-primary">អ្នកលក់ដែលផ្ទៀងផ្ទាត់</h2>
+              </div>
+              <Link
+                to="/products"
+                className="hidden sm:inline-flex items-center gap-2 text-sm font-semibold text-[#0F766E] hover:text-[#0F766E]/80 transition"
+              >
+                មើលទាំងអស់
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {verifiedSellersList.map((seller, idx) => (
+                <div key={idx} className="rounded-2xl border border-muted bg-gradient-to-br from-white to-background p-6 hover:shadow-lg transition">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#0F766E] to-[#F59E0B] flex items-center justify-center text-white font-bold">
+                      {seller.displayName ? seller.displayName.charAt(0) : '?'}
+                    </div>
+                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#F59E0B]">
+                      ⭐ {seller.rating || 4.8}
+                    </span>
+                  </div>
+                  <h3 className="font-semibold text-text-primary text-sm mb-2 line-clamp-2">{seller.displayName || seller.name}</h3>
+                  <p className="text-xs text-muted">{seller.salesCount || seller.sales || 0} ការលក់</p>
+                  <button className="w-full mt-4 rounded-lg bg-[#0F766E]/10 px-3 py-2 text-xs font-semibold text-[#0F766E] hover:bg-[#0F766E]/20 transition">
+                    មើលហាង
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Featured Products - Only if data exists */}
+      {topAds.length > 0 && (
+        <section className="py-6 sm:py-8 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between mb-4">
+              <div>
+                <p className="text-xs uppercase tracking-[0.24em] text-[#F59E0B] font-bold">ផ្តើមលក់</p>
+                <h2 className="text-2xl sm:text-3xl font-bold text-text-primary">ផលិតផលដែលផ្តើមលក់</h2>
+              </div>
+              <Link
+                to="/products"
+                className="hidden sm:inline-flex items-center gap-1 text-sm font-semibold text-[#0F766E] hover:text-[#0F766E]/80 transition"
+              >
+                មើលបន្ថែម
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+
+            {loadingTopAds ? (
+              <div className="rounded-2xl border border-muted bg-background p-8 text-center text-text-secondary">
+                កំពុងផ្ទុក…
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {topAds.map((product) => {
+                  const props = normalizeProductCardProps(product);
+                  return <ProductCard key={product._id} {...props} />;
+                })}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* CTA Section */}
       <section className="py-12 sm:py-16 bg-gradient-to-r from-[#0F766E] to-teal-700">

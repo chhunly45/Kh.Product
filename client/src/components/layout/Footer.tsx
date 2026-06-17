@@ -15,7 +15,7 @@ const Footer = () => {
               <img src="/logo.png" alt="Konpuk" className="h-12 w-auto" />
             </div>
             <p className="text-sm text-white/80 mb-4">
-              Cambodia's #1 online marketplace for buying and selling products locally.
+              ទីផ្សារលើអ៊ីនធឺណេតលំដាប់ទីមួយនៅកម្ពុជា សម្រាប់ទិញនិងលក់ផលិតផលក្នុងស្រុក។
             </p>
             <div className="flex gap-3">
               <a href="#" className="w-10 h-10 rounded-lg bg-primary/80 hover:bg-primary-hover flex items-center justify-center transition">
@@ -32,40 +32,40 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-sm font-bold text-white mb-4 uppercase tracking-widest">Explore</h4>
+            <h4 className="text-sm font-bold text-white mb-4 uppercase tracking-widest">ស្វែងរក</h4>
             <ul className="space-y-3">
-              <li><Link to="/" className="text-sm text-white/80 hover:text-white transition">Home</Link></li>
-              <li><Link to="/products" className="text-sm text-white/80 hover:text-white transition">Browse Products</Link></li>
-              <li><Link to="/post-product" className="text-sm text-white/80 hover:text-white transition">Post Product</Link></li>
-              <li><Link to="/messages" className="text-sm text-white/80 hover:text-white transition">Messages</Link></li>
+              <li><Link to="/" className="text-sm text-white/80 hover:text-white transition">ទំព័រដើម</Link></li>
+              <li><Link to="/products" className="text-sm text-white/80 hover:text-white transition">ស្វែងរកផលិតផល</Link></li>
+              <li><Link to="/post-product" className="text-sm text-white/80 hover:text-white transition">បោះពុម្ពផលិតផល</Link></li>
+              <li><Link to="/messages" className="text-sm text-white/80 hover:text-white transition">សារ</Link></li>
             </ul>
           </div>
 
           {/* Categories */}
           <div>
-            <h4 className="text-sm font-bold text-white mb-4 uppercase tracking-widest">Categories</h4>
+            <h4 className="text-sm font-bold text-white mb-4 uppercase tracking-widest">ប្រភេទ</h4>
             <ul className="space-y-3">
-              <li><a href="#" className="text-sm text-white/80 hover:text-white transition">Electronics</a></li>
-              <li><a href="#" className="text-sm text-white/80 hover:text-white transition">Vehicles</a></li>
-              <li><a href="#" className="text-sm text-white/80 hover:text-white transition">Real Estate</a></li>
-              <li><a href="#" className="text-sm text-white/80 hover:text-white transition">Fashion</a></li>
+              <li><a href="#" className="text-sm text-white/80 hover:text-white transition">អេឡិចត្រូនិក</a></li>
+              <li><a href="#" className="text-sm text-white/80 hover:text-white transition">យានយន្ត</a></li>
+              <li><a href="#" className="text-sm text-white/80 hover:text-white transition">អចលនទ្រព្យ</a></li>
+              <li><a href="#" className="text-sm text-white/80 hover:text-white transition">ម៉ូត</a></li>
             </ul>
           </div>
 
           {/* Support */}
           <div>
-            <h4 className="text-sm font-bold text-white mb-4 uppercase tracking-widest">Support</h4>
+            <h4 className="text-sm font-bold text-white mb-4 uppercase tracking-widest">ការគាំទ្រ</h4>
             <ul className="space-y-3">
-              <li><a href="#" className="text-sm text-white/80 hover:text-white transition">Help Center</a></li>
-              <li><a href="#" className="text-sm text-white/80 hover:text-white transition">Safety Tips</a></li>
-              <li><a href="#" className="text-sm text-white/80 hover:text-white transition">Contact Us</a></li>
-              <li><a href="#" className="text-sm text-white/80 hover:text-white transition">Report Issue</a></li>
+              <li><a href="#" className="text-sm text-white/80 hover:text-white transition">មជ្ឈមណ្ឌលជំនួយ</a></li>
+              <li><a href="#" className="text-sm text-white/80 hover:text-white transition">គន្លឹះសុវត្ថិភាព</a></li>
+              <li><a href="#" className="text-sm text-white/80 hover:text-white transition">ទំនាក់ទំនង</a></li>
+              <li><a href="#" className="text-sm text-white/80 hover:text-white transition">រាយការណ៍បញ្ហា</a></li>
             </ul>
           </div>
 
           {/* Contact */}
           <div>
-            <h4 className="text-sm font-bold text-white mb-4 uppercase tracking-widest">Contact</h4>
+            <h4 className="text-sm font-bold text-white mb-4 uppercase tracking-widest">ទំនាក់ទំនង</h4>
             <ul className="space-y-3">
               <li className="flex items-center gap-2 text-sm">
                 <Phone className="w-4 h-4 text-white/80 flex-shrink-0" />
@@ -77,7 +77,7 @@ const Footer = () => {
               </li>
               <li className="flex items-start gap-2 text-sm">
                 <MapPin className="w-4 h-4 text-white/80 flex-shrink-0 mt-0.5" />
-                <span className="text-white/80">Phnom Penh, Cambodia</span>
+                <span className="text-white/80">ភ្នំពេញ, កម្ពុជា</span>
               </li>
             </ul>
           </div>
@@ -88,11 +88,11 @@ const Footer = () => {
 
         {/* Bottom Footer */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm text-white/80">
-          <p>© {currentYear} Konpuk. All rights reserved. Made for Cambodia. 🇰🇭</p>
+          <p>© {currentYear} Konpuk. រក្សាសិទ្ធិគ្រប់យ៉ាង។ សម្រាប់ប្រើនៅកម្ពុជា។ 🇰🇭</p>
           <div className="flex flex-wrap gap-4 sm:justify-end">
-            <a href="#" className="hover:text-white transition">Privacy</a>
-            <a href="#" className="hover:text-white transition">Terms</a>
-            <a href="#" className="hover:text-white transition">Cookies</a>
+            <a href="#" className="hover:text-white transition">ភាពឯកជន</a>
+            <a href="#" className="hover:text-white transition">ល័ក្ខខណ្ឌ</a>
+            <a href="#" className="hover:text-white transition">គូគី</a>
           </div>
         </div>
       </div>

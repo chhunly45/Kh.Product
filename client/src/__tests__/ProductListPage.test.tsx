@@ -23,7 +23,7 @@ describe('ProductListPage', () => {
 
     await waitFor(() => expect(mockedProductApi.getProducts).toHaveBeenCalled());
     expect(screen.getByText(/Test Bike/i)).toBeInTheDocument();
-    expect(screen.getByText(/Showing 1 of 1 matching listings/i)).toBeInTheDocument();
+    expect(screen.getByText(/បង្ហាញ 1 នៃ 1 លទ្ធផល/i)).toBeInTheDocument();
   });
 
   it('shows an error message when product loading fails', async () => {

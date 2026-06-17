@@ -1,6 +1,6 @@
-﻿import { useEffect, useState, FormEvent } from 'react';
+﻿import { useEffect, useState, FormEvent, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { UploadCloud, LogIn, User, Globe, Search, MapPin, Menu, X, Heart, Bell, MessageSquare, LogOut } from 'lucide-react';
+import { UploadCloud, User, Globe, Menu, X } from 'lucide-react';
 import api from '../../services/api';
 import { getFavoritesCount } from '../../services/favorites.api';
 import { getNotificationsCount } from '../../services/notification.api';
@@ -17,10 +17,40 @@ const Header = () => {
   const [categories, setCategories] = useState<CategoryItem[]>([]);
   const [category, setCategory] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [categoriesOpen, setCategoriesOpen] = useState(false);
+  const categoriesButtonRef = useRef<HTMLButtonElement | null>(null);
+  const categoriesMenuRef = useRef<HTMLDivElement | null>(null);
+  const mobileMenuRef = useRef<HTMLDivElement | null>(null);
   const [favoriteCount, setFavoriteCount] = useState(0);
   const [notificationCount, setNotificationCount] = useState(0);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        categoriesMenuRef.current &&
+        !categoriesMenuRef.current.contains(e.target as Node) &&
+        !categoriesButtonRef.current?.contains(e.target as Node)
+      ) {
+        setCategoriesOpen(false);
+      }
+      if (
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(e.target as Node) &&
+        !(e.target as HTMLElement)?.closest('[role="button"]')?.contains(e.target as Node)
+      ) {
+        // Allow mobile menu to close via mobile menu button
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
+
+  const handleCategoryClick = () => {
+    setCategoriesOpen(false);
+    categoriesButtonRef.current?.focus();
+  };
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -100,250 +130,170 @@ const Header = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <Link to="/" className="flex items-center gap-2 flex-shrink-0">
-            <img src="/logo.png" alt="Konpuk" className="h-12 md:h-14 w-auto" />
-          </Link>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <Link to="/" className="flex items-center gap-2 flex-shrink-0">
+              <img src="/logo.png" alt="Konpuk" className="h-10 md:h-12 w-auto" />
+            </Link>
+          </div>
 
-          <form onSubmit={handleSearch} className="hidden lg:flex flex-1 items-center gap-3 mx-8">
-            <div className="flex-1 flex items-center gap-3 rounded-3xl bg-white border border-muted px-4 py-3 shadow-sm">
-              <Search className="w-5 h-5 text-muted flex-shrink-0" />
-              <input
-                value={searchTerm}
-                onChange={(event) => setSearchTerm(event.target.value)}
-                placeholder="Search products..."
-                className="w-full border-none bg-transparent text-sm text-text-primary outline-none placeholder:text-muted"
-              />
+          {/* Categories dropdown centered on desktop */}
+          <div className="hidden lg:flex items-center justify-center flex-1">
+            <div className="relative">
+              <button
+                ref={categoriesButtonRef}
+                type="button"
+                onClick={() => setCategoriesOpen((s) => !s)}
+                className="inline-flex items-center gap-2 rounded-3xl border border-muted bg-white px-4 py-2 text-sm font-semibold text-text-primary hover:shadow-md transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                aria-haspopup="menu"
+                aria-expanded={categoriesOpen}
+                aria-controls="categories-menu"
+              >
+                ក្រុមផលិតផល
+              </button>
+              {categoriesOpen && (
+                <div
+                  id="categories-menu"
+                  ref={categoriesMenuRef}
+                  className="absolute left-1/2 transform -translate-x-1/2 mt-2 w-60 bg-white rounded-2xl shadow-lg border border-muted p-3 z-50"
+                  role="menu"
+                  aria-label="Categories"
+                  onKeyDown={(e) => {
+                    const links = categoriesMenuRef.current?.querySelectorAll('a');
+                    if (!links || links.length === 0) return;
+                    const focusable = Array.from(links) as HTMLElement[];
+                    const currentIndex = focusable.indexOf(document.activeElement as HTMLElement);
+                    if (e.key === 'ArrowDown') {
+                      e.preventDefault();
+                      const next = focusable[(currentIndex + 1) % focusable.length];
+                      next.focus();
+                    } else if (e.key === 'ArrowUp') {
+                      e.preventDefault();
+                      const prev = focusable[(currentIndex - 1 + focusable.length) % focusable.length];
+                      prev.focus();
+                    } else if (e.key === 'Home') {
+                      e.preventDefault();
+                      (focusable[0] as HTMLElement).focus();
+                    } else if (e.key === 'End') {
+                      e.preventDefault();
+                      (focusable[focusable.length - 1] as HTMLElement).focus();
+                    } else if (e.key === 'Escape') {
+                      e.preventDefault();
+                      setCategoriesOpen(false);
+                      categoriesButtonRef.current?.focus();
+                    }
+                  }}
+                >
+                  <div className="grid grid-cols-2 gap-2">
+                    <Link onClick={handleCategoryClick} to="/products?category=food" role="menuitem" tabIndex={0} className="flex items-center gap-2 px-3 py-2 text-sm rounded hover:bg-background focus:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                      <span className="text-lg">🍜</span>
+                      <span>ម្ហូប</span>
+                    </Link>
+                    <Link onClick={handleCategoryClick} to="/products?category=phones" role="menuitem" tabIndex={0} className="flex items-center gap-2 px-3 py-2 text-sm rounded hover:bg-background focus:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                      <span className="text-lg">📱</span>
+                      <span>ទូរស័ព្ទ</span>
+                    </Link>
+                    <Link onClick={handleCategoryClick} to="/products?category=electronics" role="menuitem" tabIndex={0} className="flex items-center gap-2 px-3 py-2 text-sm rounded hover:bg-background focus:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                      <span className="text-lg">🔌</span>
+                      <span>អេឡិចត្រូនិក</span>
+                    </Link>
+                    <Link onClick={handleCategoryClick} to="/products?category=auto" role="menuitem" tabIndex={0} className="flex items-center gap-2 px-3 py-2 text-sm rounded hover:bg-background focus:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                      <span className="text-lg">🚗</span>
+                      <span>យានយន្ត</span>
+                    </Link>
+                    <Link onClick={handleCategoryClick} to="/products?category=real-estate" role="menuitem" tabIndex={0} className="flex items-center gap-2 px-3 py-2 text-sm rounded hover:bg-background focus:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                      <span className="text-lg">🏠</span>
+                      <span>អចលនទ្រព្យ</span>
+                    </Link>
+                    <Link onClick={handleCategoryClick} to="/products?category=clothing" role="menuitem" tabIndex={0} className="flex items-center gap-2 px-3 py-2 text-sm rounded hover:bg-background focus:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                      <span className="text-lg">👕</span>
+                      <span>សម្លៀកបំពាក់</span>
+                    </Link>
+                    <Link onClick={handleCategoryClick} to="/products?category=furniture" role="menuitem" tabIndex={0} className="flex items-center gap-2 px-3 py-2 text-sm rounded hover:bg-background focus:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                      <span className="text-lg">🛋️</span>
+                      <span>គ្រឿងសង្ហារឹម</span>
+                    </Link>
+                    <Link onClick={handleCategoryClick} to="/products?category=services" role="menuitem" tabIndex={0} className="flex items-center gap-2 px-3 py-2 text-sm rounded hover:bg-background focus:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                      <span className="text-lg">🛠️</span>
+                      <span>សេវាកម្ម</span>
+                    </Link>
+                  </div>
+                </div>
+              )}
             </div>
-            <button
-              type="submit"
-              className="rounded-3xl bg-gradient-to-r from-primary to-accent px-6 py-3 text-sm font-bold text-white shadow-lg hover:shadow-primary/30 transition flex-shrink-0"
-            >
-              Search
-            </button>
-          </form>
+          </div>
 
-          <div className="hidden lg:flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <Link
               to="/post-product"
-              className="inline-flex items-center gap-2 rounded-3xl bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-amber-500 transition"
+              className="inline-flex items-center gap-2 rounded-3xl bg-[#0F766E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0f6f63] transition"
             >
               <UploadCloud className="w-4 h-4" />
-              Sell
+              លក់ទំនិញ
             </Link>
 
             {user ? (
               <div className="relative group">
                 <button
                   type="button"
-                  className="inline-flex items-center gap-2 rounded-3xl border border-muted bg-white px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-white/90 transition"
+                  className="inline-flex items-center gap-2 rounded-3xl border border-muted bg-white px-4 py-2 text-sm font-semibold text-text-secondary hover:bg-white/90 transition"
                   title="User menu"
                 >
                   {user.profileImageUrl ? (
-                    <img src={user.profileImageUrl} alt="avatar" className="w-5 h-5 rounded-full object-cover" />
+                    <img src={user.profileImageUrl} alt="avatar" className="w-6 h-6 rounded-full object-cover" />
                   ) : (
-                    <User className="w-4 h-4" />
+                    <User className="w-5 h-5" />
                   )}
-                  <span>{user?.displayName?.split(' ')[0] || 'Account'}</span>
                 </button>
-
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-3xl shadow-xl border border-muted opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                  <Link
-                    to="/profile"
-                    className="block px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background rounded-t-3xl"
-                  >
-                    My Profile
-                  </Link>
-                  <Link
-                    to="/messages"
-                    className="block px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background border-t border-muted"
-                  >
-                    Messages
-                  </Link>
-                  <Link
-                    to="/notifications"
-                    className="block px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background border-t border-muted"
-                  >
-                    Notifications {notificationCount > 0 && `(${notificationCount})`}
-                  </Link>
-                  <Link
-                    to="/favorites"
-                    className="block px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background border-t border-muted"
-                  >
-                    Favorites ({favoriteCount})
-                  </Link>
-                  {user?.role === 'admin' && (
-                    <Link
-                      to="/admin"
-                      className="block px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background border-t border-muted"
-                    >
-                      Admin Dashboard
-                    </Link>
-                  )}
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      try {
-                        await logout();
-                      } catch {
-                        localStorage.removeItem('authToken');
-                        localStorage.removeItem('refreshToken');
-                        localStorage.removeItem('user');
-                      }
-                      navigate('/');
-                    }}
-                    className="w-full text-left px-4 py-3 text-sm font-semibold text-rose-600 hover:bg-background border-t border-muted rounded-b-3xl"
-                  >
-                    Logout
-                  </button>
+                  <Link to="/profile" className="block px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background rounded-t-3xl">ពត៌មានគណនី</Link>
+                  <button type="button" onClick={async () => { try { await logout(); } catch { localStorage.removeItem('authToken'); localStorage.removeItem('refreshToken'); localStorage.removeItem('user'); } navigate('/'); }} className="w-full text-left px-4 py-3 text-sm font-semibold text-rose-600 hover:bg-background border-t border-muted rounded-b-3xl">ចេញពីប្រព័ន្ធ</button>
                 </div>
               </div>
             ) : (
               <>
-                <Link
-                  to="/login"
-                  className="inline-flex items-center gap-2 rounded-3xl border border-muted bg-white px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-white/90 transition"
-                >
-                  Login
-                </Link>
-                <Link
-                  to="/register"
-                  className="inline-flex items-center gap-2 rounded-3xl bg-primary px-4 py-3 text-sm font-semibold text-white hover:bg-primary-hover transition"
-                >
-                  Register
-                </Link>
+                <Link to="/login" className="inline-flex items-center gap-2 rounded-3xl border border-muted bg-white px-4 py-2 text-sm font-semibold text-text-secondary hover:bg-white/90 transition">ចូលគណនី</Link>
+                <Link to="/register" className="inline-flex items-center gap-2 rounded-3xl bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-hover transition">បង្កើតគណនី</Link>
               </>
             )}
-          </div>
 
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden inline-flex h-10 w-10 items-center justify-center rounded-3xl border border-muted bg-white text-text-primary shadow-sm"
-            aria-label="Toggle mobile menu"
-          >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
-        </div>
+            <button className="inline-flex items-center gap-1 p-2 rounded text-sm text-text-secondary" type="button">
+              <Globe className="w-5 h-5" />
+            </button>
 
-        <form onSubmit={handleSearch} className="lg:hidden mt-4">
-          <div className="flex items-center gap-2 rounded-3xl border border-muted bg-white px-3 py-3 shadow-sm">
-            <Search className="w-4 h-4 text-muted" />
-            <input
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder="Search products..."
-              className="flex-1 border-none bg-transparent text-sm text-text-primary outline-none placeholder:text-muted"
-            />
-            <button
-              type="submit"
-              className="rounded-2xl bg-primary px-3 py-2 text-xs font-semibold text-white hover:bg-primary-hover transition"
-            >
-              Search
+            <button type="button" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="lg:hidden inline-flex h-10 w-10 items-center justify-center rounded-3xl border border-muted bg-white text-text-primary shadow-sm" aria-label="Toggle mobile menu">
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
-        </form>
+        </div>
 
         {mobileMenuOpen && (
-          <div className="mt-3 space-y-3 rounded-3xl border border-surface-muted bg-white p-3 shadow-lg">
-            <div className="grid gap-2 sm:grid-cols-2">
-              <Link
-                to="/post-product"
-                className="inline-flex items-center justify-center rounded-3xl bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-amber-500 transition"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Sell
-              </Link>
-              <Link
-                to="/products"
-                className="inline-flex items-center justify-center rounded-3xl border border-muted bg-white px-4 py-2 text-sm font-semibold text-text-secondary hover:bg-background transition"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Discover
-              </Link>
+          <div ref={mobileMenuRef} className="mt-3 space-y-3 rounded-3xl border border-surface-muted bg-white p-3 shadow-lg">
+            <div className="grid gap-2">
+              <details className="rounded-3xl border border-muted bg-white p-2">
+                <summary className="px-3 py-2 text-sm font-semibold">ក្រុមផលិតផល</summary>
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  <Link onClick={() => setMobileMenuOpen(false)} to="/products?category=food" className="px-3 py-2 text-sm rounded hover:bg-background">ម្ហូប</Link>
+                  <Link onClick={() => setMobileMenuOpen(false)} to="/products?category=phones" className="px-3 py-2 text-sm rounded hover:bg-background">ទូរស័ព្ទ</Link>
+                  <Link onClick={() => setMobileMenuOpen(false)} to="/products?category=electronics" className="px-3 py-2 text-sm rounded hover:bg-background">អេឡិចត្រូនិក</Link>
+                  <Link onClick={() => setMobileMenuOpen(false)} to="/products?category=auto" className="px-3 py-2 text-sm rounded hover:bg-background">យានយន្ត</Link>
+                  <Link onClick={() => setMobileMenuOpen(false)} to="/products?category=real-estate" className="px-3 py-2 text-sm rounded hover:bg-background">អចលនទ្រព្យ</Link>
+                  <Link onClick={() => setMobileMenuOpen(false)} to="/products?category=clothing" className="px-3 py-2 text-sm rounded hover:bg-background">សម្លៀកបំពាក់</Link>
+                  <Link onClick={() => setMobileMenuOpen(false)} to="/products?category=furniture" className="px-3 py-2 text-sm rounded hover:bg-background">គ្រឿងសង្ហារឹម</Link>
+                  <Link onClick={() => setMobileMenuOpen(false)} to="/products?category=services" className="px-3 py-2 text-sm rounded hover:bg-background">សេវាកម្ម</Link>
+                </div>
+              </details>
+              <Link to="/post-product" onClick={() => setMobileMenuOpen(false)} className="inline-flex items-center justify-center rounded-3xl bg-[#0F766E] px-4 py-2 text-sm font-semibold text-white">លក់ទំនិញ</Link>
+              {user ? (
+                <Link to="/profile" onClick={() => setMobileMenuOpen(false)} className="block rounded-3xl border border-muted bg-white px-4 py-2 text-center text-sm font-semibold text-text-secondary">ពត៌មានគណនី</Link>
+              ) : (
+                <>
+                  <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="block rounded-3xl border border-muted bg-white px-4 py-2 text-center text-sm font-semibold text-text-secondary">ចូលគណនី</Link>
+                  <Link to="/register" onClick={() => setMobileMenuOpen(false)} className="block rounded-3xl bg-primary px-4 py-2 text-center text-sm font-semibold text-white">បង្កើតគណនី</Link>
+                </>
+              )}
             </div>
-            {user ? (
-              <>
-                <button
-                  type="button"
-                  onClick={() => {
-                    navigate('/profile');
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full rounded-3xl border border-muted bg-white px-4 py-2 text-sm font-semibold text-text-secondary hover:bg-background transition"
-                >
-                  My Profile
-                </button>
-                <Link
-                  to="/messages"
-                  className="block rounded-3xl border border-muted bg-white px-4 py-2 text-center text-sm font-semibold text-text-secondary hover:bg-background transition"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Messages
-                </Link>
-                <Link
-                  to="/notifications"
-                  className="block rounded-3xl border border-muted bg-white px-4 py-2 text-center text-sm font-semibold text-text-secondary hover:bg-background transition"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Notifications{notificationCount > 0 ? ` (${notificationCount})` : ''}
-                </Link>
-                <Link
-                  to="/favorites"
-                  className="block rounded-3xl border border-muted bg-white px-4 py-2 text-center text-sm font-semibold text-text-secondary hover:bg-background transition"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Favorites ({favoriteCount})
-                </Link>
-                {user?.role === 'admin' && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      navigate('/admin');
-                      setMobileMenuOpen(false);
-                    }}
-                    className="w-full rounded-3xl border border-muted bg-white px-4 py-2 text-sm font-semibold text-text-secondary hover:bg-background transition"
-                  >
-                    Admin Dashboard
-                  </button>
-                )}
-                <button
-                  type="button"
-                  onClick={async () => {
-                    try {
-                      await logout();
-                    } catch {
-                      localStorage.removeItem('authToken');
-                      localStorage.removeItem('refreshToken');
-                      localStorage.removeItem('user');
-                    }
-                    setMobileMenuOpen(false);
-                    navigate('/');
-                  }}
-                  className="w-full rounded-3xl border border-muted bg-white px-4 py-2 text-sm font-semibold text-rose-600 hover:bg-background transition"
-                >
-                  Logout
-                </button>
-              </>
-            ) : (
-              <>
-                <Link
-                  to="/login"
-                  className="block rounded-3xl border border-muted bg-white px-4 py-2 text-center text-sm font-semibold text-text-secondary hover:bg-background transition"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Login
-                </Link>
-                <Link
-                  to="/register"
-                  className="block rounded-3xl bg-primary px-4 py-2 text-center text-sm font-semibold text-white hover:bg-primary-hover transition"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Register
-                </Link>
-              </>
-            )}
           </div>
         )}
       </div>

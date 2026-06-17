@@ -37,9 +37,9 @@ const SearchBar = ({ initialFilters }: SearchBarProps) => {
   const [categories, setCategories] = useState<CategoryItem[]>([]);
 
   const sortOptions = [
-    { value: 'newest', label: 'Newest first' },
-    { value: 'priceAsc', label: 'Price low to high' },
-    { value: 'priceDesc', label: 'Price high to low' }
+    { value: 'newest', label: 'ថ្មីជាាច្រើន' },
+    { value: 'priceAsc', label: 'ថ្លៃពីទាបទៅខ្ពស់' },
+    { value: 'priceDesc', label: 'ថ្លៃពីខ្ពស់ទៅទាប' }
   ];
   const navigate = useNavigate();
 
@@ -130,33 +130,42 @@ const SearchBar = ({ initialFilters }: SearchBarProps) => {
   };
 
   return (
-    <form onSubmit={handleSearch} className="w-full space-y-4">
-      <div className="flex flex-col sm:flex-row gap-3 sm:gap-2">
+    <form onSubmit={handleSearch} className="w-full space-y-3" aria-labelledby="search-form-heading">
+      <h2 id="search-form-heading" className="sr-only">Search products</h2>
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-2 items-stretch">
         <div className="flex-1 relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
+          <label htmlFor="search-input" className="sr-only">ស្វែងរកផលិតផល</label>
           <input
+            id="search-input"
+            name="search"
             type="text"
-            placeholder="What are you looking for?"
+            placeholder="ស្វែងរកផលិតផល..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 rounded-lg border border-muted bg-white text-text-primary placeholder-text-secondary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition"
+            className="w-full pl-12 pr-4 py-3 rounded-lg border border-muted bg-white text-text-primary placeholder-text-secondary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 transition focus-visible:ring-2"
+            aria-label="ស្វែងរកផលិតផល"
           />
         </div>
-        <div className="relative">
+        <div className="relative w-full sm:w-56">
           <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
+          <label htmlFor="location-input" className="sr-only">ទីតាំង</label>
           <input
+            id="location-input"
+            name="location"
             type="text"
-            placeholder="Location"
+            placeholder="ទីតាំង"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            className="w-full sm:w-44 pl-12 pr-4 py-3 rounded-lg border border-muted bg-white text-text-primary placeholder-text-secondary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition"
+            className="w-full pl-12 pr-4 py-3 rounded-lg border border-muted bg-white text-text-primary placeholder-text-secondary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 transition focus-visible:ring-2"
+            aria-label="ទីតាំង"
           />
         </div>
         <button
           type="submit"
-          className="px-6 py-3 rounded-lg bg-primary text-white font-semibold hover:bg-primary-hover transition duration-200 shadow-lg shadow-primary/30"
+          className="w-full sm:w-auto px-6 py-3 rounded-lg bg-[#0F766E] text-white font-semibold hover:bg-[#0f6f63] transition duration-200 shadow"
         >
-          Search
+          ស្វែងរក
         </button>
       </div>
 
@@ -164,21 +173,23 @@ const SearchBar = ({ initialFilters }: SearchBarProps) => {
         type="button"
         onClick={() => setShowAdvanced(!showAdvanced)}
         className="inline-flex items-center gap-2 text-sm font-medium text-text-secondary hover:text-text-primary"
+        aria-expanded={showAdvanced}
+        aria-controls="advanced-filters"
       >
         {showAdvanced ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-        {showAdvanced ? 'Hide advanced filters' : 'Show advanced filters'}
+        {showAdvanced ? 'លាក់តម្រងជម្រៅ' : 'បង្ហាញតម្រងជម្រៅ'}
       </button>
 
       {showAdvanced && (
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div id="advanced-filters" className="grid gap-4 md:grid-cols-2 xl:grid-cols-4" role="region" aria-label="Advanced search filters">
           <label className="space-y-2">
-            <span className="text-sm font-medium text-text-secondary">Category</span>
+            <span className="text-sm font-medium text-text-secondary">ប្រភេទ</span>
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               className="w-full rounded-lg border border-muted bg-white px-4 py-3 text-text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
             >
-              <option value="">Any category</option>
+              <option value="">គ្រប់ប្រភេទ</option>
               {categories.map((cat) => (
                 <option key={cat._id} value={cat._id}>
                   {cat.labelKh || cat.name}
@@ -188,13 +199,13 @@ const SearchBar = ({ initialFilters }: SearchBarProps) => {
           </label>
 
           <label className="space-y-2">
-            <span className="text-sm font-medium text-text-secondary">Province</span>
+            <span className="text-sm font-medium text-text-secondary">ខេត្ត</span>
             <select
               value={province}
               onChange={(e) => setProvince(e.target.value)}
               className="w-full rounded-lg border border-muted bg-white px-4 py-3 text-text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
             >
-              <option value="">Any province</option>
+              <option value="">គ្រប់ខេត្ត</option>
               {provinces.map((prov) => {
                 const provinceValue = prov.id ?? prov._id;
                 return (
@@ -207,14 +218,14 @@ const SearchBar = ({ initialFilters }: SearchBarProps) => {
           </label>
 
           <label className="space-y-2">
-            <span className="text-sm font-medium text-text-secondary">District</span>
+            <span className="text-sm font-medium text-text-secondary">ស្រុក / ខណ្ឌ</span>
             <select
               value={district}
               onChange={(e) => setDistrict(e.target.value)}
               disabled={!province}
               className="w-full rounded-lg border border-muted bg-white px-4 py-3 text-text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <option value="">Any district</option>
+              <option value="">គ្រប់ស្រុក</option>
               {districts.map((dist) => (
                 <option key={dist.id} value={dist.id}>
                   {dist.name}
@@ -224,27 +235,27 @@ const SearchBar = ({ initialFilters }: SearchBarProps) => {
           </label>
 
           <label className="space-y-2">
-            <span className="text-sm font-medium text-text-secondary">Condition</span>
+            <span className="text-sm font-medium text-text-secondary">លក្ខខណ្ឌ</span>
             <select
               value={condition}
               onChange={(e) => setCondition(e.target.value)}
               className="w-full rounded-lg border border-muted bg-white px-4 py-3 text-text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
             >
-              <option value="">Any condition</option>
-              <option value="new">New</option>
-              <option value="used">Used</option>
-              <option value="refurbished">Refurbished</option>
+              <option value="">គ្រប់លក្ខខណ្ឌ</option>
+              <option value="new">ថ្មី</option>
+              <option value="used">ប្រើរួច</option>
+              <option value="refurbished">បានស្ដារឡើងវិញ</option>
             </select>
           </label>
 
           <label className="space-y-2">
-            <span className="text-sm font-medium text-text-secondary">Sort by</span>
+            <span className="text-sm font-medium text-text-secondary">ដាក់តម្រៀប</span>
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value)}
               className="w-full rounded-lg border border-muted bg-white px-4 py-3 text-text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
             >
-              <option value="">Default sort</option>
+              <option value="">តម្រៀបលំនាំដើម</option>
               {sortOptions.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
@@ -254,23 +265,23 @@ const SearchBar = ({ initialFilters }: SearchBarProps) => {
           </label>
 
           <label className="space-y-2">
-            <span className="text-sm font-medium text-text-secondary">Posted</span>
+            <span className="text-sm font-medium text-text-secondary">ពេលដែលបានផុស</span>
             <select
               value={datePosted}
               onChange={(e) => setDatePosted(e.target.value)}
               className="w-full rounded-lg border border-muted bg-white px-4 py-3 text-text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
             >
-              <option value="">Any time</option>
-              <option value="24h">Last 24 hours</option>
-              <option value="7d">Last 7 days</option>
-              <option value="30d">Last 30 days</option>
-              <option value="90d">Last 90 days</option>
+              <option value="">គ្រប់ពេល</option>
+              <option value="24h">24 ម៉ោងចុងក្រោយ</option>
+              <option value="7d">7 ថ្ងៃចុងក្រោយ</option>
+              <option value="30d">30 ថ្ងៃចុងក្រោយ</option>
+              <option value="90d">90 ថ្ងៃចុងក្រោយ</option>
             </select>
           </label>
 
           <div className="grid grid-cols-2 gap-4">
             <label className="space-y-2">
-              <span className="text-sm font-medium text-text-secondary">Min price</span>
+              <span className="text-sm font-medium text-text-secondary">តម្លៃ​ ទាបបំផុត</span>
               <input
                 type="number"
                 min={0}
@@ -281,7 +292,7 @@ const SearchBar = ({ initialFilters }: SearchBarProps) => {
               />
             </label>
             <label className="space-y-2">
-              <span className="text-sm font-medium text-text-secondary">Max price</span>
+              <span className="text-sm font-medium text-text-secondary">តម្លៃ​ ខ្ពស់បំផុត</span>
               <input
                 type="number"
                 min={0}

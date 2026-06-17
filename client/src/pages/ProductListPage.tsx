@@ -65,9 +65,9 @@ const ProductListPage = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <div className="space-y-6">
         <section className="rounded-3xl border border-muted bg-white p-6 shadow-sm">
-          <h1 className="text-3xl font-bold text-text-primary">Search products</h1>
+          <h1 className="text-3xl font-bold text-text-primary">ស្វែងរកផលិតផល</h1>
           <p className="mt-2 text-sm text-text-secondary">
-            Use filters to narrow down results by category, province, condition, price and post date.
+            ប្រើតម្រងដើម្បីបន្ថប់លទ្ធផលដោយប្រភេទ ខេត្ត លក្ខខណ្ឌ តម្លៃ និងថ្ងៃផុស។
           </p>
           <div className="mt-6">
             <SearchBar initialFilters={currentFilters} />
@@ -80,8 +80,8 @@ const ProductListPage = () => {
         <section className="space-y-6">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-2xl font-semibold text-text-primary">Products</h2>
-              <p className="text-sm text-text-secondary">Showing {products.length} of {total} matching listings.</p>
+              <h2 className="text-2xl font-semibold text-text-primary">ផលិតផល</h2>
+              <p className="text-sm text-text-secondary"><span aria-live="polite">បង្ហាញ {products.length} នៃ {total} លទ្ធផល</span></p>
             </div>
           </div>
 

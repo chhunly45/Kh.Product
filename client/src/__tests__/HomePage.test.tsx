@@ -27,8 +27,8 @@ describe('HomePage', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText(/Cambodia's trusted marketplace/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /search/i })).toBeInTheDocument();
+    expect(screen.getByText(/ទិញ និង លក់/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /ស្វែងរក/i })).toBeInTheDocument();
 
     await waitFor(() => {
       expect(mockedApi.get).toHaveBeenCalledWith('/categories');

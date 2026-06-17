@@ -26,9 +26,9 @@ const ProductCard = ({ title, titleKh, titleEn, price, location, category, id, i
 
   const categoryLabel = getCategoryLabel(category, '');
 
-  // Determine display title: prefer bilingual (Kh / En), fallback to whichever is available
-  const displayTitle = titleKh && titleEn ? `${titleKh} / ${titleEn}` : titleEn || titleKh || title || 'Product';
-  const altText = title || displayTitle;
+  // Khmer-first title logic
+  const displayTitle = titleKh || titleEn || title || 'Product';
+  const altText = displayTitle;
 
   useEffect(() => {
     setIsSaved(Boolean(isFavorite));
@@ -48,27 +48,29 @@ const ProductCard = ({ title, titleKh, titleEn, price, location, category, id, i
   return (
     <Link
       to={`/products/${id}`}
-      className="group block overflow-hidden rounded-[1.75rem] border border-surface-muted bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-2xl hover:border-primary"
+      className="group block overflow-hidden rounded-2xl border border-surface-muted bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
     >
-      <div className="relative h-64 overflow-hidden bg-surface">
-        <img
-          src={src}
-          alt={altText}
-          className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-          onError={(e) => {
-            e.currentTarget.src = fallback;
-          }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+          <div className="relative overflow-hidden bg-surface">
+        <div className="aspect-w-4 aspect-h-3 w-full bg-gray-100">
+          <img
+            src={src}
+            alt={altText}
+            loading="lazy"
+            className="h-full w-full object-cover transition duration-500 group-hover:scale-105 rounded-t-2xl"
+            onError={(e) => {
+              e.currentTarget.src = fallback;
+            }}
+          />
+        </div>
 
         {categoryLabel && (
-          <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-text-primary shadow-sm">
+          <span className="absolute left-3 top-3 rounded-md bg-white/95 px-2 py-1 text-xs font-medium text-text-primary shadow-sm">
             {categoryLabel}
           </span>
         )}
 
         {featured && (
-          <span className="absolute right-4 top-4 rounded-full bg-accent px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-white shadow-lg">
+          <span className="absolute right-3 top-3 rounded-md bg-amber-500 px-2 py-1 text-xs font-semibold text-white shadow">
             Featured
           </span>
         )}
@@ -84,43 +86,47 @@ const ProductCard = ({ title, titleKh, titleEn, price, location, category, id, i
               onToggleFavorite(id, isSaved);
             }
           }}
-          className="absolute right-4 bottom-4 inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/95 text-muted shadow-lg transition hover:text-red-500 hover:bg-white"
+          className="absolute right-3 bottom-3 inline-flex h-12 w-12 min-h-[48px] min-w-[48px] items-center justify-center rounded-full bg-white shadow-md transition hover:shadow-lg hover:text-red-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
           aria-label={isSaved ? 'Remove from favorites' : 'Save to favorites'}
         >
           <Heart className={`w-5 h-5 transition ${isSaved ? 'text-red-500 fill-current' : 'text-muted'}`} fill={isSaved ? 'currentColor' : 'none'} />
         </button>
       </div>
 
-      <div className="p-5">
-        <div className="flex items-start justify-between gap-4">
-          <div className="space-y-2">
-            <h3 className="text-lg font-semibold text-text-primary line-clamp-2 group-hover:text-primary transition">
-              {displayTitle}
-            </h3>
-            {location && (
-              <div className="flex items-center gap-2 text-sm text-text-secondary">
-                <MapPin className="w-4 h-4 text-muted" />
-                <span className="truncate">{location}</span>
-              </div>
-            )}
-          </div>
-          <div className="text-right">
-            <p className="text-lg font-bold text-primary">{priceText.usd}</p>
-            <p className="text-xs text-text-secondary">{priceText.khr}</p>
-          </div>
+      <div className="p-4 sm:p-5 flex flex-col h-40">
+        <div className="flex-1">
+          <h3 className="text-sm sm:text-base font-semibold text-text-primary leading-tight mb-1 line-clamp-2 break-words overflow-hidden">
+            {titleKh || titleEn || title}
+          </h3>
+
+          {(titleKh && titleEn && titleEn !== titleKh) && (
+            <p className="text-xs text-text-secondary line-clamp-1 truncate">{titleEn}</p>
+          )}
+
+          {location && (
+            <div className="flex items-center gap-2 text-xs text-text-secondary">
+              <MapPin className="w-3.5 h-3.5 text-muted" />
+              <span className="truncate">{location}</span>
+            </div>
+          )}
         </div>
 
-        <div className="mt-4 flex flex-wrap items-center gap-2">
-          {seller?.sellerVerificationStatus && (
-            <span
-              className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] ${sellerVerified ? 'bg-primary/10 text-primary' : 'bg-muted/10 text-text-secondary'}`}
-            >
-              {sellerVerified ? 'Verified seller' : 'Unverified seller'}
-            </span>
-          )}
-          <span className="rounded-full bg-background px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">
-            {formatViewsCount(viewsCount)} views
-          </span>
+        <div className="mt-3 flex items-end justify-between">
+            <div>
+            <p className="text-lg font-extrabold text-[#0F766E]" aria-label={`Price ${priceText.usd} ${priceText.khr}`}>{priceText.usd}</p>
+            <p className="text-xs text-text-secondary" aria-hidden="true">{priceText.khr}</p>
+          </div>
+
+          <div className="flex items-center gap-2 text-xs text-text-secondary">
+            {seller?.sellerVerificationStatus && (
+              <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-semibold whitespace-nowrap ${sellerVerified ? 'bg-primary/15 text-primary font-bold' : 'bg-muted/20 text-text-secondary'}`} title={sellerVerified ? 'Verified seller' : 'Not verified'}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  <span>{sellerVerified ? 'ផ្ទៀងផ្ទាត់' : 'មិនផ្ទៀងផ្ទាត់'}</span>
+                </span>
+            )}
+
+            <span className="text-xs text-text-secondary">{formatViewsCount(viewsCount)} views</span>
+          </div>
         </div>
       </div>
     </Link>
