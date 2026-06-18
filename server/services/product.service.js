@@ -23,7 +23,21 @@ const listProducts = async (filters) => {
   const query = { status: 'published' };
   const locationFilters = [];
 
-  if (filters.category) query.category = filters.category;
+const mongoose = require('mongoose');
+
+if (filters.category) {
+  if (mongoose.Types.ObjectId.isValid(filters.category)) {
+    query.category = filters.category;
+  } else {
+    const category = await Category.findOne({
+      slug: filters.category
+    }).select('_id');
+
+    if (category) {
+      query.category = category._id;
+    }
+  }
+}
   if (filters.seller) query.seller = filters.seller;
   if (filters.province) query.province = Number(filters.province);
   if (filters.district) query.district = Number(filters.district);
