@@ -124,16 +124,22 @@ const incrementProductViews = async (productId) => {
 };
 
 const getFeaturedProducts = async (filters = {}) => {
-  const query = { status: 'published', $or: [{ featured: true }, { isFeatured: true }] };
+  const featuredQuery = { status: 'published', $or: [{ featured: true }, { isFeatured: true }] };
   const page = Number(filters.page) || 1;
   const limit = Number(filters.perPage) || 12;
   const skip = (page - 1) * limit;
+
+  // Check if there are any featured products
+  const featuredCount = await Product.countDocuments(featuredQuery);
+  
+  // If featured products exist, return them; otherwise fall back to recent products
+  const query = featuredCount > 0 ? featuredQuery : { status: 'published' };
 
   const items = await Product.find(query)
     .populate('seller', sellerPopulateFields)
     .populate('category', 'name labelKh slug')
     .populate('images')
-    .sort({ featuredAt: -1, createdAt: -1 })
+    .sort(featuredCount > 0 ? { featuredAt: -1, createdAt: -1 } : { createdAt: -1 })
     .skip(skip)
     .limit(limit)
     .lean();
