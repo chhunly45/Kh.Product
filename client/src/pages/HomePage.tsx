@@ -78,7 +78,7 @@ const HomePage = () => {
       imageUrl: getSafeString(normalizedImage),
       viewsCount: product.viewsCount,
       featured: product.featured,
-      isFavorite: product.isFavorite,code client\src\pages\HomePage.tsxcode client\src\pages\HomePage.tsx
+      isFavorite: product.isFavorite,
       seller: normalizeSeller(product.seller),
     };
   };
@@ -169,21 +169,15 @@ const HomePage = () => {
           ) : latestProducts.length > 0 ? (
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {latestProducts.map((product, index) => {
-  const props = normalizeProductCardProps(product);
+                const props = normalizeProductCardProps(product);
 
-  console.log('LATEST CARD PROPS', {
-    title: props.title,
-    imageUrl: props.imageUrl,
-    originalImages: product.images,
-  });
-
-  return <ProductCard key={product._id} {...props} />;
-})}
-                console.log('HOME PRODUCT', {
-                  title: product.title,
-                  images: product.images,
-                  imageUrl: product.imageUrl,
+                console.log('LATEST CARD PROPS', {
+                  index,
+                  title: props.title,
+                  imageUrl: props.imageUrl,
+                  originalImages: product.images,
                 });
+
                 if (index === 0) {
                   (window as any).__HOME_FIRST_PRODUCT__ = {
                     title: product.title,
@@ -191,7 +185,7 @@ const HomePage = () => {
                     imageUrl: product.imageUrl,
                   };
                 }
-                const props = normalizeProductCardProps(product);
+
                 return <ProductCard key={product._id} {...props} />;
               })}
             </div>

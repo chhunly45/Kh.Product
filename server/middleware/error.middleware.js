@@ -1,4 +1,4 @@
-Get-Content server\middleware\error.middleware.jsconst errorHandler = (err, req, res, next) => {
+const errorHandler = (err, req, res, next) => {
   if (err.code === 'EBADCSRFTOKEN') {
     return res.status(403).json({ success: false, message: 'Restricted form submission.' });
   }
