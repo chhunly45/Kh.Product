@@ -102,8 +102,8 @@ const ProductListPage = () => {
                   location={product.location || 'Unknown'}
                   category={product.category?.labelKh || product.category?.name || 'General'}
                   seller={product.seller}
-                    imageUrl={product.images?.[0]?.secureUrl || product.images?.[0]?.url || ''}
-                    featured={product.featured || product.isFeatured}
+                  imageUrl={product.images?.[0]?.secureUrl || product.images?.[0]?.url || product.imageUrl || ''}
+                  featured={product.featured || product.isFeatured}
                   viewsCount={product.viewsCount}
                   isFavorite={favoriteIds.includes(product._id)}
                   onToggleFavorite={async (productId, currentFavorite) => {

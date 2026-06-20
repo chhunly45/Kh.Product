@@ -79,8 +79,8 @@ const FavoritesPage = () => {
                   price={product.price}
                   location={product.location}
                   category={product.category?.labelKh || product.category?.name}
-                  imageUrl={product.images?.[0]?.secureUrl || product.images?.[0]?.url}
-                   featured={product.featured || product.isFeatured}
+                  imageUrl={product.images?.[0]?.secureUrl || product.images?.[0]?.url || product.imageUrl || ''}
+                  featured={product.featured || product.isFeatured}
                   seller={product.seller}
                 />
               </div>

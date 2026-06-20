@@ -145,7 +145,7 @@ const Header = () => {
                 ref={categoriesButtonRef}
                 type="button"
                 onClick={() => setCategoriesOpen((s) => !s)}
-                className="inline-flex items-center gap-2 rounded-3xl border border-muted bg-white px-4 py-2 text-sm font-semibold text-text-primary hover:shadow-md transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                className="inline-flex items-center gap-2 rounded-3xl border border-muted bg-white px-4 py-2 text-sm font-medium text-text-primary hover:shadow-md transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 aria-haspopup="menu"
                 aria-expanded={categoriesOpen}
                 aria-controls="categories-menu"
@@ -227,7 +227,7 @@ const Header = () => {
           <div className="flex items-center gap-3">
             <Link
               to="/post-product"
-              className="inline-flex items-center gap-2 rounded-3xl bg-[#0F766E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0f6f63] transition"
+              className="inline-flex items-center gap-2 rounded-3xl bg-[#0F766E] px-4 py-2 text-sm font-medium text-white hover:bg-[#0f6f63] transition"
             >
               <UploadCloud className="w-4 h-4" />
               លក់ទំនិញ
@@ -237,7 +237,7 @@ const Header = () => {
               <div className="relative group">
                 <button
                   type="button"
-                  className="inline-flex items-center gap-2 rounded-3xl border border-muted bg-white px-4 py-2 text-sm font-semibold text-text-secondary hover:bg-white/90 transition"
+                  className="inline-flex items-center gap-2 rounded-3xl border border-muted bg-white px-4 py-2 text-sm font-medium text-text-secondary hover:bg-white/90 transition"
                   title="User menu"
                 >
                   {user.profileImageUrl ? (
@@ -253,8 +253,8 @@ const Header = () => {
               </div>
             ) : (
               <>
-                <Link to="/login" className="inline-flex items-center gap-2 rounded-3xl border border-muted bg-white px-4 py-2 text-sm font-semibold text-text-secondary hover:bg-white/90 transition">ចូលគណនី</Link>
-                <Link to="/register" className="inline-flex items-center gap-2 rounded-3xl bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-hover transition">បង្កើតគណនី</Link>
+                <Link to="/login" className="inline-flex items-center gap-2 rounded-3xl border border-muted bg-white px-4 py-2 text-sm font-medium text-text-secondary hover:bg-white/90 transition">ចូលគណនី</Link>
+                <Link to="/register" className="inline-flex items-center gap-2 rounded-3xl bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-hover transition">បង្កើតគណនី</Link>
               </>
             )}
 

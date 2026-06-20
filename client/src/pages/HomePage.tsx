@@ -54,20 +54,34 @@ const HomePage = () => {
     };
   };
 
-  const normalizeProductCardProps = (product: any) => ({
-    id: product._id,
-    title: getSafeString(product.title),
-    titleKh: getSafeString(product.titleKh),
-    titleEn: getSafeString(product.titleEn),
-    price: typeof product.price === 'string' || typeof product.price === 'number' ? product.price : '',
-    location: getSafeString(product.location),
-    category: getCategoryLabel(product.category, 'General'),
-    imageUrl: getSafeString(product.imageUrl),
-    viewsCount: product.viewsCount,
-    featured: product.featured,
-    isFavorite: product.isFavorite,
-    seller: normalizeSeller(product.seller),
-  });
+  const normalizeProductCardProps = (product: any) => {
+    const normalizedImage =
+      product.images?.[0]?.secureUrl ||
+      product.images?.[0]?.url ||
+      product.imageUrl;
+
+    console.log('NORMALIZE PRODUCT', {
+      title: product.title,
+      images: product.images,
+      imageUrl: product.imageUrl,
+      normalizedImage,
+    });
+
+    return {
+      id: product._id,
+      title: getSafeString(product.title),
+      titleKh: getSafeString(product.titleKh),
+      titleEn: getSafeString(product.titleEn),
+      price: typeof product.price === 'string' || typeof product.price === 'number' ? product.price : '',
+      location: getSafeString(product.location),
+      category: getCategoryLabel(product.category, 'General'),
+      imageUrl: getSafeString(normalizedImage),
+      viewsCount: product.viewsCount,
+      featured: product.featured,
+      isFavorite: product.isFavorite,code client\src\pages\HomePage.tsxcode client\src\pages\HomePage.tsx
+      seller: normalizeSeller(product.seller),
+    };
+  };
 
   useEffect(() => {
     const loadTopAds = async () => {
@@ -115,7 +129,7 @@ const HomePage = () => {
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
           <div className="max-w-2xl">
-            <h1 className="text-2xl sm:text-3xl font-black leading-snug tracking-tight">
+            <h1 className="text-4xl sm:text-5xl font-extrabold leading-[1.2] tracking-tight">
               ទិញ និង លក់<br />ទំនិញទូទាំងកម្ពុជា
             </h1>
             <p className="mt-2 text-sm sm:text-base text-white/95 leading-relaxed">
@@ -154,7 +168,29 @@ const HomePage = () => {
             </div>
           ) : latestProducts.length > 0 ? (
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {latestProducts.map((product) => {
+              {latestProducts.map((product, index) => {
+  const props = normalizeProductCardProps(product);
+
+  console.log('LATEST CARD PROPS', {
+    title: props.title,
+    imageUrl: props.imageUrl,
+    originalImages: product.images,
+  });
+
+  return <ProductCard key={product._id} {...props} />;
+})}
+                console.log('HOME PRODUCT', {
+                  title: product.title,
+                  images: product.images,
+                  imageUrl: product.imageUrl,
+                });
+                if (index === 0) {
+                  (window as any).__HOME_FIRST_PRODUCT__ = {
+                    title: product.title,
+                    images: product.images,
+                    imageUrl: product.imageUrl,
+                  };
+                }
                 const props = normalizeProductCardProps(product);
                 return <ProductCard key={product._id} {...props} />;
               })}
@@ -252,7 +288,18 @@ const HomePage = () => {
             ) : (
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {topAds.map((product) => {
+                  console.log('HOME PRODUCT', {
+                    title: product.title,
+                    images: product.images,
+                    imageUrl: product.imageUrl,
+                  });
                   const props = normalizeProductCardProps(product);
+
+console.log('CARD PROPS', {
+  title: props.title,
+  imageUrl: props.imageUrl,
+  originalImages: product.images,
+});
                   return <ProductCard key={product._id} {...props} />;
                 })}
               </div>

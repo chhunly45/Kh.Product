@@ -595,7 +595,7 @@ const ProductDetailPage = () => {
                       price={item.price}
                       location={item.location || 'Unknown'}
                       category={item.category?.labelKh || item.category?.name || 'General'}
-                      imageUrl={item.images?.[0]?.secureUrl || item.images?.[0]?.url || ''}
+                      imageUrl={item.images?.[0]?.secureUrl || item.images?.[0]?.url || item.imageUrl || ''}
                       seller={item.seller}
                       featured={item.featured || item.isFeatured}
                     />

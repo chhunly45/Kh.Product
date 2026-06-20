@@ -2,6 +2,13 @@ export default {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
   theme: {
     extend: {
+      fontFamily: {
+        sans: [
+          'Kantumruy Pro',
+          'Inter',
+          'sans-serif'
+        ]
+      },
       colors: {
         primary: '#0F766E',
         'primary-hover': '#115E59',
