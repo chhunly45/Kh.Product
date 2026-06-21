@@ -64,32 +64,32 @@ const ChatPage = () => {
     const socket = connectSocket();
     socketRef.current = socket;
 
-    socket.on('online_users', (users: string[]) => setOnlineUsers(users));
-    socket.on('new_message', ({ chatId, message, unreadCount }: any) => {
+    socket?.on('online_users', (users: string[]) => setOnlineUsers(users));
+    socket?.on('new_message', ({ chatId, message, unreadCount }: any) => {
       setChats((prev) => prev.map((chat) => chat._id === chatId ? { ...chat, unreadCount, lastMessage: { content: message.content, createdAt: message.createdAt } } : chat));
       if (chatId === selectedChatId) {
         setMessages((prev) => [...prev, message]);
       }
     });
-    socket.on('message_received', (message: any) => {
+    socket?.on('message_received', (message: any) => {
       if (message.chatId === selectedChatId) {
         setMessages((prev) => [...prev, message]);
       }
     });
-    socket.on('chat_updated', ({ chatId, unreadCount, lastMessageAt }: any) => {
+    socket?.on('chat_updated', ({ chatId, unreadCount, lastMessageAt }: any) => {
       setChats((prev) => prev.map((chat) => chat._id === chatId ? { ...chat, unreadCount: typeof unreadCount === 'number' ? unreadCount : chat.unreadCount, lastMessageAt: lastMessageAt || chat.lastMessageAt } : chat));
     });
 
-    socket.connect();
+    socket?.connect();
 
     loadChats();
 
     return () => {
       disconnectSocket();
-      socket.off('online_users');
-      socket.off('new_message');
-      socket.off('message_received');
-      socket.off('chat_updated');
+      socket?.off('online_users');
+      socket?.off('new_message');
+      socket?.off('message_received');
+      socket?.off('chat_updated');
     };
   }, [currentUserId, routeChatId, navigate]);
 

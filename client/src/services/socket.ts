@@ -1,40 +1,39 @@
-import { io, Socket } from 'socket.io-client';
-
-const getViteEnv = (key: string, fallback: string) => {
-  const env = safeImportMetaEnv();
-  const value = env[key];
-  return value || fallback;
-};
+import { io } from 'socket.io-client';
 
 const safeImportMetaEnv = () => {
   try {
-    return eval('import.meta.env') as Record<string, string>;
+    // eslint-disable-next-line no-eval
+    return (eval('import.meta.env') as Record<string, string>) || {};
   } catch {
     return {} as Record<string, string>;
   }
 };
 
-const baseURL = getViteEnv('VITE_API_BASE_URL', 'https://kh-product-1.onrender.com/api').replace(/\/api\/?$/, '');
+const getServerBase = () => {
+  const env = safeImportMetaEnv();
+  const url = env.VITE_API_BASE_URL || env.VITE_API_URL || env.VITE_PUBLIC_API_URL || ''; // may be empty
+  if (url) return url.replace(/\/api\/?$/, '');
+  // fallback to same host at port 5000
+  return `${window.location.protocol}//${window.location.hostname}${window.location.hostname === 'localhost' ? ':5000' : ''}`;
+};
 
-const socket: Socket = io(baseURL, {
-  autoConnect: false,
-  auth: {
-    token: localStorage.getItem('authToken') || ''
-  }
-});
+const baseURL = getServerBase();
 
-export const connectSocket = () => {
+// single socket instance (autoConnect: false)
+const socket = io(baseURL, { autoConnect: false, transports: ['websocket'] });
+
+export const connectSocket = (token?: string | null) => {
+  const t = token || localStorage.getItem('authToken') || '';
   if (!socket.connected) {
-    socket.auth = { token: localStorage.getItem('authToken') || '' };
+    socket.auth = { token: t };
     socket.connect();
   }
   return socket;
 };
 
 export const disconnectSocket = () => {
-  if (socket.connected) {
-    socket.disconnect();
-  }
+  if (socket.connected) socket.disconnect();
 };
 
-export default socket;
+export const getSocket = () => socket;
+
