@@ -23,6 +23,23 @@ query('category').optional().trim().isString(),
 
 router.get('/featured', validate, productController.listFeaturedProducts);
 router.get('/slug/:slug', validate, productController.getProductBySlug);
+
+// Handle old product ID URLs → redirect to slug-based URLs
+router.get('/:id', param('id').isMongoId(), async (req, res, next) => {
+  try {
+    const product = await require('../models/product.model').findById(req.params.id).select('slug');
+    if (product && product.slug) {
+      // Redirect old /products/:id URLs to new /products/slug/:slug URLs
+      return res.redirect(301, `/products/slug/${product.slug}`);
+    }
+    // If product not found or no slug, pass to original controller
+    next();
+  } catch (error) {
+    // On error, pass to original controller
+    next();
+  }
+});
+
 router.get('/:id', param('id').isMongoId(), validate, productController.getProduct);
 router.post('/:id/views', param('id').isMongoId(), validate, productController.addProductView);
 
