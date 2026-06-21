@@ -24,10 +24,19 @@ const ChatPage = () => {
   const [status, setStatus] = useState('');
   const [activeTitle, setActiveTitle] = useState('Select a conversation');
   const socketRef = useRef<any>(null);
+  const selectedChatIdRef = useRef<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const currentUserId = useMemo(() => decodeTokenUserId(), []);
   const { id: routeChatId } = useParams<{ id?: string }>();
   const navigate = useNavigate();
+  const isDev = import.meta.env.DEV;
+
+  const debugLog = (...args: unknown[]) => {
+    if (isDev) {
+      // eslint-disable-next-line no-console
+      console.debug('[ChatPage socket]', ...args);
+    }
+  };
 
   const selectedChat = useMemo(
     () => chats.find((chat) => chat._id === selectedChatId),
@@ -40,10 +49,67 @@ const ChatPage = () => {
   };
 
   useEffect(() => {
+    selectedChatIdRef.current = selectedChatId;
+  }, [selectedChatId]);
+
+  useEffect(() => {
+    const socket = connectSocket();
+    socketRef.current = socket;
+
+    socket?.on('online_users', (users: string[]) => {
+      debugLog('online_users', users);
+      setOnlineUsers(users);
+    });
+    socket?.on('connect', () => {
+      debugLog('connected', { socketId: socket.id, selectedChatId: selectedChatIdRef.current });
+      if (selectedChatIdRef.current) {
+        debugLog('joining room', selectedChatIdRef.current);
+        socket.emit('join_chat', { chatId: selectedChatIdRef.current });
+      }
+    });
+    socket?.on('new_message', ({ chatId, message, unreadCount }: any) => {
+      debugLog('new_message', { chatId, message, unreadCount, selectedChatId: selectedChatIdRef.current });
+      setChats((prev) => prev.map((chat) => chat._id === chatId ? {
+        ...chat,
+        unreadCount,
+        lastMessage: { content: message.content, createdAt: message.createdAt }
+      } : chat));
+      if (chatId === selectedChatIdRef.current) {
+        setMessages((prev) => [...prev, message]);
+      }
+    });
+    socket?.on('message_received', (message: any) => {
+      debugLog('message_received', { message, selectedChatId: selectedChatIdRef.current });
+      if (message.chatId === selectedChatIdRef.current) {
+        setMessages((prev) => [...prev, message]);
+      }
+    });
+    socket?.on('chat_updated', ({ chatId, unreadCount, lastMessageAt }: any) => {
+      debugLog('chat_updated', { chatId, unreadCount, lastMessageAt });
+      setChats((prev) => prev.map((chat) => chat._id === chatId ? {
+        ...chat,
+        unreadCount: typeof unreadCount === 'number' ? unreadCount : chat.unreadCount,
+        lastMessageAt: lastMessageAt || chat.lastMessageAt
+      } : chat));
+    });
+
+    socket?.connect();
+
+    return () => {
+      socket?.off('online_users');
+      socket?.off('new_message');
+      socket?.off('message_received');
+      socket?.off('chat_updated');
+      disconnectSocket();
+    };
+  }, [currentUserId]);
+
+  useEffect(() => {
     const loadChats = async () => {
       try {
         const data = await listChats();
         setChats(data);
+        setStatus('');
         if (routeChatId) {
           const exists = data.some((chat: any) => chat._id === routeChatId);
           if (exists) {
@@ -61,43 +127,16 @@ const ChatPage = () => {
       }
     };
 
-    const socket = connectSocket();
-    socketRef.current = socket;
-
-    socket?.on('online_users', (users: string[]) => setOnlineUsers(users));
-    socket?.on('new_message', ({ chatId, message, unreadCount }: any) => {
-      setChats((prev) => prev.map((chat) => chat._id === chatId ? { ...chat, unreadCount, lastMessage: { content: message.content, createdAt: message.createdAt } } : chat));
-      if (chatId === selectedChatId) {
-        setMessages((prev) => [...prev, message]);
-      }
-    });
-    socket?.on('message_received', (message: any) => {
-      if (message.chatId === selectedChatId) {
-        setMessages((prev) => [...prev, message]);
-      }
-    });
-    socket?.on('chat_updated', ({ chatId, unreadCount, lastMessageAt }: any) => {
-      setChats((prev) => prev.map((chat) => chat._id === chatId ? { ...chat, unreadCount: typeof unreadCount === 'number' ? unreadCount : chat.unreadCount, lastMessageAt: lastMessageAt || chat.lastMessageAt } : chat));
-    });
-
-    socket?.connect();
-
     loadChats();
-
-    return () => {
-      disconnectSocket();
-      socket?.off('online_users');
-      socket?.off('new_message');
-      socket?.off('message_received');
-      socket?.off('chat_updated');
-    };
-  }, [currentUserId, routeChatId, navigate]);
+  }, [routeChatId, navigate]);
 
   useEffect(() => {
     if (!selectedChatId) return;
 
     const loadChat = async () => {
       try {
+        setStatus('');
+        setActiveTitle('Loading conversation...');
         const data = await getChat(selectedChatId);
         setMessages(data.messages);
         const contact = getContact(data.chat);
@@ -119,6 +158,8 @@ const ChatPage = () => {
   }, [messages]);
 
   const handleSelectChat = (chatId: string) => {
+    setStatus('');
+    setActiveTitle('Loading conversation...');
     setSelectedChatId(chatId);
     navigate(`/messages/${chatId}`);
   };
