@@ -34,7 +34,7 @@ const ChatPage = () => {
   const debugLog = (...args: unknown[]) => {
     if (isDev) {
       // eslint-disable-next-line no-console
-      console.debug('[ChatPage socket]', ...args);
+      console.log('[ChatPage socket]', ...args);
     }
   };
 
