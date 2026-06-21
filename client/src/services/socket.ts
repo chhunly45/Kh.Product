@@ -9,15 +9,42 @@ const safeImportMetaEnv = () => {
   }
 };
 
-const getServerBase = () => {
+const getSocketBaseUrl = () => {
   const env = safeImportMetaEnv();
-  const url = env.VITE_API_BASE_URL || env.VITE_API_URL || env.VITE_PUBLIC_API_URL || ''; // may be empty
-  if (url) return url.replace(/\/api\/?$/, '');
-  // fallback to same host at port 5000
-  return `${window.location.protocol}//${window.location.hostname}${window.location.hostname === 'localhost' ? ':5000' : ''}`;
+  const rawUrl = env.VITE_API_BASE_URL || env.VITE_API_URL || env.VITE_PUBLIC_API_URL || '';
+  if (rawUrl) {
+    return rawUrl.replace(/\/api\/?$/, '');
+  }
+
+  if (typeof window !== 'undefined') {
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      return `${window.location.protocol}//${window.location.hostname}:5000`;
+    }
+  }
+
+  return 'https://kh-product-1.onrender.com';
 };
 
-const baseURL = getServerBase();
+const baseURL = getSocketBaseUrl();
+
+// DEBUG: log the env-derived socket URL so we can verify what the client will use at runtime
+try {
+  const env = safeImportMetaEnv();
+  // eslint-disable-next-line no-console
+  console.log('[socket] VITE_API_BASE_URL=', env.VITE_API_BASE_URL, ' -> baseURL=', baseURL);
+  try {
+    // also log the full socket.io endpoint URL we expect the client to use
+    const socketEndpoint = new URL('/socket.io/', baseURL).toString();
+    // eslint-disable-next-line no-console
+    console.log('[socket] socket endpoint=', socketEndpoint);
+  } catch (err) {
+    // if baseURL isn't a valid URL, still log baseURL
+    // eslint-disable-next-line no-console
+    console.log('[socket] socket endpoint failed to parse, baseURL=', baseURL);
+  }
+} catch (e) {
+  // ignore logging errors in unusual environments
+}
 
 // single socket instance (autoConnect: false)
 const socket = io(baseURL, { autoConnect: false, transports: ['websocket'] });
