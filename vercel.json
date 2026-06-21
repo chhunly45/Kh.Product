@@ -28,12 +28,5 @@
       "source": "./(.*)",
       "destination": "/index.html"
     }
-  ],
-  "redirects": [
-    {
-      "source": "/products/:id",
-      "destination": "/products/:slug",
-      "permanent": true
-    }
   ]
 }
