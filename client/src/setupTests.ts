@@ -38,3 +38,6 @@ Object.defineProperty(global.navigator, 'geolocation', {
   },
   configurable: true
 });
+
+// Mock scrollIntoView for jsdom (needed for ChatPage message container)
+Element.prototype.scrollIntoView = jest.fn();

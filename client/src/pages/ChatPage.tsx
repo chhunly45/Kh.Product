@@ -15,6 +15,16 @@ const decodeTokenUserId = (): string | null => {
   }
 };
 
+const getIsDev = (): boolean => {
+  try {
+    // eslint-disable-next-line no-eval
+    const env = eval('import.meta.env') as Record<string, unknown>;
+    return Boolean(env?.DEV);
+  } catch {
+    return process.env.NODE_ENV === 'development';
+  }
+};
+
 const ChatPage = () => {
   const [chats, setChats] = useState<any[]>([]);
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
@@ -29,7 +39,7 @@ const ChatPage = () => {
   const currentUserId = useMemo(() => decodeTokenUserId(), []);
   const { id: routeChatId } = useParams<{ id?: string }>();
   const navigate = useNavigate();
-  const isDev = import.meta.env.DEV;
+  const isDev = getIsDev();
 
   const debugLog = (...args: unknown[]) => {
     if (isDev) {
@@ -74,14 +84,16 @@ const ChatPage = () => {
         unreadCount,
         lastMessage: { content: message.content, createdAt: message.createdAt }
       } : chat));
-      if (chatId === selectedChatIdRef.current) {
-        setMessages((prev) => [...prev, message]);
-      }
     });
     socket?.on('message_received', (message: any) => {
       debugLog('message_received', { message, selectedChatId: selectedChatIdRef.current });
       if (message.chatId === selectedChatIdRef.current) {
-        setMessages((prev) => [...prev, message]);
+        setMessages((prev) => {
+          if (message._id && prev.some((msg) => msg._id === message._id)) {
+            return prev;
+          }
+          return [...prev, message];
+        });
       }
     });
     socket?.on('chat_updated', ({ chatId, unreadCount, lastMessageAt }: any) => {
@@ -97,10 +109,12 @@ const ChatPage = () => {
 
     return () => {
       socket?.off('online_users');
+      socket?.off('connect');
       socket?.off('new_message');
       socket?.off('message_received');
       socket?.off('chat_updated');
       disconnectSocket();
+      socketRef.current = null;
     };
   }, [currentUserId]);
 
@@ -173,7 +187,6 @@ const ChatPage = () => {
       content: inputValue.trim()
     });
 
-    setMessages((prev) => [...prev, { content: inputValue.trim(), sender: currentUserId || 'me', createdAt: new Date().toISOString() }]);
     setInputValue('');
   };
 

@@ -23,18 +23,21 @@ const listChats = async (userId) => {
 };
 
 const getChat = async (chatId, userId) => {
-  const chat = await Chat.findById(chatId)
+  const chat = await Chat.findOne({
+    _id: chatId,
+    $or: [{ buyer: userId }, { seller: userId }]
+  })
     .populate('product', 'title slug')
     .populate('buyer', 'displayName profileImageUrl')
     .populate('seller', 'displayName profileImageUrl');
 
   if (!chat) {
-    const error = new Error('Chat not found');
-    error.statusCode = 404;
-    throw error;
-  }
-
-  if (chat.buyer.toString() !== userId.toString() && chat.seller.toString() !== userId.toString()) {
+    const existingChat = await Chat.findById(chatId);
+    if (!existingChat) {
+      const error = new Error('Chat not found');
+      error.statusCode = 404;
+      throw error;
+    }
     const error = new Error('Access denied');
     error.statusCode = 403;
     throw error;
