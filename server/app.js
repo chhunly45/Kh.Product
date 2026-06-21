@@ -112,6 +112,44 @@ app.get('/api/csrf-token', (req, res) => {
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 app.use('/api', routes);
 
+const Product = require('./models/Product');
+const SITE_URL = process.env.SITE_URL || 'https://konpuk.com';
+
+// Redirect old product ID URLs to new slug-based URLs (302)
+app.get('/products/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const mongoose = require('mongoose');
+    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send('Not found');
+    const product = await Product.findById(id).select('slug');
+    if (!product || !product.slug) return res.status(404).send('Not found');
+    return res.redirect(302, `${SITE_URL.replace(/\/$/, '')}/products/${product.slug}`);
+  } catch (err) {
+    console.warn('Redirect error', err && err.message);
+    return res.status(500).send('Server error');
+  }
+});
+
+// Sitemap and robots
+try {
+  const sitemapRoutes = require('./routes/sitemap.routes');
+  app.use('/', sitemapRoutes);
+} catch (err) {
+  console.warn('Sitemap routes not mounted:', err && err.message);
+}
+
+app.get('/robots.txt', (req, res) => {
+  const siteUrl = process.env.SITE_URL || 'https://konpuk.com';
+  const lines = [
+    'User-agent: *',
+    'Allow: /',
+    'Disallow: /admin',
+    'Disallow: /dashboard',
+    `Sitemap: ${siteUrl.replace(/\/$/, '')}/sitemap.xml`
+  ];
+  res.type('text/plain').send(lines.join('\n'));
+});
+
 app.use((req, res) => {
   res.status(404).json({ success: false, message: 'Endpoint not found' });
 });

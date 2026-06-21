@@ -35,7 +35,7 @@ const AppRoutes = () => (
     <Route path="/register" element={<RegisterPage />} />
     <Route path="/verify-email" element={<VerifyEmailPage />} />
     <Route path="/products" element={<ProductListPage />} />
-    <Route path="/products/:id" element={<ProductDetailPage />} />
+    <Route path="/products/:slug" element={<ProductDetailPage />} />
     <Route path="/post-product" element={<PostProductPage />} />
     <Route path="/profile" element={<ProfilePage />} />
     <Route path="/profile/:id" element={<ProfilePage />} />

@@ -180,7 +180,7 @@ const PostProductPage = () => {
         await uploadProductImages(product._id, images);
       }
 
-      setSavedProductId(product?._id || null);
+      setSavedProductId(product?.slug || product?._id || null);
       if (!isEditing) {
         setTitle('');
         setTitleKh('');

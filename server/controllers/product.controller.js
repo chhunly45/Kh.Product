@@ -30,6 +30,15 @@ const getProduct = async (req, res, next) => {
   }
 };
 
+const getProductBySlug = async (req, res, next) => {
+  try {
+    const product = await productService.getProductBySlug(req.params.slug);
+    res.json({ success: true, data: product });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const addProductView = async (req, res, next) => {
   try {
     const product = await productService.incrementProductViews(req.params.id);
@@ -55,6 +64,13 @@ const createProduct = async (req, res, next) => {
     const product = await productService.createProduct(req.user.id, payload);
     console.info('Product saved response:', product);
     res.status(201).json({ success: true, data: product });
+    // Clear sitemap cache if available
+    try {
+      const sitemapRoutes = require('../routes/sitemap.routes');
+      if (sitemapRoutes && typeof sitemapRoutes.clearCache === 'function') sitemapRoutes.clearCache();
+    } catch (e) {
+      // ignore
+    }
   } catch (error) {
     console.error('Create product error:', error);
     next(error);
@@ -65,6 +81,12 @@ const updateProduct = async (req, res, next) => {
   try {
     const product = await productService.updateProduct(req.params.id, req.user, req.body);
     res.json({ success: true, data: product });
+    try {
+      const sitemapRoutes = require('../routes/sitemap.routes');
+      if (sitemapRoutes && typeof sitemapRoutes.clearCache === 'function') sitemapRoutes.clearCache();
+    } catch (e) {
+      // ignore
+    }
   } catch (error) {
     next(error);
   }
@@ -74,6 +96,12 @@ const deleteProduct = async (req, res, next) => {
   try {
     await productService.deleteProduct(req.params.id, req.user);
     res.json({ success: true, message: 'Product deleted' });
+    try {
+      const sitemapRoutes = require('../routes/sitemap.routes');
+      if (sitemapRoutes && typeof sitemapRoutes.clearCache === 'function') sitemapRoutes.clearCache();
+    } catch (e) {
+      // ignore
+    }
   } catch (error) {
     next(error);
   }
@@ -82,6 +110,7 @@ const deleteProduct = async (req, res, next) => {
 module.exports = {
   listProducts,
   getProduct,
+  getProductBySlug,
   addProductView,
   listFeaturedProducts,
   createProduct,

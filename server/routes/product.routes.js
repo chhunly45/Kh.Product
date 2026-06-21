@@ -22,6 +22,7 @@ query('category').optional().trim().isString(),
 );
 
 router.get('/featured', validate, productController.listFeaturedProducts);
+router.get('/slug/:slug', validate, productController.getProductBySlug);
 router.get('/:id', param('id').isMongoId(), validate, productController.getProduct);
 router.post('/:id/views', param('id').isMongoId(), validate, productController.addProductView);
 

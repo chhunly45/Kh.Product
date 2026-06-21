@@ -107,6 +107,28 @@ const getProductById = async (productId) => {
   return product;
 };
 
+const getProductBySlug = async (slug) => {
+  const product = await Product.findOne({ slug })
+    .populate('seller', sellerPopulateFields)
+    .populate('category', 'name labelKh slug')
+    .populate('images');
+
+  if (!product || product.status === 'archived') {
+    const error = new Error('Product not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  if (!product.seller) {
+    const fallbackSeller = await findFallbackSeller(product);
+    if (fallbackSeller) {
+      product.seller = fallbackSeller;
+    }
+  }
+
+  return product;
+};
+
 const incrementProductViews = async (productId) => {
   const product = await Product.findByIdAndUpdate(
     productId,
@@ -279,6 +301,7 @@ const deleteProduct = async (productId, user) => {
 module.exports = {
   listProducts,
   getProductById,
+  getProductBySlug,
   incrementProductViews,
   getProductViews,
   getFeaturedProducts,

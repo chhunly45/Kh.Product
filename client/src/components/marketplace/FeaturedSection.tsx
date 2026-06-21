@@ -6,6 +6,7 @@ import { getCategoryLabel } from '../../utils/category';
 interface Product {
   _id?: string;
   id?: string;
+  slug?: string;
   title?: string;
   titleKh?: string;
   titleEn?: string;
@@ -45,7 +46,7 @@ const FeaturedSection = ({ title, description, products, viewAllLink = '/' }: Fe
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {products.map((product) => {
-            const id = product._id || product.id || 'unknown';
+            const id = product.slug || product._id || product.id || 'unknown';
             const categoryLabel = getCategoryLabel(product.category, 'General');
             const imageUrl = product.images?.[0]?.secureUrl || product.images?.[0]?.url || product.imageUrl || '';
             return (

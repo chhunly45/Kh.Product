@@ -1,7 +1,7 @@
 ﻿import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Phone, MessageCircle, ShieldCheck, ArrowUpRight, AlertTriangle, MapPin, CalendarDays, Heart } from 'lucide-react';
-import { getProductById, getProducts, trackProductView, updateProduct, deleteProduct } from '../services/product.api';
+import { getProductById, getProductBySlug, getProducts, trackProductView, updateProduct, deleteProduct } from '../services/product.api';
 import { formatViewsCount } from '../utils/views';
 import { getProfile } from '../services/auth.api';
 import { checkFavorite, addFavorite, removeFavorite } from '../services/favorites.api';
@@ -14,7 +14,7 @@ import SEO from '../components/SEO';
 import ProductCard from '../components/marketplace/ProductCard';
 
 const ProductDetailPage = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
   const [product, setProduct] = useState<any>(null);
   const [selectedImage, setSelectedImage] = useState<string>('');
   const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
@@ -67,17 +67,17 @@ const ProductDetailPage = () => {
 
   useEffect(() => {
     const loadProduct = async () => {
-      if (!id) return;
+      if (!slug) return;
       setStatus('Loading product details...');
       try {
-        const data = await getProductById(id);
+        const data = await getProductBySlug(slug as string);
         setProduct(data);
         setSelectedImage(data.images?.[0]?.secureUrl || data.images?.[0]?.url || '');
         setIsFavorite(false);
 
         if (isAuthenticated) {
           try {
-            const favorite = await checkFavorite(id);
+            const favorite = await checkFavorite(data._id);
             setIsFavorite(Boolean(favorite));
           } catch {
             setIsFavorite(false);
@@ -96,27 +96,27 @@ const ProductDetailPage = () => {
       }
     };
     loadProduct();
-  }, [id, isAuthenticated]);
+  }, [slug, isAuthenticated]);
 
   useEffect(() => {
     const trackView = async () => {
-      if (!id || hasTrackedView(id)) return;
+      if (!product?._id || hasTrackedView(product._id)) return;
       try {
-        const result = await trackProductView(id);
+        const result = await trackProductView(product._id);
         if (result?.viewsCount != null) {
           setProduct((current: any) => current ? { ...current, viewsCount: result.viewsCount } : current);
         }
-        markViewTracked(id);
+        markViewTracked(product._id);
       } catch (error) {
         console.error('Unable to track product view:', error);
       }
     };
     trackView();
-  }, [id]);
+  }, [product]);
 
   useEffect(() => {
     const loadRelated = async () => {
-      if (!product?.category?._id || !id) return;
+      if (!product?.category?._id) return;
       setRelatedLoading(true);
       try {
         const response = await getProducts({ category: product.category._id, perPage: '8', sort: 'newest' });
@@ -131,7 +131,7 @@ const ProductDetailPage = () => {
       }
     };
     loadRelated();
-  }, [product, id]);
+  }, [product]);
 
   const formatPrice = (price: number | string) => {
     return {
@@ -182,7 +182,7 @@ const ProductDetailPage = () => {
   const startChatWithSeller = async () => {
     if (!product) return;
     if (!isAuthenticated) {
-      navigate(`/login?redirectTo=/products/${product._id}`);
+      navigate(`/login?redirectTo=/products/${product.slug || product._id}`);
       return;
     }
 
@@ -218,7 +218,7 @@ const ProductDetailPage = () => {
   
   const seoTitle = `${displayTitle} for Sale in ${product.location || 'Cambodia'}`;
   const seoDescription = getSeoDescription(product);
-  const canonicalUrl = `${window.location.origin}/products/${product._id}`;
+  const canonicalUrl = `${window.location.origin}/products/${product.slug || product._id}`;
   const seoImage = product.images?.[0]?.secureUrl || product.images?.[0]?.url || '/no-image.png';
   const robotsTag = product.status === 'deleted' ? 'noindex' : 'index, follow';
 
@@ -245,10 +245,17 @@ const ProductDetailPage = () => {
           offers: {
             '@type': 'Offer',
             url: canonicalUrl,
-            priceCurrency: 'USD',
+            priceCurrency: product.currency || 'KHR',
             price: product.price,
             availability: product.status === 'published' ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock'
-          }
+          },
+          seller: product.seller
+            ? {
+                '@type': product.seller?.companyName ? 'Organization' : 'Person',
+                name: product.seller?.companyName || product.seller?.displayName || product.seller?.name || product.seller?.email || 'Konpuk Seller',
+                url: product.seller?.profileUrl || undefined
+              }
+            : undefined
         }}
       />
 
@@ -267,19 +274,19 @@ const ProductDetailPage = () => {
                 <button
                   type="button"
                   onClick={async () => {
-                    if (!id) return;
-                    try {
-                      if (isFavorite) {
-                        await removeFavorite(id);
-                        setIsFavorite(false);
-                      } else {
-                        await addFavorite(id);
-                        setIsFavorite(true);
+                      if (!product?._id) return;
+                      try {
+                        if (isFavorite) {
+                          await removeFavorite(product._id);
+                          setIsFavorite(false);
+                        } else {
+                          await addFavorite(product._id);
+                          setIsFavorite(true);
+                        }
+                      } catch (err) {
+                        console.error('Favorite toggle failed:', err);
                       }
-                    } catch (err) {
-                      console.error('Favorite toggle failed:', err);
-                    }
-                  }}
+                    }}
                   className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${isFavorite ? 'bg-red-500 text-white hover:bg-red-600' : 'bg-background text-text-primary hover:bg-background'}`}
                 >
                   <Heart className="w-4 h-4" />

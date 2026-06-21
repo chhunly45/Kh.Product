@@ -8,14 +8,14 @@ import ProductCard from '../components/marketplace/ProductCard';
 import { getCategoryLabel } from '../utils/category';
 
 const categories = [
-  { name: 'ម្ហូប', icon: '🍜', slug: 'food', count: 125 },
-  { name: 'ឈានឈប់', icon: '👕', slug: 'clothing', count: 89 },
+  { name: 'ម្ហូបអាហារ', icon: '🍜', slug: 'food', count: 125 },
+  { name: 'សំលៀកបំពាក់', icon: '👕', slug: 'clothing', count: 89 },
   { name: 'ឯកសារ', icon: '📱', slug: 'electronics', count: 234 },
-  { name: 'វាង', icon: '🏠', slug: 'home', count: 156 },
-  { name: 'ពលុង', icon: '⚽', slug: 'sports', count: 42 },
-  { name: 'សេង', icon: '💄', slug: 'beauty', count: 178 },
+  { name: 'អចលនទ្រព្យ', icon: '🏠', slug: 'home', count: 156 },
+  { name: 'កីឡា', icon: '⚽', slug: 'sports', count: 42 },
+  { name: 'គ្រឿងសំអាង', icon: '💄', slug: 'beauty', count: 178 },
   { name: 'សៀវភៅ', icon: '📚', slug: 'books', count: 95 },
-  { name: 'ឥលាស', icon: '🚗', slug: 'auto', count: 67 },
+  { name: 'រថយន្ត', icon: '🚗', slug: 'auto', count: 67 },
 ];
 
 const verifiedSellers = [
@@ -68,7 +68,7 @@ const HomePage = () => {
     });
 
     return {
-      id: product._id,
+      id: product.slug || product._id,
       title: getSafeString(product.title),
       titleKh: getSafeString(product.titleKh),
       titleEn: getSafeString(product.titleEn),
@@ -128,9 +128,9 @@ const HomePage = () => {
         }}></div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
-          <div className="max-w-2xl">
-            <h1 className="text-4xl sm:text-5xl font-extrabold leading-[1.2] tracking-tight">
-              ទិញ និង លក់<br />ទំនិញទូទាំងកម្ពុជា
+          <div className="max-w-full sm:max-w-2xl">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold leading-[1.1] tracking-tight whitespace-nowrap">
+              ទិញ និង លក់ ទំនិញទូទាំងកម្ពុជា
             </h1>
             <p className="mt-2 text-sm sm:text-base text-white/95 leading-relaxed">
               ស្វែងរកផលិតផល និងអ្នកលក់ដែលអាចទុកចិត្តបានទូទាំងប្រទេស

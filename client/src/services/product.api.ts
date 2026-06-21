@@ -47,6 +47,11 @@ export const getProductById = async (productId: string) => {
   return response.data.data;
 };
 
+export const getProductBySlug = async (slug: string) => {
+  const response = await api.get(`/products/slug/${encodeURIComponent(slug)}`);
+  return response.data.data;
+};
+
 export const deleteProductImage = async (imageId: string) => {
   const response = await api.delete(`/upload/${imageId}`);
   return response.data;

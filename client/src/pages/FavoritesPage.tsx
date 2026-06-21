@@ -72,7 +72,7 @@ const FavoritesPage = () => {
                   <Heart className="w-5 h-5" />
                 </button>
                 <ProductCard
-                  id={product._id}
+                  id={product.slug || product._id}
                   title={product.title}
                   titleKh={product.titleKh}
                   titleEn={product.titleEn}
