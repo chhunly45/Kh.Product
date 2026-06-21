@@ -26,6 +26,8 @@ router.use('/favorites', favoriteRoutes);
 router.use('/upload', uploadRoutes);
 router.use('/banners', bannerRoutes);
 router.use('/chats', chatRoutes);
+// Expose legacy/semantic route names for client compatibility
+router.use('/conversations', chatRoutes);
 router.use('/reports', reportRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/reviews', reviewRoutes);
