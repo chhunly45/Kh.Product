@@ -1,4 +1,22 @@
 const authService = require('../services/auth.service');
+const shouldDebugCsrf = process.env.DEBUG_CSRF === 'true';
+
+const logAuthDebug = (req, res, label, extra = {}) => {
+  if (!shouldDebugCsrf) return;
+  console.log('[AUTH DEBUG]', label, {
+    path: req.path,
+    method: req.method,
+    userAgent: req.headers['user-agent'],
+    origin: req.headers.origin,
+    referer: req.headers.referer,
+    hasXcsrfHeader: !!req.headers['x-csrf-token'],
+    hasXxsrfHeader: !!req.headers['x-xsrf-token'],
+    hasXsrfCookie: !!(req.cookies && req.cookies['XSRF-TOKEN']),
+    hasCsrfCookie: !!(req.cookies && req.cookies._csrf),
+    statusCode: res.statusCode,
+    ...extra
+  });
+};
 
 const register = async (req, res, next) => {
   try {
@@ -11,23 +29,29 @@ const register = async (req, res, next) => {
 };
 
 const login = async (req, res, next) => {
+  logAuthDebug(req, res, 'auth controller enter', { event: 'login_enter' });
   try {
     const { identifier, password, useOtp } = req.body;
     // Default to OTP for additional security (can be disabled by passing useOtp: false)
     const useOtpFlag = useOtp !== false;
     const result = await authService.loginUser(identifier, password, { useOtp: useOtpFlag });
     res.json({ success: true, data: result });
+    logAuthDebug(req, res, 'auth controller exit', { event: 'login_exit', resultRequiresOtp: !!result.requiresOtp });
   } catch (error) {
+    logAuthDebug(req, res, 'auth controller error', { event: 'login_error', errorMessage: error.message });
     next(error);
   }
 };
 
 const verifyLoginOtp = async (req, res, next) => {
+  logAuthDebug(req, res, 'auth controller enter', { event: 'verify_login_otp_enter' });
   try {
     const { identifier, code } = req.body;
     const result = await authService.verifyLoginOtp(identifier, code);
     res.json({ success: true, data: result });
+    logAuthDebug(req, res, 'auth controller exit', { event: 'verify_login_otp_exit' });
   } catch (error) {
+    logAuthDebug(req, res, 'auth controller error', { event: 'verify_login_otp_error', errorMessage: error.message });
     next(error);
   }
 };
