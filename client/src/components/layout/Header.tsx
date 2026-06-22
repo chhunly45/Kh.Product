@@ -1,10 +1,11 @@
 ﻿import { useEffect, useState, FormEvent, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { UploadCloud, User, Globe, Menu, X } from 'lucide-react';
+import { UploadCloud, User, Globe, Menu, X, Bell } from 'lucide-react';
 import api from '../../services/api';
 import { getFavoritesCount } from '../../services/favorites.api';
-import { getNotificationsCount } from '../../services/notification.api';
+import { getNotifications, getNotificationsCount } from '../../services/notification.api';
 import { useAuth } from '../../hooks/useAuth';
+import useSocket from '../../hooks/useSocket';
 
 interface CategoryItem {
   _id: string;
@@ -23,8 +24,35 @@ const Header = () => {
   const mobileMenuRef = useRef<HTMLDivElement | null>(null);
   const [favoriteCount, setFavoriteCount] = useState(0);
   const [notificationCount, setNotificationCount] = useState(0);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [recentNotifications, setRecentNotifications] = useState<any[]>([]);
   const { user, logout } = useAuth();
+  const { socket } = useSocket();
   const navigate = useNavigate();
+  const notificationsButtonRef = useRef<HTMLButtonElement | null>(null);
+  const notificationsMenuRef = useRef<HTMLDivElement | null>(null);
+
+  const fetchNotificationsCount = async () => {
+    const token = localStorage.getItem('authToken');
+    if (!token) return;
+    try {
+      const count = await getNotificationsCount();
+      setNotificationCount(count);
+    } catch (error) {
+      setNotificationCount(0);
+    }
+  };
+
+  const fetchRecentNotifications = async () => {
+    const token = localStorage.getItem('authToken');
+    if (!token) return;
+    try {
+      const data = await getNotifications();
+      setRecentNotifications(data || []);
+    } catch (error) {
+      setRecentNotifications([]);
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -34,6 +62,13 @@ const Header = () => {
         !categoriesButtonRef.current?.contains(e.target as Node)
       ) {
         setCategoriesOpen(false);
+      }
+      if (
+        notificationsMenuRef.current &&
+        !notificationsMenuRef.current.contains(e.target as Node) &&
+        !notificationsButtonRef.current?.contains(e.target as Node)
+      ) {
+        setNotificationsOpen(false);
       }
       if (
         mobileMenuRef.current &&
@@ -73,21 +108,6 @@ const Header = () => {
       }
     };
 
-    const fetchNotificationsCount = async () => {
-      const token = localStorage.getItem('authToken');
-      if (!token) return;
-      try {
-        const count = await getNotificationsCount();
-        setNotificationCount(count);
-      } catch (error) {
-        setNotificationCount(0);
-      }
-    };
-
-    const handleNotificationsUpdated = () => {
-      fetchNotificationsCount();
-    };
-
     fetchCategories();
     if (user) {
       fetchFavoriteCount();
@@ -97,11 +117,40 @@ const Header = () => {
       setNotificationCount(0);
     }
 
-    window.addEventListener('notificationsUpdated', handleNotificationsUpdated);
-    return () => {
-      window.removeEventListener('notificationsUpdated', handleNotificationsUpdated);
-    };
+    return undefined;
   }, [user]);
+
+  useEffect(() => {
+    const handleNotificationsUpdated = () => {
+      fetchNotificationsCount();
+      if (notificationsOpen) {
+        fetchRecentNotifications();
+      }
+    };
+
+    window.addEventListener('notificationsUpdated', handleNotificationsUpdated);
+    return () => window.removeEventListener('notificationsUpdated', handleNotificationsUpdated);
+  }, [notificationsOpen]);
+
+  useEffect(() => {
+    if (!user || !socket) return;
+
+    const handleNewNotification = async (notification: any) => {
+      if (typeof notification?.unreadCount === 'number') {
+        setNotificationCount(notification.unreadCount);
+      } else {
+        setNotificationCount((current) => current + 1);
+      }
+      if (notificationsOpen) {
+        await fetchRecentNotifications();
+      }
+    };
+
+    socket.on('new_notification', handleNewNotification);
+    return () => {
+      socket.off('new_notification', handleNewNotification);
+    };
+  }, [socket, user, notificationsOpen]);
 
   const handleSearch = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -256,6 +305,73 @@ const Header = () => {
                 <Link to="/login" className="inline-flex items-center gap-2 rounded-3xl border border-muted bg-white px-4 py-2 text-sm font-medium text-text-secondary hover:bg-white/90 transition">ចូលគណនី</Link>
                 <Link to="/register" className="inline-flex items-center gap-2 rounded-3xl bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-hover transition">បង្កើតគណនី</Link>
               </>
+            )}
+
+            {user && (
+              <div className="relative">
+                <button
+                  ref={notificationsButtonRef}
+                  type="button"
+                  onClick={async () => {
+                      setNotificationsOpen((current) => {
+                        const nextOpen = !current;
+                        if (nextOpen) {
+                          fetchRecentNotifications();
+                        }
+                        return nextOpen;
+                      });
+                  }}
+                  className="relative inline-flex h-10 w-10 items-center justify-center rounded-3xl border border-muted bg-white text-text-secondary transition hover:bg-white/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  aria-haspopup="menu"
+                  aria-expanded={notificationsOpen}
+                  title="Notifications"
+                >
+                  <Bell className="w-5 h-5" />
+                  {notificationCount > 0 && (
+                    <span className="absolute -right-1 -top-1 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-rose-600 px-1.5 text-[0.625rem] font-semibold text-white">
+                      {notificationCount > 9 ? '9+' : notificationCount}
+                    </span>
+                  )}
+                </button>
+                {notificationsOpen && (
+                  <div
+                    ref={notificationsMenuRef}
+                    className="absolute right-0 mt-2 w-80 max-w-full rounded-3xl border border-muted bg-white p-3 shadow-xl z-50"
+                    role="menu"
+                    aria-label="Notifications"
+                  >
+                    <div className="flex items-center justify-between gap-3 px-2 pb-2">
+                      <div>
+                        <p className="text-sm font-semibold text-text-primary">Notifications</p>
+                        <p className="text-xs text-muted">Recent updates for your account</p>
+                      </div>
+                      <Link to="/notifications" onClick={() => setNotificationsOpen(false)} className="text-xs font-semibold text-primary hover:text-primary-hover">View all</Link>
+                    </div>
+                    <div className="space-y-2 max-h-72 overflow-y-auto pt-2">
+                      {recentNotifications.length ? (
+                        recentNotifications.slice(0, 5).map((notification) => (
+                          <Link
+                            key={notification._id}
+                            to={notification.link || '/notifications'}
+                            onClick={() => setNotificationsOpen(false)}
+                            className={`block rounded-3xl border p-3 text-sm transition ${notification.read ? 'border-muted bg-white' : 'border-primary/20 bg-primary/5 hover:bg-primary/10'}`}
+                          >
+                            <div className="flex items-center justify-between gap-2">
+                              <p className="font-medium text-text-primary line-clamp-1">{notification.title}</p>
+                              {!notification.read && <span className="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-primary text-[0.65rem] font-semibold text-white">new</span>}
+                            </div>
+                            <p className="mt-1 text-xs text-text-secondary line-clamp-2">{notification.message}</p>
+                          </Link>
+                        ))
+                      ) : (
+                        <div className="rounded-3xl border border-muted bg-background p-4 text-sm text-text-secondary">
+                          No new notifications yet.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
 
             <button className="inline-flex items-center gap-1 p-2 rounded text-sm text-text-secondary" type="button">

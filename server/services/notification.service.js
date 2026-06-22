@@ -1,5 +1,11 @@
 const { User } = require('../models');
 
+let notificationIo = null;
+
+const setIo = (io) => {
+  notificationIo = io;
+};
+
 const addNotification = async (userId, notification) => {
   const user = await User.findById(userId);
   if (!user) {
@@ -24,17 +30,37 @@ const addNotification = async (userId, notification) => {
   }
 
   await user.save();
+
+  if (notificationIo) {
+    notificationIo.to(`user:${userId}`).emit('new_notification', nextNotification.toObject ? nextNotification.toObject() : nextNotification);
+  }
+
   return nextNotification;
 };
 
-const getNotifications = async (userId) => {
+const getNotifications = async (userId, page = 1, limit = 25) => {
   const user = await User.findById(userId).select('notifications');
   if (!user) {
     const error = new Error('User not found');
     error.statusCode = 404;
     throw error;
   }
-  return (user.notifications || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+  const notifications = (user.notifications || []).slice().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  const pageNumber = Number(page) >= 1 ? Number(page) : 1;
+  const pageLimit = Number(limit) >= 1 ? Math.min(Number(limit), 100) : 25;
+  const startIndex = (pageNumber - 1) * pageLimit;
+  const paginated = notifications.slice(startIndex, startIndex + pageLimit);
+
+  return {
+    items: paginated,
+    meta: {
+      total: notifications.length,
+      page: pageNumber,
+      limit: pageLimit,
+      pages: Math.max(1, Math.ceil(notifications.length / pageLimit))
+    }
+  };
 };
 
 const getUnreadCount = async (userId) => {
@@ -67,9 +93,37 @@ const markAsRead = async (userId, notificationId) => {
   return notification;
 };
 
+const markAllAsRead = async (userId) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    const error = new Error('User not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  let updated = false;
+  (user.notifications || []).forEach((notification) => {
+    if (!notification.read) {
+      notification.read = true;
+      updated = true;
+    }
+  });
+
+  if (updated) {
+    await user.save();
+  }
+
+  return {
+    total: (user.notifications || []).length,
+    unreadCount: (user.notifications || []).filter((n) => !n.read).length
+  };
+};
+
 module.exports = {
+  setIo,
   addNotification,
   getNotifications,
   getUnreadCount,
-  markAsRead
+  markAsRead,
+  markAllAsRead
 };

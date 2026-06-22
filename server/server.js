@@ -10,6 +10,7 @@ const categoriesSeed = require('./config/categories');
 const { User, Chat, Category, Product } = require('./models');
 const { repairProductTextIndex } = require('./scripts/repair-product-text-index');
 const chatService = require('./services/chat.service');
+const notificationService = require('./services/notification.service');
 
 const onlineUsers = new Map();
 
@@ -64,6 +65,8 @@ io.use(async (socket, next) => {
   }
 });
 
+notificationService.setIo(io);
+
 io.on('connection', (socket) => {
   const userId = socket.user.id.toString();
   const socketIds = onlineUsers.get(userId) || new Set();
@@ -80,7 +83,7 @@ io.on('connection', (socket) => {
   socket.on('send_message', async ({ chatId, content }) => {
     try {
       const message = await chatService.sendMessage(chatId, socket.user.id, content);
-      const chat = await Chat.findById(chatId);
+      const chat = await Chat.findById(chatId).populate('product', 'title');
       const recipientId = getRecipientId(chat, socket.user.id);
       const payload = {
         ...message.toObject(),
@@ -91,6 +94,12 @@ io.on('connection', (socket) => {
       };
       io.to(`chat:${chatId}`).emit('message_received', payload);
       if (recipientId) {
+        await notificationService.addNotification(recipientId, {
+          type: 'chat_message',
+          title: 'New message',
+          message: `${chat?.product?.title ? `Message about "${chat.product.title}"` : 'You have a new message'}: ${String(message.content).slice(0, 120)}`,
+          link: `/messages/${chatId}`
+        });
         io.to(`user:${recipientId}`).emit('new_message', {
           chatId,
           message: payload,
