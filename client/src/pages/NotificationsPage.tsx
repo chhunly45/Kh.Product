@@ -13,9 +13,14 @@ const NotificationsPage = () => {
       setLoading(true);
       try {
         const data = await getNotifications();
-        setNotifications(data || []);
+        // Ensure notifications is always an array
+        const notificationItems = Array.isArray(data)
+          ? data
+          : data?.items || [];
+        setNotifications(notificationItems);
       } catch (error) {
         setMessage('Unable to load notifications.');
+        setNotifications([]);
       } finally {
         setLoading(false);
       }

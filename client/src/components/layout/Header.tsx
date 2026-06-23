@@ -48,7 +48,11 @@ const Header = () => {
     if (!token) return;
     try {
       const data = await getNotifications();
-      setRecentNotifications(data || []);
+      // Ensure recentNotifications is always an array
+      const notificationItems = Array.isArray(data)
+        ? data
+        : data?.items || [];
+      setRecentNotifications(notificationItems);
     } catch (error) {
       setRecentNotifications([]);
     }

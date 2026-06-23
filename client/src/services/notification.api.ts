@@ -2,7 +2,16 @@ import api from './api';
 
 export const getNotifications = async () => {
   const response = await api.get('/notifications');
-  return response.data.data;
+  const data = response.data.data;
+  
+  // Handle both array and object response shapes
+  // Backend returns { items: [], meta: {...} }
+  // But also support direct array for backward compatibility
+  const notificationItems = Array.isArray(data)
+    ? data
+    : data?.items || [];
+  
+  return notificationItems;
 };
 
 export const getNotificationsCount = async () => {
