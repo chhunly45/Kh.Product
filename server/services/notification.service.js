@@ -1,4 +1,6 @@
-const { User } = require('../models');
+const { User, Product } = require('../models');
+
+const PRODUCT_ID_LINK_RE = /^\/products\/([0-9a-fA-F]{24})$/;
 
 let notificationIo = null;
 
@@ -51,6 +53,36 @@ const getNotifications = async (userId, page = 1, limit = 25) => {
   const pageLimit = Number(limit) >= 1 ? Math.min(Number(limit), 100) : 25;
   const startIndex = (pageNumber - 1) * pageLimit;
   const paginated = notifications.slice(startIndex, startIndex + pageLimit);
+
+  const oldProductIds = [];
+  paginated.forEach((notification) => {
+    if (typeof notification.link === 'string') {
+      const match = PRODUCT_ID_LINK_RE.exec(notification.link);
+      if (match) {
+        oldProductIds.push(match[1]);
+      }
+    }
+  });
+
+  if (oldProductIds.length > 0) {
+    const products = await Product.find({ _id: { $in: oldProductIds } }).select('slug');
+    const slugById = products.reduce((map, product) => {
+      map[product._id.toString()] = product.slug;
+      return map;
+    }, {});
+
+    paginated.forEach((notification) => {
+      if (typeof notification.link === 'string') {
+        const match = PRODUCT_ID_LINK_RE.exec(notification.link);
+        if (match) {
+          const slug = slugById[match[1]];
+          if (slug) {
+            notification.link = `/products/${slug}`;
+          }
+        }
+      }
+    });
+  }
 
   return {
     items: paginated,
