@@ -6,6 +6,7 @@ import { ArrowRight, ChevronRight } from 'lucide-react';
 import { getProducts, getFeaturedProducts } from '../services/product.api';
 import ProductCard from '../components/marketplace/ProductCard';
 import { getCategoryLabel } from '../utils/category';
+import { getProductCoverImageUrl } from '../utils/product';
 
 const categories = [
   { name: 'ម្ហូបអាហារ', icon: '🍜', slug: 'food', count: 125 },
@@ -55,17 +56,7 @@ const HomePage = () => {
   };
 
   const normalizeProductCardProps = (product: any) => {
-    const normalizedImage =
-      product.images?.[0]?.secureUrl ||
-      product.images?.[0]?.url ||
-      product.imageUrl;
-
-    console.log('NORMALIZE PRODUCT', {
-      title: product.title,
-      images: product.images,
-      imageUrl: product.imageUrl,
-      normalizedImage,
-    });
+    const normalizedImage = getProductCoverImageUrl(product, product.imageUrl || '');
 
     return {
       id: product.slug || product._id,

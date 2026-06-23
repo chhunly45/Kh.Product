@@ -1,4 +1,5 @@
 const { Product, Category, User, Image } = require('../models');
+const mongoose = require('mongoose');
 const notificationService = require('./notification.service');
 
 const sellerPopulateFields = 'displayName profileImageUrl avatar email phoneNumber sellerVerificationStatus';
@@ -23,9 +24,7 @@ const listProducts = async (filters) => {
   const query = { status: 'published' };
   const locationFilters = [];
 
-const mongoose = require('mongoose');
-
-if (filters.category) {
+  if (filters.category) {
   if (mongoose.Types.ObjectId.isValid(filters.category)) {
     query.category = filters.category;
   } else {
@@ -75,6 +74,7 @@ if (filters.category) {
       .populate('seller', sellerPopulateFields)
       .populate('category', 'name labelKh slug')
       .populate('images')
+      .populate('coverImage')
       .sort(sortBy)
       .skip(skip)
       .limit(limit)
@@ -89,7 +89,8 @@ const getProductById = async (productId) => {
   const product = await Product.findById(productId)
     .populate('seller', sellerPopulateFields)
     .populate('category', 'name labelKh slug')
-    .populate('images');
+    .populate('images')
+    .populate('coverImage');
 
   if (!product || product.status === 'archived') {
     const error = new Error('Product not found');
@@ -111,7 +112,8 @@ const getProductBySlug = async (slug) => {
   const product = await Product.findOne({ slug })
     .populate('seller', sellerPopulateFields)
     .populate('category', 'name labelKh slug')
-    .populate('images');
+    .populate('images')
+    .populate('coverImage');
 
   if (!product || product.status === 'archived') {
     const error = new Error('Product not found');
@@ -161,6 +163,7 @@ const getFeaturedProducts = async (filters = {}) => {
     .populate('seller', sellerPopulateFields)
     .populate('category', 'name labelKh slug')
     .populate('images')
+    .populate('coverImage')
     .sort(featuredCount > 0 ? { featuredAt: -1, createdAt: -1 } : { createdAt: -1 })
     .skip(skip)
     .limit(limit)
@@ -225,6 +228,7 @@ const createProduct = async (sellerId, payload) => {
     location: payload.location,
     category: categoryId,
     tags: Array.isArray(payload.tags) ? payload.tags : [],
+    coverImage: payload.coverImage && mongoose.Types.ObjectId.isValid(payload.coverImage) ? payload.coverImage : null,
     metaTitle: payload.metaTitle || fallbackTitle,
     metaDescription: payload.metaDescription || payload.description,
     extraAttributes: payload.extraAttributes || {}
@@ -251,7 +255,7 @@ const updateProduct = async (productId, user, updates) => {
   const previousStatus = product.status;
 
   Object.keys(updates).forEach((key) => {
-    if (['title', 'titleKh', 'titleEn', 'description', 'price', 'condition', 'location', 'status', 'category', 'tags', 'metaTitle', 'metaDescription', 'extraAttributes'].includes(key)) {
+    if (['title', 'titleKh', 'titleEn', 'description', 'price', 'condition', 'location', 'status', 'category', 'tags', 'metaTitle', 'metaDescription', 'extraAttributes', 'coverImage'].includes(key)) {
       product[key] = updates[key];
     }
   });

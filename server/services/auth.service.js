@@ -99,7 +99,7 @@ const registerUser = async ({ email, password, displayName, phoneNumber, locatio
   }
 
   if (!validatePassword(password)) {
-    const error = new Error('Password does not meet complexity requirements');
+    const error = new Error('Password must be at least 8 characters');
     error.statusCode = 400;
     throw error;
   }
@@ -781,7 +781,7 @@ const resetPassword = async (identifier, code, newPassword) => {
   }
 
   if (!validatePassword(newPassword)) {
-    const error = new Error('Password does not meet complexity requirements');
+    const error = new Error('Password must be at least 8 characters');
     error.statusCode = 400;
     throw error;
   }
@@ -962,7 +962,7 @@ const changePassword = async (userId, currentPassword, newPassword) => {
   }
 
   if (!validatePassword(newPassword)) {
-    const error = new Error('New password does not meet complexity requirements');
+    const error = new Error('New password must be at least 8 characters');
     error.statusCode = 400;
     throw error;
   }

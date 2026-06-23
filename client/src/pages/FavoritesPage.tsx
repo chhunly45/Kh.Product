@@ -2,6 +2,7 @@
 import { Link } from 'react-router-dom';
 import { Heart } from 'lucide-react';
 import ProductCard from '../components/marketplace/ProductCard';
+import { getProductCoverImageUrl } from '../utils/product';
 import { getFavorites, removeFavorite } from '../services/favorites.api';
 
 const FavoritesPage = () => {
@@ -79,7 +80,7 @@ const FavoritesPage = () => {
                   price={product.price}
                   location={product.location}
                   category={product.category?.labelKh || product.category?.name}
-                  imageUrl={product.images?.[0]?.secureUrl || product.images?.[0]?.url || product.imageUrl || ''}
+                  imageUrl={getProductCoverImageUrl(product, product.imageUrl || '')}
                   featured={product.featured || product.isFeatured}
                   seller={product.seller}
                 />

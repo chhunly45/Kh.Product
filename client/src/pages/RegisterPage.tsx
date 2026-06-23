@@ -1,6 +1,7 @@
 ﻿import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { getPasswordStrength, getPasswordStrengthLabel } from '../utils/password';
 
 const safeImportMetaEnv = () => {
   try {
@@ -58,8 +59,8 @@ const RegisterPage = () => {
         setLoading(false);
         return;
       }
-      if (!password || password.length < 6) {
-        setError('Password must be at least 6 characters');
+      if (!password || password.length < 8) {
+        setError('Password must be at least 8 characters');
         setLoading(false);
         return;
       }
@@ -184,6 +185,19 @@ const RegisterPage = () => {
                 className="mt-2 w-full rounded-3xl border border-muted bg-background px-4 py-3 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
                 disabled={loading}
               />
+              <p className="mt-2 text-sm text-muted">ប្រើយ៉ាងហោចណាស់ 8 តួ។ ការបន្ថែមលេខ និងសញ្ញាពិសេសនឹងធ្វើឱ្យលេខសម្ងាត់កាន់តែមានសុវត្ថិភាព។</p>
+              {getPasswordStrength(formData.password) && (
+                <p className="mt-1 text-sm">
+                  កម្លាំងលេខសម្ងាត់:{' '}
+                  <span className={
+                    getPasswordStrength(formData.password) === 'Strong'
+                      ? 'text-emerald-600'
+                      : getPasswordStrength(formData.password) === 'Medium'
+                      ? 'text-amber-600'
+                      : 'text-rose-600'
+                  }>{getPasswordStrengthLabel(getPasswordStrength(formData.password))}</span>
+                </p>
+              )}
             </label>
             <label className="block">
               <span className="text-sm font-medium text-text-secondary">Confirm Password</span>

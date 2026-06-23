@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import ProductCard from './ProductCard';
 import { ArrowRight } from 'lucide-react';
 import { getCategoryLabel } from '../../utils/category';
+import { getProductCoverImageUrl } from '../../utils/product';
 
 interface Product {
   _id?: string;
@@ -48,7 +49,7 @@ const FeaturedSection = ({ title, description, products, viewAllLink = '/' }: Fe
           {products.map((product) => {
             const id = product.slug || product._id || product.id || 'unknown';
             const categoryLabel = getCategoryLabel(product.category, 'General');
-            const imageUrl = product.images?.[0]?.secureUrl || product.images?.[0]?.url || product.imageUrl || '';
+            const imageUrl = getProductCoverImageUrl(product, product.imageUrl || '');
             return (
               <ProductCard
                 key={id}

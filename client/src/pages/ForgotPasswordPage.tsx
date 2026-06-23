@@ -1,6 +1,7 @@
 ﻿import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { requestPasswordReset, resetPassword, resendPasswordResetCode } from '../services/auth.api';
+import { getPasswordStrength, getPasswordStrengthLabel } from '../utils/password';
 
 const ForgotPasswordPage = () => {
   const navigate = useNavigate();
@@ -72,8 +73,8 @@ const ForgotPasswordPage = () => {
         setError('Please enter the 6-digit reset code.');
         return;
       }
-      if (!password || password.length < 6) {
-        setError('Password must be at least 6 characters.');
+      if (!password || password.length < 8) {
+        setError('Password must be at least 8 characters.');
         return;
       }
       if (password !== confirmPassword) {
@@ -193,6 +194,19 @@ const ForgotPasswordPage = () => {
                   className="mt-2 w-full rounded-3xl border border-muted bg-background px-4 py-3 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
                   disabled={loading}
                 />
+                <p className="mt-2 text-sm text-muted">ប្រើយ៉ាងហោចណាស់ 8 តួ។ ការបន្ថែមលេខ និងសញ្ញាពិសេសនឹងធ្វើឱ្យលេខសម្ងាត់កាន់តែមានសុវត្ថិភាព។</p>
+                {getPasswordStrength(password) && (
+                  <p className="mt-1 text-sm">
+                    កម្លាំងលេខសម្ងាត់:{' '}
+                    <span className={
+                      getPasswordStrength(password) === 'Strong'
+                        ? 'text-emerald-600'
+                        : getPasswordStrength(password) === 'Medium'
+                        ? 'text-amber-600'
+                        : 'text-rose-600'
+                    }>{getPasswordStrengthLabel(getPasswordStrength(password))}</span>
+                  </p>
+                )}
               </label>
               <label className="block">
                 <span className="text-sm font-medium text-text-secondary">Confirm Password</span>

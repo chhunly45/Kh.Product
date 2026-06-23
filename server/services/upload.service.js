@@ -32,7 +32,15 @@ const createImages = async (userId, files, productId) => {
     await Product.findById(productId).orFail();
   }
 
-  const createdImages = await Promise.all(files.map(async (file) => {
+  let shouldSetCover = false;
+  if (productId) {
+    const product = await Product.findById(productId).select('coverImage').lean();
+    shouldSetCover = !product?.coverImage;
+  }
+
+  const createdImages = [];
+
+  for (const file of files) {
     try {
       const result = await uploadStream(file.buffer, {
         folder: `marketplace/${productId || 'tmp'}`,
@@ -54,10 +62,15 @@ const createImages = async (userId, files, productId) => {
       });
 
       if (productId) {
-        await Product.findByIdAndUpdate(productId, { $push: { images: image._id } });
+        const update = { $push: { images: image._id } };
+        if (shouldSetCover) {
+          update.$set = { coverImage: image._id };
+          shouldSetCover = false;
+        }
+        await Product.findByIdAndUpdate(productId, update);
       }
 
-      return image;
+      createdImages.push(image);
     } catch (uploadError) {
       console.error('Failed to upload single image:', {
         file: file.originalname,
@@ -65,7 +78,7 @@ const createImages = async (userId, files, productId) => {
       });
       throw uploadError;
     }
-  }));
+  }
 
   return createdImages;
 };
@@ -91,7 +104,13 @@ const deleteImage = async (user, imageId) => {
   }
 
   if (image.product) {
-    await Product.findByIdAndUpdate(image.product, { $pull: { images: image._id } });
+    const product = await Product.findById(image.product).select('coverImage').lean();
+    const update = { $pull: { images: image._id } };
+    if (product?.coverImage?.toString() === image._id.toString()) {
+      const replacementImage = await Image.findOne({ product: image.product, _id: { $ne: image._id } }).sort({ sortOrder: 1 }).lean();
+      update.$set = { coverImage: replacementImage ? replacementImage._id : null };
+    }
+    await Product.findByIdAndUpdate(image.product, update);
   }
 
   await image.deleteOne();

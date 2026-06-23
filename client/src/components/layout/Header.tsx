@@ -291,12 +291,28 @@ const Header = () => {
                 <button
                   type="button"
                   className="inline-flex items-center gap-2 rounded-3xl border border-muted bg-white px-4 py-2 text-sm font-medium text-text-secondary hover:bg-white/90 transition"
-                  title="User menu"
+                  title={user.displayName ? `User menu (${user.displayName})` : 'User menu'}
                 >
                   {user.profileImageUrl ? (
                     <img src={user.profileImageUrl} alt="avatar" className="w-6 h-6 rounded-full object-cover" />
                   ) : (
                     <User className="w-5 h-5" />
+                  )}
+                  {/* Desktop: full display name; Mobile: shortened name or initials */}
+                  {user.displayName && (
+                    <>
+                      <span className="hidden md:inline truncate max-w-[10rem]">{user.displayName}</span>
+                      <span className="inline md:hidden font-medium">
+                        {(() => {
+                          const parts = user.displayName.trim().split(/\s+/);
+                          if (parts.length === 1) return parts[0].slice(0, 10);
+                          // Prefer last name on very small screens (e.g. 'Vandy'), otherwise initials
+                          const last = parts[parts.length - 1];
+                          const initials = (parts[0][0] || '') + (parts.length > 1 ? (parts[parts.length - 1][0] || '') : '');
+                          return last.length <= 8 ? last : initials.toUpperCase();
+                        })()}
+                      </span>
+                    </>
                   )}
                 </button>
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-3xl shadow-xl border border-muted opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">

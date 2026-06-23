@@ -52,11 +52,12 @@ router.post(
   body('description').notEmpty().withMessage('Description is required'),
   body('price').isFloat({ min: 0 }).withMessage('Price must be a positive number'),
   body('category').isMongoId().withMessage('Valid category is required'),
+  body('coverImage').optional().isMongoId().withMessage('Cover image must be a valid image id'),
   validate,
   productController.createProduct
 );
 
-router.put('/:id', authMiddleware, param('id').isMongoId(), validate, productController.updateProduct);
+router.put('/:id', authMiddleware, param('id').isMongoId(), body('coverImage').optional().isMongoId().withMessage('Cover image must be a valid image id'), validate, productController.updateProduct);
 router.delete('/:id', authMiddleware, param('id').isMongoId(), validate, productController.deleteProduct);
 
 module.exports = router;

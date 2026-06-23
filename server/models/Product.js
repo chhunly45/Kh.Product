@@ -17,6 +17,7 @@ const ProductSchema = new Schema({
   district: { type: Number },
   status: { type: String, enum: ['draft', 'published', 'sold', 'archived', 'flagged'], default: 'published' },
   images: [{ type: Types.ObjectId, ref: 'Image' }],
+  coverImage: { type: Types.ObjectId, ref: 'Image', default: null },
   tags: { type: [{ type: String, trim: true }], default: [] },
   viewsCount: { type: Number, default: 0 },
   isFeatured: { type: Boolean, default: false },

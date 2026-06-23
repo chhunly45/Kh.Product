@@ -2,6 +2,7 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Phone, MessageCircle, ShieldCheck, ArrowUpRight, AlertTriangle, MapPin, CalendarDays, Heart } from 'lucide-react';
 import { getProductById, getProductBySlug, getProducts, trackProductView, updateProduct, deleteProduct } from '../services/product.api';
+import { getProductCoverImageUrl } from '../utils/product';
 import { formatViewsCount } from '../utils/views';
 import { getProfile } from '../services/auth.api';
 import { checkFavorite, addFavorite, removeFavorite } from '../services/favorites.api';
@@ -72,7 +73,7 @@ const ProductDetailPage = () => {
       try {
         const data = await getProductBySlug(slug as string);
         setProduct(data);
-        setSelectedImage(data.images?.[0]?.secureUrl || data.images?.[0]?.url || '');
+        setSelectedImage(getProductCoverImageUrl(data, ''));
         setIsFavorite(false);
 
         if (isAuthenticated) {
@@ -219,7 +220,7 @@ const ProductDetailPage = () => {
   const seoTitle = `${displayTitle} for Sale in ${product.location || 'Cambodia'}`;
   const seoDescription = getSeoDescription(product);
   const canonicalUrl = `${window.location.origin}/products/${product.slug || product._id}`;
-  const seoImage = product.images?.[0]?.secureUrl || product.images?.[0]?.url || '/no-image.png';
+  const seoImage = getProductCoverImageUrl(product, '/no-image.png');
   const robotsTag = product.status === 'deleted' ? 'noindex' : 'index, follow';
 
   return (
@@ -317,7 +318,7 @@ const ProductDetailPage = () => {
             <div className="space-y-6">
               <div className="overflow-hidden rounded-[2rem] bg-background shadow-sm">
                 <img
-                  src={selectedImage || product.images?.[0]?.secureUrl || product.images?.[0]?.url || '/no-image.png'}
+                  src={selectedImage || getProductCoverImageUrl(product, '/no-image.png')}
                   alt={displayTitle}
                   className="h-96 w-full object-cover"
                 />

@@ -30,7 +30,7 @@ router.post(
   '/register',
   body('email').optional({ checkFalsy: true }).isEmail().withMessage('Valid email is required'),
   body('phoneNumber').notEmpty().withMessage('Phone number is required'),
-  body('password').isLength({ min: 6 }).withMessage('Password must have at least 6 characters'),
+  body('password').isLength({ min: 8 }).withMessage('Password must have at least 8 characters'),
   body('displayName').notEmpty().withMessage('Display name is required'),
   validate,
   authController.register
@@ -120,7 +120,7 @@ router.post(
   '/password-reset/confirm',
   body('identifier').notEmpty().withMessage('Email or phone is required'),
   body('code').isLength({ min: 6, max: 6 }).withMessage('Reset code must be 6 digits'),
-  body('password').isLength({ min: 6 }).withMessage('Password must have at least 6 characters'),
+  body('password').isLength({ min: 8 }).withMessage('Password must have at least 8 characters'),
   validate,
   authController.resetPassword
 );
@@ -140,7 +140,7 @@ router.post(
   '/change-password',
   authMiddleware,
   body('currentPassword').notEmpty().withMessage('Current password is required'),
-  body('newPassword').isLength({ min: 6 }).withMessage('New password must have at least 6 characters'),
+  body('newPassword').isLength({ min: 8 }).withMessage('New password must have at least 8 characters'),
   validate,
   authController.changePassword
 );

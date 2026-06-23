@@ -4,6 +4,7 @@ import {
   login as loginApi,
   verifyLoginOtp as verifyLoginOtpApi,
   logout as logoutApi,
+  getProfile as getProfileApi,
   AuthResponse,
   LoginOtpResponse,
   LoginPayload,
@@ -48,6 +49,7 @@ const getStoredToken = (): string | null => {
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<AuthUser | null>(getStoredUser);
   const [authToken, setAuthToken] = useState<string | null>(getStoredToken);
+  const [restoreAttempted, setRestoreAttempted] = useState(false);
 
   useEffect(() => {
     const handleStorage = () => {
@@ -67,6 +69,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       window.removeEventListener('sessionExpired', handleSessionExpired);
     };
   }, []);
+
+  useEffect(() => {
+    if (restoreAttempted) {
+      return;
+    }
+
+    if (user && authToken) {
+      setRestoreAttempted(true);
+      return;
+    }
+
+    const restoreUserFromProfile = async () => {
+      setRestoreAttempted(true);
+      try {
+        const profile = await getProfileApi();
+        if (profile) {
+          setUser(profile);
+          localStorage.setItem('user', JSON.stringify(profile));
+        } else {
+          setUser(null);
+          localStorage.removeItem('user');
+        }
+      } catch {
+        if (!authToken) {
+          setUser(null);
+          localStorage.removeItem('user');
+        }
+      }
+    };
+
+    restoreUserFromProfile();
+  }, [user, authToken, restoreAttempted]);
 
   const login = async (payload: LoginPayload): Promise<AuthResponse | LoginOtpResponse> => {
     const response = await loginApi(payload);

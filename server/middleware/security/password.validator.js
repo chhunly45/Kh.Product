@@ -1,8 +1,8 @@
-const PASSWORD_REGEX = /^(?=.{8,}$)(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).*$/;
+const MIN_PASSWORD_LENGTH = 8;
 
 function validatePassword(password) {
   if (!password || typeof password !== 'string') return false;
-  return PASSWORD_REGEX.test(password);
+  return password.length >= MIN_PASSWORD_LENGTH;
 }
 
 module.exports = { validatePassword };

@@ -4,6 +4,7 @@ import SearchBar from '../components/marketplace/SearchBar';
 import TopAdBanner from '../components/marketplace/TopAdBanner';
 import ProductCard from '../components/marketplace/ProductCard';
 import { getProducts } from '../services/product.api';
+import { getProductCoverImageUrl } from '../utils/product';
 import { getFavoriteIds, addFavorite, removeFavorite } from '../services/favorites.api';
 
 const ProductListPage = () => {
@@ -102,7 +103,7 @@ const ProductListPage = () => {
                   location={product.location || 'Unknown'}
                   category={product.category?.labelKh || product.category?.name || 'General'}
                   seller={product.seller}
-                  imageUrl={product.images?.[0]?.secureUrl || product.images?.[0]?.url || product.imageUrl || ''}
+                  imageUrl={getProductCoverImageUrl(product, product.imageUrl || '')}
                   featured={product.featured || product.isFeatured}
                   viewsCount={product.viewsCount}
                   isFavorite={favoriteIds.includes(product._id)}

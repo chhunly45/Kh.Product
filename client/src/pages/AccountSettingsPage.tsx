@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getProfile, updateProfile, changePassword } from '../services/auth.api';
+import { getPasswordStrength, getPasswordStrengthLabel } from '../utils/password';
 
 const AccountSettingsPage = () => {
   const [profile, setProfile] = useState<any>(null);
@@ -64,6 +65,10 @@ const AccountSettingsPage = () => {
   };
 
   const submitPassword = async () => {
+    if (!newPassword || newPassword.length < 8) {
+      setMessage('New password must be at least 8 characters');
+      return;
+    }
     if (newPassword !== confirmPassword) {
       setMessage('Passwords do not match');
       return;
@@ -120,6 +125,19 @@ const AccountSettingsPage = () => {
         <div className="grid grid-cols-1 gap-3">
           <input type="password" placeholder="Current password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} className="mt-1 w-full rounded-md border px-3 py-2" />
           <input type="password" placeholder="New password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="mt-1 w-full rounded-md border px-3 py-2" />
+          <p className="mt-2 text-sm text-muted">ប្រើយ៉ាងហោចណាស់ 8 តួ។ ការបន្ថែមលេខ និងសញ្ញាពិសេសនឹងធ្វើឱ្យលេខសម្ងាត់កាន់តែមានសុវត្ថិភាព។</p>
+          {getPasswordStrength(newPassword) && (
+            <p className="text-sm mt-1">
+              កម្លាំងលេខសម្ងាត់:{' '}
+              <span className={
+                getPasswordStrength(newPassword) === 'Strong'
+                  ? 'text-emerald-600'
+                  : getPasswordStrength(newPassword) === 'Medium'
+                  ? 'text-amber-600'
+                  : 'text-rose-600'
+              }>{getPasswordStrengthLabel(getPasswordStrength(newPassword))}</span>
+            </p>
+          )}
           <input type="password" placeholder="Confirm new password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="mt-1 w-full rounded-md border px-3 py-2" />
           <div>
             <button onClick={submitPassword} disabled={loading} className="rounded-lg bg-accent text-white px-4 py-2">

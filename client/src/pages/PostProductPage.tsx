@@ -22,6 +22,10 @@ const PostProductPage = () => {
   const [district, setDistrict] = useState<number | ''>('');
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
+  const [existingImages, setExistingImages] = useState<any[]>([]);
+  const [coverImageId, setCoverImageId] = useState<string | null>(null);
+  const [initialCoverImageId, setInitialCoverImageId] = useState<string | null>(null);
+  const [selectedNewCoverIndex, setSelectedNewCoverIndex] = useState<number | null>(null);
   const [existingImageCount, setExistingImageCount] = useState(0);
   const [status, setStatus] = useState<string>('');
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -68,7 +72,11 @@ const PostProductPage = () => {
         setCondition(product.condition || 'used');
         setProvince(product.province || '');
         setDistrict(product.district || '');
+        setExistingImages(product.images || []);
         setExistingImageCount(product.images?.length || 0);
+        setCoverImageId(product.coverImage?._id || product.images?.[0]?._id || null);
+        setInitialCoverImageId(product.coverImage?._id || product.images?.[0]?._id || null);
+        setSelectedNewCoverIndex(null);
         setStatus('');
         if (product.province) {
           try {
@@ -119,6 +127,10 @@ const PostProductPage = () => {
   const handleRemovePreview = (index: number) => {
     setPreviews((current) => current.filter((_, idx) => idx !== index));
     setImages((current) => current.filter((_, idx) => idx !== index));
+    if (selectedNewCoverIndex === index) {
+      setSelectedNewCoverIndex(null);
+      setCoverImageId(initialCoverImageId);
+    }
   };
 
   const validateForm = () => {
@@ -153,7 +165,7 @@ const PostProductPage = () => {
     setStatus(isEditing ? 'Updating listing...' : 'Publishing product...');
     setIsSubmitting(true);
 
-    const payload = {
+    const payload: any = {
       title,
       titleKh,
       titleEn,
@@ -163,7 +175,8 @@ const PostProductPage = () => {
       category,
       condition,
       province: province ? Number(province) : undefined,
-      district: district ? Number(district) : undefined
+      district: district ? Number(district) : undefined,
+      coverImage: coverImageId || undefined
     };
 
     try {
@@ -177,7 +190,11 @@ const PostProductPage = () => {
       }
 
       if (images.length && product?._id) {
-        await uploadProductImages(product._id, images);
+        const uploadedImages = await uploadProductImages(product._id, images);
+        if (selectedNewCoverIndex != null && uploadedImages[selectedNewCoverIndex]) {
+          payload.coverImage = uploadedImages[selectedNewCoverIndex]._id;
+          await updateProduct(product._id, { coverImage: payload.coverImage });
+        }
       }
 
       setSavedProductId(product?.slug || product?._id || null);
@@ -368,20 +385,64 @@ const PostProductPage = () => {
           </label>
         </div>
 
+        {existingImages.length > 0 && (
+          <div className="space-y-3">
+            <p className="text-sm font-medium text-text-secondary">Existing images</p>
+            <div className="grid gap-3 sm:grid-cols-3">
+              {existingImages.map((image, index) => {
+                const src = image.secureUrl || image.url;
+                const isCover = coverImageId === image._id;
+                return (
+                  <button
+                    key={image._id}
+                    type="button"
+                    onClick={() => {
+                      setCoverImageId(image._id);
+                      setSelectedNewCoverIndex(null);
+                    }}
+                    className={`group relative overflow-hidden rounded-3xl border ${isCover ? 'border-primary' : 'border-transparent'} bg-background focus:outline-none focus:ring-2 focus:ring-primary/30`}
+                  >
+                    <img src={src} alt={`Existing image ${index + 1}`} className="h-28 w-full object-cover" />
+                    <span className="pointer-events-none absolute left-2 top-2 rounded-full bg-white/90 px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-text-primary">
+                      {isCover ? 'Cover' : 'Set cover'}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {previews.length > 0 && (
-          <div className="grid gap-3 sm:grid-cols-3">
-            {previews.map((preview, index) => (
-              <div key={`${preview}-${index}`} className="group relative overflow-hidden rounded-3xl bg-background">
-                <img src={preview} alt={`Preview ${index + 1}`} className="h-28 w-full object-cover" />
-                <button
-                  type="button"
-                  onClick={() => handleRemovePreview(index)}
-                  className="absolute right-2 top-2 rounded-full bg-black/70 px-2 py-1 text-xs font-semibold text-white opacity-0 transition group-hover:opacity-100"
-                >
-                  Remove
-                </button>
-              </div>
-            ))}
+          <div className="space-y-3">
+            <p className="text-sm font-medium text-text-secondary">New uploads</p>
+            <div className="grid gap-3 sm:grid-cols-3">
+              {previews.map((preview, index) => {
+                const isCover = selectedNewCoverIndex === index && coverImageId === null;
+                return (
+                  <div key={`${preview}-${index}`} className="group relative overflow-hidden rounded-3xl bg-background">
+                    <img src={preview} alt={`Preview ${index + 1}`} className="h-28 w-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedNewCoverIndex(index);
+                        setCoverImageId(null);
+                      }}
+                      className={`absolute left-2 top-2 rounded-full bg-white/90 px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-text-primary ${isCover ? 'border border-primary' : ''}`}
+                    >
+                      {isCover ? 'Cover' : 'Set cover'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleRemovePreview(index)}
+                      className="absolute right-2 top-2 rounded-full bg-black/70 px-2 py-1 text-xs font-semibold text-white opacity-0 transition group-hover:opacity-100"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
 
