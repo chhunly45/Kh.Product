@@ -99,6 +99,15 @@ const deleteImage = async (user, imageId) => {
     throw error;
   }
 
+  if (image.product) {
+    const imageCount = await Image.countDocuments({ product: image.product });
+    if (imageCount <= 1) {
+      const error = new Error('At least one product image is required');
+      error.statusCode = 400;
+      throw error;
+    }
+  }
+
   if (image.publicId) {
     await cloudinary.uploader.destroy(image.publicId, { resource_type: 'image' });
   }

@@ -1,7 +1,7 @@
 ﻿import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../services/api';
-import { createProduct, uploadProductImages, getProductById, updateProduct } from '../services/product.api';
+import { createProduct, uploadProductImages, getProductById, updateProduct, deleteProductImage } from '../services/product.api';
 import { getProvinces, getDistricts, Province, District } from '../services/location.api';
 
 const PostProductPage = () => {
@@ -124,12 +124,63 @@ const PostProductPage = () => {
     setPreviews((current) => [...current, ...fileArray.map((file) => URL.createObjectURL(file))].slice(0, 6));
   };
 
+  const totalImageCount = existingImages.length + previews.length;
+
   const handleRemovePreview = (index: number) => {
+    const currentTotal = existingImages.length + previews.length;
+    if (currentTotal <= 1) {
+      window.alert('At least one product image is required.');
+      return;
+    }
+
+    const confirmed = window.confirm('Delete this image from the upload queue?');
+    if (!confirmed) return;
+
     setPreviews((current) => current.filter((_, idx) => idx !== index));
     setImages((current) => current.filter((_, idx) => idx !== index));
+
     if (selectedNewCoverIndex === index) {
       setSelectedNewCoverIndex(null);
       setCoverImageId(initialCoverImageId);
+    } else if (selectedNewCoverIndex !== null && index < selectedNewCoverIndex) {
+      setSelectedNewCoverIndex(selectedNewCoverIndex - 1);
+    }
+  };
+
+  const handleDeleteExistingImage = async (imageId: string) => {
+    const currentTotal = existingImages.length + previews.length;
+    if (currentTotal <= 1) {
+      window.alert('At least one product image is required.');
+      return;
+    }
+
+    const confirmed = window.confirm('Delete this image? This will remove it from the product and cannot be undone.');
+    if (!confirmed) return;
+
+    try {
+      setIsSubmitting(true);
+      await deleteProductImage(imageId);
+      const remainingImages = existingImages.filter((image) => image._id !== imageId);
+      setExistingImages(remainingImages);
+      setExistingImageCount(remainingImages.length);
+
+      if (coverImageId === imageId) {
+        if (remainingImages.length > 0) {
+          setCoverImageId(remainingImages[0]._id);
+        } else if (previews.length > 0) {
+          setSelectedNewCoverIndex(0);
+          setCoverImageId(null);
+        } else {
+          setCoverImageId(null);
+        }
+      }
+
+      setStatus('Image removed from listing.');
+    } catch (error) {
+      console.error('Failed to delete existing image:', error);
+      setStatus('Unable to remove image. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -393,20 +444,36 @@ const PostProductPage = () => {
                 const src = image.secureUrl || image.url;
                 const isCover = coverImageId === image._id;
                 return (
-                  <button
+                  <div
                     key={image._id}
-                    type="button"
-                    onClick={() => {
-                      setCoverImageId(image._id);
-                      setSelectedNewCoverIndex(null);
-                    }}
-                    className={`group relative overflow-hidden rounded-3xl border ${isCover ? 'border-primary' : 'border-transparent'} bg-background focus:outline-none focus:ring-2 focus:ring-primary/30`}
+                    className={`group relative overflow-hidden rounded-3xl border ${isCover ? 'border-primary' : 'border-transparent'} bg-background focus-within:ring-2 focus-within:ring-primary/30`}
                   >
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCoverImageId(image._id);
+                        setSelectedNewCoverIndex(null);
+                      }}
+                      className="absolute inset-0 z-10"
+                      aria-label={`Select existing image ${index + 1} as cover`}
+                    />
                     <img src={src} alt={`Existing image ${index + 1}`} className="h-28 w-full object-cover" />
                     <span className="pointer-events-none absolute left-2 top-2 rounded-full bg-white/90 px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-text-primary">
                       {isCover ? 'Cover' : 'Set cover'}
                     </span>
-                  </button>
+                    <button
+                      type="button"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        handleDeleteExistingImage(image._id);
+                      }}
+                      disabled={totalImageCount <= 1}
+                      className={`absolute right-2 top-2 rounded-full px-2 py-1 text-xs font-semibold transition ${totalImageCount <= 1 ? 'bg-slate-200 text-slate-500 cursor-not-allowed' : 'bg-rose-600 text-white hover:bg-rose-700'}`}
+                      aria-label={`Delete existing image ${index + 1}`}
+                    >
+                      Delete
+                    </button>
+                  </div>
                 );
               })}
             </div>
@@ -435,7 +502,8 @@ const PostProductPage = () => {
                     <button
                       type="button"
                       onClick={() => handleRemovePreview(index)}
-                      className="absolute right-2 top-2 rounded-full bg-black/70 px-2 py-1 text-xs font-semibold text-white opacity-0 transition group-hover:opacity-100"
+                      disabled={existingImages.length + previews.length <= 1}
+                      className={`absolute right-2 top-2 rounded-full px-2 py-1 text-xs font-semibold transition ${existingImages.length + previews.length <= 1 ? 'bg-slate-200 text-slate-500 cursor-not-allowed opacity-80' : 'bg-black/70 text-white opacity-0 group-hover:opacity-100 hover:bg-black'}`}
                     >
                       Remove
                     </button>
