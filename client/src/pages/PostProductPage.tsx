@@ -454,7 +454,7 @@ const PostProductPage = () => {
                         setCoverImageId(image._id);
                         setSelectedNewCoverIndex(null);
                       }}
-                      className="absolute inset-0 z-10"
+                      className="absolute inset-0 z-0"
                       aria-label={`Select existing image ${index + 1} as cover`}
                     />
                     <img src={src} alt={`Existing image ${index + 1}`} className="h-28 w-full object-cover" />
@@ -468,7 +468,7 @@ const PostProductPage = () => {
                         handleDeleteExistingImage(image._id);
                       }}
                       disabled={totalImageCount <= 1}
-                      className={`absolute right-2 top-2 rounded-full px-2 py-1 text-xs font-semibold transition ${totalImageCount <= 1 ? 'bg-slate-200 text-slate-500 cursor-not-allowed' : 'bg-rose-600 text-white hover:bg-rose-700'}`}
+                      className={`absolute right-2 top-2 z-20 rounded-full px-2 py-1 text-xs font-semibold transition ${totalImageCount <= 1 ? 'bg-slate-200 text-slate-500 cursor-not-allowed' : 'bg-rose-600 text-white hover:bg-rose-700'}`}
                       aria-label={`Delete existing image ${index + 1}`}
                     >
                       Delete
