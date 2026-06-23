@@ -278,6 +278,9 @@ const Header = () => {
           </div>
 
           <div className="flex items-center gap-3">
+            <Link to="/help" className="hidden lg:inline-flex items-center justify-center rounded-3xl border border-muted bg-white px-4 py-2 text-sm font-medium text-text-secondary hover:bg-white/90 transition">
+              Help
+            </Link>
             <Link
               to="/post-product"
               className="inline-flex items-center gap-2 rounded-3xl bg-[#0F766E] px-4 py-2 text-sm font-medium text-white hover:bg-[#0f6f63] transition"
@@ -287,7 +290,7 @@ const Header = () => {
             </Link>
 
             {user ? (
-              <div className="relative group">
+              <div className="hidden lg:relative lg:inline-flex group">
                 <button
                   type="button"
                   className="inline-flex items-center gap-2 rounded-3xl border border-muted bg-white px-4 py-2 text-sm font-medium text-text-secondary hover:bg-white/90 transition"
@@ -306,7 +309,6 @@ const Header = () => {
                         {(() => {
                           const parts = user.displayName.trim().split(/\s+/);
                           if (parts.length === 1) return parts[0].slice(0, 10);
-                          // Prefer last name on very small screens (e.g. 'Vandy'), otherwise initials
                           const last = parts[parts.length - 1];
                           const initials = (parts[0][0] || '') + (parts.length > 1 ? (parts[parts.length - 1][0] || '') : '');
                           return last.length <= 8 ? last : initials.toUpperCase();
@@ -322,8 +324,8 @@ const Header = () => {
               </div>
             ) : (
               <>
-                <Link to="/login" className="inline-flex items-center gap-2 rounded-3xl border border-muted bg-white px-4 py-2 text-sm font-medium text-text-secondary hover:bg-white/90 transition">ចូលគណនី</Link>
-                <Link to="/register" className="inline-flex items-center gap-2 rounded-3xl bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-hover transition">បង្កើតគណនី</Link>
+                <Link to="/login" className="hidden lg:inline-flex items-center gap-2 rounded-3xl border border-muted bg-white px-4 py-2 text-sm font-medium text-text-secondary hover:bg-white/90 transition">ចូលគណនី</Link>
+                <Link to="/register" className="hidden lg:inline-flex items-center gap-2 rounded-3xl bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-hover transition">បង្កើតគណនី</Link>
               </>
             )}
 
@@ -394,7 +396,7 @@ const Header = () => {
               </div>
             )}
 
-            <button className="inline-flex items-center gap-1 p-2 rounded text-sm text-text-secondary" type="button">
+            <button aria-label="Language switcher" className="inline-flex items-center gap-1 p-2 rounded text-sm text-text-secondary" type="button">
               <Globe className="w-5 h-5" />
             </button>
 
@@ -405,30 +407,55 @@ const Header = () => {
         </div>
 
         {mobileMenuOpen && (
-          <div ref={mobileMenuRef} className="mt-3 space-y-3 rounded-3xl border border-surface-muted bg-white p-3 shadow-lg">
-            <div className="grid gap-2">
-              <details className="rounded-3xl border border-muted bg-white p-2">
-                <summary className="px-3 py-2 text-sm font-semibold">ក្រុមផលិតផល</summary>
-                <div className="grid grid-cols-2 gap-2 mt-2">
-                  <Link onClick={() => setMobileMenuOpen(false)} to="/products?category=food" className="px-3 py-2 text-sm rounded hover:bg-background">ម្ហូប</Link>
-                  <Link onClick={() => setMobileMenuOpen(false)} to="/products?category=phones" className="px-3 py-2 text-sm rounded hover:bg-background">ទូរស័ព្ទ</Link>
-                  <Link onClick={() => setMobileMenuOpen(false)} to="/products?category=electronics" className="px-3 py-2 text-sm rounded hover:bg-background">អេឡិចត្រូនិក</Link>
-                  <Link onClick={() => setMobileMenuOpen(false)} to="/products?category=auto" className="px-3 py-2 text-sm rounded hover:bg-background">យានយន្ត</Link>
-                  <Link onClick={() => setMobileMenuOpen(false)} to="/products?category=real-estate" className="px-3 py-2 text-sm rounded hover:bg-background">អចលនទ្រព្យ</Link>
-                  <Link onClick={() => setMobileMenuOpen(false)} to="/products?category=clothing" className="px-3 py-2 text-sm rounded hover:bg-background">សម្លៀកបំពាក់</Link>
-                  <Link onClick={() => setMobileMenuOpen(false)} to="/products?category=furniture" className="px-3 py-2 text-sm rounded hover:bg-background">គ្រឿងសង្ហារឹម</Link>
-                  <Link onClick={() => setMobileMenuOpen(false)} to="/products?category=services" className="px-3 py-2 text-sm rounded hover:bg-background">សេវាកម្ម</Link>
+          <div className="fixed inset-0 z-40 lg:hidden">
+            <button type="button" onClick={() => setMobileMenuOpen(false)} className="absolute inset-0 bg-black/40" aria-label="Close mobile menu" />
+            <div ref={mobileMenuRef} className="absolute left-0 top-0 h-full w-4/5 max-w-xs overflow-y-auto rounded-tr-3xl rounded-br-3xl border-r border-surface-muted bg-white p-4 shadow-xl">
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <div>
+                  <p className="text-base font-semibold text-text-primary">Navigation</p>
+                  <p className="text-sm text-muted">Mobile menu</p>
                 </div>
-              </details>
-              <Link to="/post-product" onClick={() => setMobileMenuOpen(false)} className="inline-flex items-center justify-center rounded-3xl bg-[#0F766E] px-4 py-2 text-sm font-semibold text-white">លក់ទំនិញ</Link>
-              {user ? (
-                <Link to="/profile" onClick={() => setMobileMenuOpen(false)} className="block rounded-3xl border border-muted bg-white px-4 py-2 text-center text-sm font-semibold text-text-secondary">ពត៌មានគណនី</Link>
-              ) : (
-                <>
-                  <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="block rounded-3xl border border-muted bg-white px-4 py-2 text-center text-sm font-semibold text-text-secondary">ចូលគណនី</Link>
-                  <Link to="/register" onClick={() => setMobileMenuOpen(false)} className="block rounded-3xl bg-primary px-4 py-2 text-center text-sm font-semibold text-white">បង្កើតគណនី</Link>
-                </>
-              )}
+                <button type="button" onClick={() => setMobileMenuOpen(false)} className="inline-flex h-10 w-10 items-center justify-center rounded-3xl border border-muted bg-white text-text-primary shadow-sm" aria-label="Close menu">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <nav className="space-y-2">
+                <Link to="/" onClick={() => setMobileMenuOpen(false)} className="block rounded-3xl px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background">Home</Link>
+                <Link to="/products" onClick={() => setMobileMenuOpen(false)} className="block rounded-3xl px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background">Browse Products</Link>
+                <Link to="/post-product" onClick={() => setMobileMenuOpen(false)} className="block rounded-3xl bg-[#0F766E] px-4 py-3 text-sm font-semibold text-white hover:bg-[#0e6e60]">Post Product</Link>
+                <Link to="/messages" onClick={() => setMobileMenuOpen(false)} className="block rounded-3xl px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background">Messages</Link>
+                <Link to="/notifications" onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-between rounded-3xl px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background">
+                  <span>Notifications</span>
+                  {notificationCount > 0 && <span className="inline-flex h-6 min-w-[1.5rem] items-center justify-center rounded-full bg-rose-600 px-2 text-[0.65rem] font-semibold text-white">{notificationCount > 9 ? '9+' : notificationCount}</span>}
+                </Link>
+                <hr className="border-surface-muted" />
+                <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="block rounded-3xl px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background">About</Link>
+                <Link to="/guide" onClick={() => setMobileMenuOpen(false)} className="block rounded-3xl px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background">Guide</Link>
+                <Link to="/help" onClick={() => setMobileMenuOpen(false)} className="block rounded-3xl px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background">Help</Link>
+                <hr className="border-surface-muted" />
+                {user ? (
+                  <Link to="/profile" onClick={() => setMobileMenuOpen(false)} className="block rounded-3xl px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background">Profile</Link>
+                ) : (
+                  <>
+                    <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="block rounded-3xl px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background">Login</Link>
+                    <Link to="/register" onClick={() => setMobileMenuOpen(false)} className="block rounded-3xl bg-primary px-4 py-3 text-sm font-semibold text-white hover:bg-primary-hover">Register</Link>
+                  </>
+                )}
+                <details className="rounded-3xl border border-muted bg-white p-2 mt-4">
+                  <summary className="px-3 py-2 text-sm font-semibold">Product categories</summary>
+                  <div className="grid grid-cols-2 gap-2 mt-2">
+                    <Link onClick={() => setMobileMenuOpen(false)} to="/products?category=food" className="px-3 py-2 text-sm rounded hover:bg-background">ម្ហូប</Link>
+                    <Link onClick={() => setMobileMenuOpen(false)} to="/products?category=phones" className="px-3 py-2 text-sm rounded hover:bg-background">ទូរស័ព្ទ</Link>
+                    <Link onClick={() => setMobileMenuOpen(false)} to="/products?category=electronics" className="px-3 py-2 text-sm rounded hover:bg-background">អេឡិចត្រូនិក</Link>
+                    <Link onClick={() => setMobileMenuOpen(false)} to="/products?category=auto" className="px-3 py-2 text-sm rounded hover:bg-background">យានយន្ត</Link>
+                    <Link onClick={() => setMobileMenuOpen(false)} to="/products?category=real-estate" className="px-3 py-2 text-sm rounded hover:bg-background">អចលនទ្រព្យ</Link>
+                    <Link onClick={() => setMobileMenuOpen(false)} to="/products?category=clothing" className="px-3 py-2 text-sm rounded hover:bg-background">សម្លៀកបំពាក់</Link>
+                    <Link onClick={() => setMobileMenuOpen(false)} to="/products?category=furniture" className="px-3 py-2 text-sm rounded hover:bg-background">គ្រឿងសង្ហារឹម</Link>
+                    <Link onClick={() => setMobileMenuOpen(false)} to="/products?category=services" className="px-3 py-2 text-sm rounded hover:bg-background">សេវាកម្ម</Link>
+                  </div>
+                </details>
+              </nav>
             </div>
           </div>
         )}

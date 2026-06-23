@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import Header from '../components/layout/Header';
 import api from '../services/api';
 import * as favApi from '../services/favorites.api';
@@ -50,10 +50,30 @@ describe('Header component', () => {
     expect((await screen.findAllByText(/ចូលគណនី/i)).length).toBeGreaterThanOrEqual(1);
     expect((await screen.findAllByText(/បង្កើតគណនី/i)).length).toBeGreaterThanOrEqual(1);
 
-    // open mobile menu and ensure Login/Register shown there too
     const toggle = screen.getByLabelText(/Toggle mobile menu/i);
+    expect(toggle).toBeInTheDocument();
     fireEvent.click(toggle);
-    expect((await screen.findAllByText(/ចូលគណនី/i)).length).toBeGreaterThanOrEqual(1);
+
+    const drawerNav = screen.getByRole('navigation');
+    expect(within(drawerNav).getByRole('link', { name: /About/i })).toBeInTheDocument();
+    expect(within(drawerNav).getByRole('link', { name: /Guide/i })).toBeInTheDocument();
+    expect(within(drawerNav).getByRole('link', { name: /Help/i })).toBeInTheDocument();
+    expect(within(drawerNav).getByRole('link', { name: /Post Product/i })).toBeInTheDocument();
+    expect(within(drawerNav).getByRole('link', { name: /Login/i })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByLabelText(/Close mobile menu/i));
+    await waitFor(() => expect(screen.queryByRole('navigation')).not.toBeInTheDocument());
+  });
+
+  it('renders desktop header with logo, help, and language switcher', async () => {
+    const { useAuth } = require('../hooks/useAuth');
+    useAuth.mockReturnValue({ user: null, logout: jest.fn() });
+
+    render(<Header /> , { wrapper: require('react-router-dom').MemoryRouter });
+
+    expect(screen.getByAltText('Konpuk')).toBeInTheDocument();
+    expect(screen.getAllByText(/Help/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByLabelText(/Language switcher/i)).toBeInTheDocument();
   });
 
   it('renders authenticated state with favorite/notification counts', async () => {

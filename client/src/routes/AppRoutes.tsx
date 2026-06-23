@@ -25,6 +25,9 @@ import NotificationsPage from '../pages/NotificationsPage';
 import NotFoundPage from '../pages/NotFoundPage';
 import VerificationRequestPage from '../pages/VerificationRequestPage';
 import AdminVerificationReviewPage from '../pages/AdminVerificationReviewPage';
+import AboutPage from '../pages/AboutPage';
+import GuidePage from '../pages/GuidePage';
+import HelpPage from '../pages/HelpPage';
 
 const AppRoutes = () => (
   <Routes>
@@ -36,6 +39,9 @@ const AppRoutes = () => (
     <Route path="/verify-email" element={<VerifyEmailPage />} />
     <Route path="/products" element={<ProductListPage />} />
     <Route path="/products/:slug" element={<ProductDetailPage />} />
+    <Route path="/about" element={<AboutPage />} />
+    <Route path="/guide" element={<GuidePage />} />
+    <Route path="/help" element={<HelpPage />} />
     <Route path="/post-product" element={<PostProductPage />} />
     <Route path="/profile" element={<ProfilePage />} />
     <Route path="/profile/:id" element={<ProfilePage />} />

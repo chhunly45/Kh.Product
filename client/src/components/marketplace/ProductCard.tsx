@@ -52,7 +52,7 @@ const ProductCard = ({ title, titleKh, titleEn, price, location, category, id, i
       className="group block overflow-hidden rounded-2xl border border-surface-muted bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
     >
           <div className="relative overflow-hidden bg-surface">
-        <div className="aspect-[4/3] w-full bg-gray-100">
+        <div className="w-full bg-gray-100 aspect-[16/9] sm:aspect-[4/3]">
           <img
             src={src}
             alt={altText}

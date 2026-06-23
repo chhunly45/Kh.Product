@@ -37,6 +37,9 @@ const Footer = () => {
               <li><Link to="/" className="text-sm text-white/80 hover:text-white transition">ទំព័រដើម</Link></li>
               <li><Link to="/products" className="text-sm text-white/80 hover:text-white transition">ស្វែងរកផលិតផល</Link></li>
               <li><Link to="/post-product" className="text-sm text-white/80 hover:text-white transition">បោះពុម្ពផលិតផល</Link></li>
+              <li><Link to="/help" className="text-sm text-white/80 hover:text-white transition">Help Center</Link></li>
+              <li><Link to="/about" className="text-sm text-white/80 hover:text-white transition">អំពី Konpuk</Link></li>
+              <li><Link to="/guide" className="text-sm text-white/80 hover:text-white transition">មេរៀន</Link></li>
               <li><Link to="/messages" className="text-sm text-white/80 hover:text-white transition">សារ</Link></li>
             </ul>
           </div>
@@ -56,7 +59,7 @@ const Footer = () => {
           <div>
             <h4 className="text-sm font-bold text-white mb-4 uppercase tracking-widest">ការគាំទ្រ</h4>
             <ul className="space-y-3">
-              <li><a href="#" className="text-sm text-white/80 hover:text-white transition">មជ្ឈមណ្ឌលជំនួយ</a></li>
+              <li><Link to="/help" className="text-sm text-white/80 hover:text-white transition">Help Center</Link></li>
               <li><a href="#" className="text-sm text-white/80 hover:text-white transition">គន្លឹះសុវត្ថិភាព</a></li>
               <li><a href="#" className="text-sm text-white/80 hover:text-white transition">ទំនាក់ទំនង</a></li>
               <li><a href="#" className="text-sm text-white/80 hover:text-white transition">រាយការណ៍បញ្ហា</a></li>
