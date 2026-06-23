@@ -22,7 +22,7 @@ const getSocketBaseUrl = () => {
     }
   }
 
-  return 'https://kh-product-1.onrender.com';
+  return 'https://api.konpuk.com';
 };
 
 const baseURL = getSocketBaseUrl();

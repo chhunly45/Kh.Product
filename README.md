@@ -178,7 +178,7 @@ client/dist
 Important Vercel notes:
 - Set `VITE_API_BASE_URL` to your backend URL (for example the Render service URL) including the `/api` path, e.g. `https://your-backend.example.com/api`.
 - Ensure your backend `CLIENT_URL` on Render is set to `https://konpuk.com` so CORS and CSRF cookies work when the site is live.
-- During testing you can also point `VITE_API_BASE_URL` to `https://kh-product-1.onrender.com/api` (existing Render preview).
+- During testing you can also point `VITE_API_BASE_URL` to `https://api.konpuk.com/api` (existing Render preview).
 
 7. Deploy the frontend.
 

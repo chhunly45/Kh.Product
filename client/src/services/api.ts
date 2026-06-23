@@ -18,7 +18,7 @@ const safeImportMetaEnv = () => {
 };
 
 const created = axios.create({
-  baseURL: getViteEnv('VITE_API_BASE_URL', 'https://kh-product-1.onrender.com/api'),
+  baseURL: getViteEnv('VITE_API_BASE_URL', 'https://api.konpuk.com/api'),
   headers: {
     'Content-Type': 'application/json'
   },
