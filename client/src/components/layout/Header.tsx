@@ -175,10 +175,14 @@ const Header = () => {
             <span className="hidden sm:inline">·</span>
             <Link to="/about" className="hover:text-white">About</Link>
             <span className="hidden sm:inline">·</span>
-            <button className="inline-flex items-center gap-1 hover:text-white" type="button">
-              <Globe className="w-4 h-4" />
-              EN
-            </button>
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-white text-[0.8rem]">
+              <span className="inline-flex items-center gap-1 font-semibold">
+                <Globe className="w-4 h-4" />
+                English
+              </span>
+              <span className="rounded-full bg-white/20 px-2 py-0.5 text-[0.65rem] font-semibold">Current</span>
+              <span className="rounded-full bg-white/10 px-2 py-0.5 text-[0.65rem] text-white/80">Khmer Coming Soon</span>
+            </div>
           </div>
         </div>
       </div>
@@ -395,10 +399,6 @@ const Header = () => {
                 )}
               </div>
             )}
-
-            <button aria-label="Language switcher" className="inline-flex items-center gap-1 p-2 rounded text-sm text-text-secondary" type="button">
-              <Globe className="w-5 h-5" />
-            </button>
 
             <button type="button" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="lg:hidden inline-flex h-10 w-10 items-center justify-center rounded-3xl border border-muted bg-white text-text-primary shadow-sm" aria-label="Toggle mobile menu">
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
