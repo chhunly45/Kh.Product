@@ -40,7 +40,7 @@ const createReport = async ({ reporterId, targetType, targetId, reason, details 
       type: 'report',
       title: 'Your listing has been reported',
       message: `A report was submitted for ${product.title}. The listing is under review.`,
-      link: `/products/${product._id}`
+      link: `/products/${product.slug}`
     });
 
     return report;

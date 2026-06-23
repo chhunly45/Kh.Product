@@ -50,7 +50,7 @@ const addFavorite = async (userId, productId) => {
       type: 'favorite',
       title: 'New favorite',
       message: `Your listing ${product.title} was saved by a user.`,
-      link: `/products/${productId}`
+      link: `/products/${product.slug}`
     });
   }
 

@@ -38,7 +38,7 @@ const expirePromotions = async () => {
         type: 'promotion_expired',
         title: 'Featured promotion expired',
         message: `Your featured placement for "${promotion.product?.title || 'your product'}" has expired.`,
-        link: promotion.product ? `/products/${promotion.product._id}` : '/seller/promotions'
+        link: promotion.product ? `/products/${promotion.product.slug}` : '/seller/promotions'
       });
     }
   }));
@@ -59,7 +59,7 @@ const notifyExpiringSoon = async () => {
         type: 'promotion_expiring',
         title: 'Promotion expiring soon',
         message: `Your featured placement for "${promotion.product?.title || 'your product'}" will expire on ${promotion.endDate?.toLocaleDateString()}.`,
-        link: promotion.product ? `/products/${promotion.product._id}` : '/seller/promotions'
+        link: promotion.product ? `/products/${promotion.product.slug}` : '/seller/promotions'
       });
     }
   }));
@@ -232,7 +232,7 @@ const approvePromotion = async (promotionId, adminId) => {
       type: 'promotion_approved',
       title: 'Featured promotion approved',
       message: `Your featured placement for "${promotion.product?.title || 'your product'}" has been approved. It will run until ${promotion.endDate?.toLocaleDateString()}.`,
-      link: promotion.product ? `/products/${promotion.product._id}` : '/seller/promotions'
+      link: promotion.product ? `/products/${promotion.product.slug}` : '/seller/promotions'
     });
   }
 
@@ -270,7 +270,7 @@ const rejectPromotion = async (promotionId, adminId, reason) => {
       type: 'promotion_rejected',
       title: 'Featured promotion rejected',
       message: `Your featured placement for "${promotion.product?.title || 'your product'}" was rejected. ${promotion.rejectionReason}`,
-      link: promotion.product ? `/products/${promotion.product._id}` : '/seller/promotions'
+      link: promotion.product ? `/products/${promotion.product.slug}` : '/seller/promotions'
     });
   }
 
@@ -325,7 +325,7 @@ const extendPromotion = async (promotionId, extraDays, adminId) => {
       type: 'promotion_extended',
       title: 'Featured promotion extended',
       message: `Your featured placement for "${promotion.product?.title || 'your product'}" has been extended until ${promotion.endDate?.toLocaleDateString()}.`,
-      link: promotion.product ? `/products/${promotion.product._id}` : '/seller/promotions'
+      link: promotion.product ? `/products/${promotion.product.slug}` : '/seller/promotions'
     });
   }
 
@@ -369,7 +369,7 @@ const cancelPromotion = async (promotionId, adminId) => {
       type: 'promotion_cancelled',
       title: 'Featured promotion cancelled',
       message: `Your featured placement for "${promotion.product?.title || 'your product'}" has been cancelled by the admin team.`,
-      link: promotion.product ? `/products/${promotion.product._id}` : '/seller/promotions'
+      link: promotion.product ? `/products/${promotion.product.slug}` : '/seller/promotions'
     });
   }
 

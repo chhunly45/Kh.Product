@@ -272,7 +272,7 @@ const updateProduct = async (productId, user, updates) => {
       type: 'sold',
       title: 'Listing sold',
       message: `Your product ${product.title} has been marked as sold.`,
-      link: `/products/${product._id}`
+      link: `/products/${product.slug}`
     });
   }
 

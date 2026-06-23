@@ -196,7 +196,7 @@ const updateProductStatus = async (productId, status, adminId) => {
       type: 'product_moderation',
       title: 'Listing status updated',
       message: `Your listing "${product.title}" has been marked ${status} by the moderation team.`,
-      link: `/products/${product._id}`
+      link: `/products/${product.slug}`
     });
   }
 
@@ -311,7 +311,7 @@ const updateReportStatus = async (reportId, status, adminId) => {
         type: 'report',
         title: 'Listing report reviewed',
         message: `A report for your listing "${product.title}" has been marked ${status}.`,
-        link: `/products/${product._id}`
+        link: `/products/${product.slug}`
       });
     }
   }
