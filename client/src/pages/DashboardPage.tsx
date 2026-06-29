@@ -97,20 +97,20 @@ const DashboardPage = () => {
             <h1 className="text-3xl font-semibold text-text-primary">Seller dashboard</h1>
             <p className="mt-2 text-sm text-muted">Manage your active listings, update status, and keep track of your products.</p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
             {user?.role === 'admin' && (
               <>
                 <button
                   type="button"
                   onClick={() => navigate('/admin/banners')}
-                  className="inline-flex items-center gap-2 rounded-full border border-muted bg-white px-4 py-2 text-sm font-semibold text-text-primary hover:bg-background transition"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-muted bg-white px-4 py-2 text-sm font-semibold text-text-primary transition hover:bg-background sm:w-auto"
                 >
                   Manage Banners
                 </button>
                 <button
                   type="button"
                   onClick={() => navigate('/admin/revenue')}
-                  className="inline-flex items-center gap-2 rounded-full border border-muted bg-white px-4 py-2 text-sm font-semibold text-text-primary hover:bg-background transition"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-muted bg-white px-4 py-2 text-sm font-semibold text-text-primary transition hover:bg-background sm:w-auto"
                 >
                   Revenue Dashboard
                 </button>
@@ -120,7 +120,7 @@ const DashboardPage = () => {
             <button
               type="button"
               onClick={() => navigate('/post-product')}
-              className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white hover:bg-primary-hover transition"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-primary-hover sm:w-auto"
             >
               <PlusCircle className="w-4 h-4" /> Post new listing
             </button>
