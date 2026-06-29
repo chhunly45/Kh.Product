@@ -26,7 +26,7 @@ const Header = () => {
   const [notificationCount, setNotificationCount] = useState(0);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [recentNotifications, setRecentNotifications] = useState<any[]>([]);
-  const { user, logout } = useAuth();
+  const { user, logout, isHydrated = true } = useAuth();
   const { socket } = useSocket();
   const navigate = useNavigate();
   const notificationsButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -293,7 +293,9 @@ const Header = () => {
                 លក់ទំនិញ
               </Link>
 
-              {user ? (
+              {!isHydrated ? (
+                <div data-testid="header-auth-placeholder" className="hidden h-10 w-32 items-center justify-center lg:flex" aria-hidden="true" />
+              ) : user ? (
                 <div className="hidden group lg:relative lg:inline-flex">
                   <button
                     type="button"
@@ -434,7 +436,9 @@ const Header = () => {
               <Link to="/guide" onClick={() => setMobileMenuOpen(false)} className="block rounded-3xl px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background">Guide</Link>
               <Link to="/help" onClick={() => setMobileMenuOpen(false)} className="block rounded-3xl px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background">Help</Link>
               <hr className="border-surface-muted" />
-              {user ? (
+              {!isHydrated ? (
+                <div className="h-2" aria-hidden="true" />
+              ) : user ? (
                 <Link to="/profile" onClick={() => setMobileMenuOpen(false)} className="block rounded-3xl px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background">Profile</Link>
               ) : (
                 <>

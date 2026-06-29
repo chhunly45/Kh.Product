@@ -41,9 +41,9 @@ describe('Header component', () => {
     (notifApi.getNotificationsCount as jest.Mock).mockResolvedValue(0);
   });
 
-  it('renders unauthenticated links', async () => {
+  it('renders unauthenticated links after hydration', async () => {
     const { useAuth } = require('../hooks/useAuth');
-    useAuth.mockReturnValue({ user: null, logout: jest.fn() });
+    useAuth.mockReturnValue({ user: null, logout: jest.fn(), isHydrated: true });
 
     render(<Header /> , { wrapper: require('react-router-dom').MemoryRouter });
 
@@ -65,20 +65,21 @@ describe('Header component', () => {
     await waitFor(() => expect(screen.queryByRole('navigation')).not.toBeInTheDocument());
   });
 
-  it('renders desktop header with logo, help, and language switcher', async () => {
+  it('renders desktop header with logo, help, and language switcher after hydration', async () => {
     const { useAuth } = require('../hooks/useAuth');
-    useAuth.mockReturnValue({ user: null, logout: jest.fn() });
+    useAuth.mockReturnValue({ user: null, logout: jest.fn(), isHydrated: true });
 
     render(<Header /> , { wrapper: require('react-router-dom').MemoryRouter });
 
     expect(screen.getByAltText('Konpuk')).toBeInTheDocument();
     expect(screen.getAllByText(/Help/i).length).toBeGreaterThanOrEqual(1);
-    expect(screen.getByLabelText(/Language switcher/i)).toBeInTheDocument();
+    expect(screen.getByText(/English/i)).toBeInTheDocument();
+    expect(screen.getByText(/Current/i)).toBeInTheDocument();
   });
 
-  it('renders authenticated state with favorite/notification counts', async () => {
+  it('renders authenticated state with favorite/notification counts after hydration', async () => {
     const { useAuth } = require('../hooks/useAuth');
-    useAuth.mockReturnValue({ user: { displayName: 'Test User' , profileImageUrl: '' , role: 'user' }, logout: jest.fn() });
+    useAuth.mockReturnValue({ user: { displayName: 'Test User' , profileImageUrl: '' , role: 'user' }, logout: jest.fn(), isHydrated: true });
     localStorage.setItem('authToken', 'tok');
     (favApi.getFavoritesCount as jest.Mock).mockResolvedValue(5);
     (notifApi.getNotificationsCount as jest.Mock).mockResolvedValue(2);
@@ -96,10 +97,21 @@ describe('Header component', () => {
     expect(screen.getByText(/ចេញពីប្រព័ន្ធ/i)).toBeInTheDocument();
   });
 
+  it('hides auth actions until hydration completes', async () => {
+    const { useAuth } = require('../hooks/useAuth');
+    useAuth.mockReturnValue({ user: null, logout: jest.fn(), isHydrated: false });
+
+    render(<Header /> , { wrapper: require('react-router-dom').MemoryRouter });
+
+    expect(screen.getByTestId('header-auth-placeholder')).toBeInTheDocument();
+    expect(screen.queryByText(/ចូលគណនី/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/បង្កើតគណនី/i)).not.toBeInTheDocument();
+  });
+
   it('handles categories fetch error gracefully', async () => {
     (api.get as jest.Mock).mockRejectedValue(new Error('network'));
     const { useAuth } = require('../hooks/useAuth');
-    useAuth.mockReturnValue({ user: null, logout: jest.fn() });
+    useAuth.mockReturnValue({ user: null, logout: jest.fn(), isHydrated: true });
 
     render(<Header /> , { wrapper: require('react-router-dom').MemoryRouter });
 

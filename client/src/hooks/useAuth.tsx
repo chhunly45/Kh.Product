@@ -24,6 +24,7 @@ export interface AuthContextType {
   user: AuthUser | null;
   authToken: string | null;
   isAuthenticated: boolean;
+  isHydrated: boolean;
   register: (payload: { displayName: string; email?: string; password: string; phoneNumber: string }) => Promise<AuthResponse | EmailVerificationResponse>;
   login: (payload: LoginPayload) => Promise<AuthResponse | LoginOtpResponse>;
   verifyLoginOtp: (payload: { identifier: string; code: string }) => Promise<AuthResponse>;
@@ -50,6 +51,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<AuthUser | null>(getStoredUser);
   const [authToken, setAuthToken] = useState<string | null>(getStoredToken);
   const [restoreAttempted, setRestoreAttempted] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
     const handleStorage = () => {
@@ -77,6 +79,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     if (user && authToken) {
       setRestoreAttempted(true);
+      setIsHydrated(true);
       return;
     }
 
@@ -96,6 +99,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setUser(null);
           localStorage.removeItem('user');
         }
+      } finally {
+        setIsHydrated(true);
       }
     };
 
@@ -148,13 +153,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       user,
       authToken,
       isAuthenticated: Boolean(user && authToken),
+      isHydrated,
       register,
       login,
       verifyLoginOtp,
       logout,
       setUser
     }),
-    [user, authToken]
+    [user, authToken, isHydrated]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
