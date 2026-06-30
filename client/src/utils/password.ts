@@ -28,8 +28,8 @@ export const getPasswordStrength = (password = ''): PasswordStrength => {
 };
 
 export const getPasswordStrengthLabel = (strength: PasswordStrength): string => {
-  if (strength === 'Strong') return 'ខ្លាំង';
-  if (strength === 'Medium') return 'មធ្យម';
-  if (strength === 'Weak') return 'ខ្សោយ';
+  if (strength === 'Strong') return 'ខ្លាំង / Strong';
+  if (strength === 'Medium') return 'មធ្យម / Medium';
+  if (strength === 'Weak') return 'ខ្សោយ / Weak';
   return '';
 };
