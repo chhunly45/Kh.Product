@@ -17,8 +17,12 @@ const safeImportMetaEnv = () => {
   }
 };
 
+const defaultApiBase = typeof window !== 'undefined' && window.location.hostname === 'localhost'
+  ? 'http://localhost:5002/api'
+  : 'https://api.konpuk.com/api';
+
 const created = axios.create({
-  baseURL: getViteEnv('VITE_API_BASE_URL', 'https://api.konpuk.com/api'),
+  baseURL: getViteEnv('VITE_API_BASE_URL', defaultApiBase),
   headers: {
     'Content-Type': 'application/json'
   },

@@ -423,29 +423,58 @@ const Header = () => {
             </div>
 
             <nav className="space-y-2">
+              {!isHydrated ? (
+                <div className="h-2" aria-hidden="true" />
+              ) : user ? (
+                <div className="rounded-3xl border border-muted bg-background p-3">
+                  <div className="flex items-center gap-3 rounded-3xl border border-muted bg-white px-3 py-3">
+                    {user.profileImageUrl ? (
+                      <img src={user.profileImageUrl} alt="avatar" className="h-10 w-10 rounded-full object-cover" />
+                    ) : (
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                        <User className="h-5 w-5" />
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold text-text-primary">{user.displayName || 'Account'}</p>
+                      <p className="text-xs text-muted">Signed in</p>
+                    </div>
+                  </div>
+                  <div className="mt-3 space-y-2">
+                    <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)} className="block rounded-3xl px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background">Dashboard</Link>
+                    <Link to="/profile" onClick={() => setMobileMenuOpen(false)} className="block rounded-3xl px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background">Profile</Link>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        try {
+                          await logout();
+                        } catch {
+                          localStorage.removeItem('authToken');
+                          localStorage.removeItem('refreshToken');
+                          localStorage.removeItem('user');
+                        }
+                        setMobileMenuOpen(false);
+                        navigate('/');
+                      }}
+                      className="w-full rounded-3xl border border-muted px-4 py-3 text-left text-sm font-semibold text-rose-600 hover:bg-background"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-2 rounded-3xl border border-muted bg-background p-3">
+                  <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="block rounded-3xl border border-muted bg-white px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background">Login</Link>
+                  <Link to="/register" onClick={() => setMobileMenuOpen(false)} className="block rounded-3xl bg-primary px-4 py-3 text-sm font-semibold text-white hover:bg-primary-hover">Register</Link>
+                </div>
+              )}
               <Link to="/" onClick={() => setMobileMenuOpen(false)} className="block rounded-3xl px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background">Home</Link>
               <Link to="/products" onClick={() => setMobileMenuOpen(false)} className="block rounded-3xl px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background">Browse Products</Link>
               <Link to="/post-product" onClick={() => setMobileMenuOpen(false)} className="block rounded-3xl bg-[#0F766E] px-4 py-3 text-sm font-semibold text-white hover:bg-[#0e6e60]">Post Product</Link>
-              <Link to="/messages" onClick={() => setMobileMenuOpen(false)} className="block rounded-3xl px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background">Messages</Link>
-              <Link to="/notifications" onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-between rounded-3xl px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background">
-                <span>Notifications</span>
-                {notificationCount > 0 && <span className="inline-flex h-6 min-w-[1.5rem] items-center justify-center rounded-full bg-rose-600 px-2 text-[0.65rem] font-semibold text-white">{notificationCount > 9 ? '9+' : notificationCount}</span>}
-              </Link>
               <hr className="border-surface-muted" />
               <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="block rounded-3xl px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background">About</Link>
               <Link to="/guide" onClick={() => setMobileMenuOpen(false)} className="block rounded-3xl px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background">Guide</Link>
               <Link to="/help" onClick={() => setMobileMenuOpen(false)} className="block rounded-3xl px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background">Help</Link>
-              <hr className="border-surface-muted" />
-              {!isHydrated ? (
-                <div className="h-2" aria-hidden="true" />
-              ) : user ? (
-                <Link to="/profile" onClick={() => setMobileMenuOpen(false)} className="block rounded-3xl px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background">Profile</Link>
-              ) : (
-                <>
-                  <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="block rounded-3xl px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background">Login</Link>
-                  <Link to="/register" onClick={() => setMobileMenuOpen(false)} className="block rounded-3xl bg-primary px-4 py-3 text-sm font-semibold text-white hover:bg-primary-hover">Register</Link>
-                </>
-              )}
               <details className="mt-4 rounded-3xl border border-muted bg-white p-2">
                 <summary className="px-3 py-2 text-sm font-semibold">Product categories</summary>
                 <div className="mt-2 grid grid-cols-2 gap-2">
