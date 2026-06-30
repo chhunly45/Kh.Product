@@ -116,7 +116,7 @@ const RegisterPage = () => {
         <form className="mt-10 space-y-6" onSubmit={handleSubmit}>
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block">
-              <span className="text-sm font-medium text-text-secondary">First Name</span>
+              <span className="text-sm font-medium text-text-secondary">នាមត្រកូល / First Name</span>
               <input
                 type="text"
                 name="firstName"
@@ -128,7 +128,7 @@ const RegisterPage = () => {
               />
             </label>
             <label className="block">
-              <span className="text-sm font-medium text-text-secondary">Last Name</span>
+              <span className="text-sm font-medium text-text-secondary">នាមខ្លួន / Last Name</span>
               <input
                 type="text"
                 name="lastName"
