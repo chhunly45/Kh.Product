@@ -31,7 +31,13 @@ const TopAdBanner = ({ imageUrl, link }: TopAdBannerProps) => {
         <div className="flex items-center gap-4 p-4 sm:p-6">
           <div className="flex-shrink-0">
             {banner.imageUrl ? (
-              <img src={banner.imageUrl} alt={banner.title} className="hidden md:block w-48 h-20 object-cover rounded-md" />
+              <img
+                src={banner.imageUrl}
+                alt={banner.title}
+                loading="lazy"
+                decoding="async"
+                className="hidden md:block w-48 h-20 object-cover rounded-md"
+              />
             ) : (
               <div className="hidden md:flex w-48 h-20 bg-background rounded-md items-center justify-center text-muted">Ad image</div>
             )}
@@ -59,7 +65,13 @@ const TopAdBanner = ({ imageUrl, link }: TopAdBannerProps) => {
         <div className="flex items-center gap-4 p-4 sm:p-6">
           <div className="flex-shrink-0">
             {imageUrl ? (
-              <img src={imageUrl} alt="ad" className="hidden md:block w-48 h-20 object-cover rounded-md" />
+              <img
+                src={imageUrl}
+                alt="ad"
+                loading="lazy"
+                decoding="async"
+                className="hidden md:block w-48 h-20 object-cover rounded-md"
+              />
             ) : (
               <div className="hidden md:flex w-48 h-20 bg-background rounded-md items-center justify-center text-muted">Ad image</div>
             )}

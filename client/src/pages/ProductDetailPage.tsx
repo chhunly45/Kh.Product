@@ -320,6 +320,8 @@ const ProductDetailPage = () => {
                 <img
                   src={selectedImage || getProductCoverImageUrl(product, '/no-image.png')}
                   alt={displayTitle}
+                  loading="eager"
+                  decoding="async"
                   className="h-[24rem] w-full object-cover sm:h-[26rem] md:h-[28rem] xl:h-[34rem]"
                 />
               </div>
@@ -336,7 +338,7 @@ const ProductDetailPage = () => {
                         className={`overflow-hidden rounded-3xl border ${selectedImage === src ? 'border-primary ring-2 ring-primary/20' : 'border-transparent'} bg-white focus:outline-none focus:ring-2 focus:ring-primary/30`}
                       >
                         <div className="aspect-square w-full overflow-hidden">
-                          <img src={src} alt={displayTitle} className="h-full w-full object-cover" />
+                          <img src={src} alt={displayTitle} loading="lazy" decoding="async" className="h-full w-full object-cover" />
                         </div>
                       </button>
                     );
@@ -396,7 +398,7 @@ const ProductDetailPage = () => {
                   </div>
                   <div className="h-16 w-16 overflow-hidden rounded-3xl bg-background">
                     {product.seller?.profileImageUrl ? (
-                      <img src={product.seller.profileImageUrl} alt={product.seller.displayName} className="h-full w-full object-cover" />
+                      <img src={product.seller.profileImageUrl} alt={product.seller.displayName} loading="lazy" decoding="async" className="h-full w-full object-cover" />
                     ) : (
                       <div className="flex h-full items-center justify-center text-muted">No Image</div>
                     )}

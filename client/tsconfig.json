@@ -17,7 +17,12 @@
     "jsx": "react-jsx",
     "types": ["vite/client", "jest", "node"]
   },
+  "exclude": [
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+    "src/__tests__/**/*",
+    "node_modules/@types/react-router-dom"
+  ],
   "include": ["src"],
-  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx", "src/__tests__/**/*"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

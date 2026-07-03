@@ -14,7 +14,13 @@ const SellerHero = ({ profile, avatarImage, coverImage, username, verificationSt
   return (
     <div className="relative overflow-hidden bg-text-primary">
       <div className="relative h-[15.5rem] overflow-hidden sm:h-[16.5rem]">
-        <img src={coverImage} alt={profile?.displayName ? `${profile.displayName} cover` : 'Seller cover'} className="h-full w-full object-cover" />
+        <img
+          src={coverImage}
+          alt={profile?.displayName ? `${profile.displayName} cover` : 'Seller cover'}
+          loading="eager"
+          decoding="async"
+          className="h-full w-full object-cover"
+        />
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/75 via-[#0f766e]/70 to-[#0f766e]/60" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.16),_transparent_35%)]" />
       </div>
@@ -23,7 +29,13 @@ const SellerHero = ({ profile, avatarImage, coverImage, username, verificationSt
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:gap-8">
             <div className="flex-shrink-0">
               <div className="relative h-[11rem] w-[11rem] overflow-hidden rounded-full border-4 border-white bg-slate-100 shadow-[0_18px_40px_rgba(15,23,42,0.16)]">
-                <img src={avatarImage} alt={profile?.displayName ? `${profile.displayName} avatar` : 'Seller avatar'} className="h-full w-full object-cover" />
+                <img
+                  src={avatarImage}
+                  alt={profile?.displayName ? `${profile.displayName} avatar` : 'Seller avatar'}
+                  loading="lazy"
+                  decoding="async"
+                  className="h-full w-full object-cover"
+                />
               </div>
             </div>
             <div className="min-w-0">

@@ -568,7 +568,7 @@ const ProfilePage = () => {
                         </div>
                         <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center">
                           <div className="h-24 w-24 overflow-hidden rounded-[1.15rem] bg-background shadow-sm">
-                            <img src={avatarPreview || defaultAvatar} alt="Avatar preview" className="h-full w-full object-cover" />
+                            <img src={avatarPreview || defaultAvatar} alt="Avatar preview" loading="lazy" decoding="async" className="h-full w-full object-cover" />
                           </div>
                           <label className="inline-flex cursor-pointer items-center justify-center rounded-full bg-background px-4 py-3 text-sm font-semibold text-text-secondary shadow-sm ring-1 ring-slate-200 transition hover:bg-slate-50 focus-within:ring-2 focus-within:ring-primary/30">
                             {profileUi.chooseAvatar}
@@ -585,7 +585,7 @@ const ProfilePage = () => {
                         </div>
                         <div className="mt-4">
                           <div className="h-36 overflow-hidden rounded-[1.15rem] bg-background shadow-sm">
-                            <img src={coverPreview || defaultCover} alt="Cover preview" className="h-full w-full object-cover" />
+                            <img src={coverPreview || defaultCover} alt="Cover preview" loading="lazy" decoding="async" className="h-full w-full object-cover" />
                           </div>
                           <label className="mt-4 inline-flex cursor-pointer items-center gap-2 rounded-full bg-background px-4 py-3 text-sm font-semibold text-text-secondary shadow-sm ring-1 ring-slate-200 transition hover:bg-slate-50 focus-within:ring-2 focus-within:ring-primary/30">
                             {profileUi.chooseCover}
@@ -694,11 +694,11 @@ const ProfilePage = () => {
                       </div>
                       <div className="mt-5 grid gap-4 sm:grid-cols-2">
                         <div className="overflow-hidden rounded-[1.25rem] border border-slate-200 bg-white p-3 shadow-sm">
-                          <img src={avatarImage} alt={profile?.displayName ? `${profile.displayName} avatar` : 'Seller avatar'} className="h-32 w-full rounded-[1rem] object-cover" />
+                          <img src={avatarImage} alt={profile?.displayName ? `${profile.displayName} avatar` : 'Seller avatar'} loading="lazy" decoding="async" className="h-32 w-full rounded-[1rem] object-cover" />
                           <p className="mt-3 text-sm font-semibold text-text-primary">{profileUi.profilePhoto}</p>
                         </div>
                         <div className="overflow-hidden rounded-[1.25rem] border border-slate-200 bg-white p-3 shadow-sm">
-                          <img src={coverImage} alt={profile?.displayName ? `${profile.displayName} cover` : 'Seller cover'} className="h-32 w-full rounded-[1rem] object-cover" />
+                          <img src={coverImage} alt={profile?.displayName ? `${profile.displayName} cover` : 'Seller cover'} loading="lazy" decoding="async" className="h-32 w-full rounded-[1rem] object-cover" />
                           <p className="mt-3 text-sm font-semibold text-text-primary">{profileUi.coverPhoto}</p>
                         </div>
                       </div>
