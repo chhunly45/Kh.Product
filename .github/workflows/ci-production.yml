@@ -1,0 +1,60 @@
+name: CI Production Gate
+
+on:
+  workflow_call:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  quality-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: |
+            package-lock.json
+            client/package-lock.json
+            server/package-lock.json
+
+      - name: Install root deps
+        run: npm ci
+
+      - name: Install client deps
+        run: npm --prefix client ci
+
+      - name: Install server deps
+        run: npm --prefix server ci
+
+      - name: Gate 1 - Build (server build)
+        run: npm --prefix server run build
+
+      - name: Gate 2 - TypeScript
+        run: npm run typecheck
+
+      - name: Gate 3 - Lint
+        run: npm run lint
+
+      - name: Gate 4 - Documentation
+        run: npm run verify:docs
+
+      - name: Gate 5 - Production Build (client)
+        run: npm --prefix client run build
+
+      - name: Repository clean check
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Repository is not clean after CI steps"
+            git status --short
+            exit 1
+          fi

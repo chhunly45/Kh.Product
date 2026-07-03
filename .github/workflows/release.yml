@@ -1,0 +1,37 @@
+name: Release Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Semantic version tag (example: v1.0.1)'
+        required: true
+        type: string
+
+jobs:
+  pre-release-gates:
+    uses: ./.github/workflows/ci-production.yml
+
+  create-tag:
+    runs-on: ubuntu-latest
+    needs: pre-release-gates
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Create and push tag
+        run: |
+          TAG="${{ inputs.tag }}"
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag $TAG already exists"
+            exit 1
+          fi
+          git tag "$TAG"
+          git push origin "$TAG"

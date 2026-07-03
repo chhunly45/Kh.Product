@@ -1,6 +1,16 @@
 {
   "scripts": {
-    "make:admin": "npm --prefix server run make:admin --"
+    "make:admin": "npm --prefix server run make:admin --",
+    "build": "npm run build:server && npm run build:client",
+    "lint": "npm --prefix server run lint && npm --prefix client run lint",
+    "typecheck": "npm --prefix server run typecheck && npm --prefix client run typecheck",
+    "build:client": "npm --prefix client run build",
+    "build:server": "npm --prefix server run build",
+    "test": "npm --prefix server run test:unit && npm --prefix client run test",
+    "verify:docs": "node scripts/verify-docs.js",
+    "verify:clean": "git diff --exit-code && git diff --cached --exit-code && node -e \"const {execSync}=require('child_process');const out=execSync('git status --porcelain',{encoding:'utf8'}).trim();if(out){console.error('Repository not clean');console.error(out);process.exit(1);}console.log('Repository clean');\"",
+    "verify": "npm run verify:docs && npm run lint && npm run typecheck && npm run build:client && npm run build:server && npm run verify:clean",
+    "ci": "npm run verify"
   },
   "dependencies": {
     "lucide-react": "^1.17.0"
