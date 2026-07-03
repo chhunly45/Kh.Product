@@ -2,7 +2,7 @@
 
 ## v1.0.0 - 2026-07-03
 
-- Commit: 0cdf587da207a8353d92ec186acda5582ea07d1a
+- Commit: ca519641c35c91b8f315a0bd8899105687cfcec1
 
 ### Highlights
 - Finalized production release baseline with authenticated runtime stabilization.

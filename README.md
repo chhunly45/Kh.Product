@@ -1,471 +1,72 @@
-# Konpuk
-
-Konpuk is a Cambodian local classifieds platform built with a React frontend and an Express/MongoDB backend. The repository is organized into two main application modules:
-
-- `client/` — frontend application powered by Vite, React, TypeScript, Tailwind, and Axios.
-- `server/` — backend API powered by Express, MongoDB, Cloudinary, authentication, and CSRF protection.
-
-## Features
-
-- User registration, login, password reset, and profile management
-- Product listing creation, editing, deletion, and search filters
-- Category management with admin and moderator controls
-- Favorites and notification handling for signed-in users
-- Chat and messaging between buyers and sellers
-- Report submission for products or users
-- Image uploads via Cloudinary
-- Admin dashboard endpoints for user, product, and report moderation
-- CSRF protection, rate limiting, and security middleware for production readiness
-
-## Development Environment
-
-### Prerequisites
-
-- Node.js 18+ and npm
-- MongoDB available locally or via connection string
-- `git`
-- Terminal/PowerShell access
-
-### Install
-
-```bash
-git clone https://github.com/chhunly45/Kh.Product.git
-cd Kh.Product
-cd server
-npm install
-cd ../client
-npm install
-```
-
-### Environment Variables
-
-```bash
-cd ../server
-copy .env.production.example .env
-```
-
-Copy `server/.env.example` to `server/.env` and update values as needed.
-
-`DEV_SEED` must NEVER be enabled in production.
-
-The official development environment template is `server/.env.example`.
-Use it as the source of truth for backend environment configuration.
-
-### Database
-
-Use a local MongoDB instance or a development MongoDB URI.
-
-Example:
-
-```env
-MONGODB_URI=mongodb://localhost:27017/konpuk
-```
-
-### Seed
-
-Run the development seed only when both conditions are met:
-
-- `NODE_ENV=development`
-- `DEV_SEED=true`
-
-Windows:
-
-```powershell
-cd server
-set NODE_ENV=development&& set DEV_SEED=true&& npm run seed:dev
-```
-
-macOS/Linux:
-
-```bash
-cd server
-NODE_ENV=development DEV_SEED=true npm run seed:dev
-```
-
-The script exits immediately if any of the following are true:
-
-- `NODE_ENV` is not `development`
-- `DEV_SEED` is not `true`
-- a CI/CD environment is detected
-- the database name is not one of `konpuk_dev` or `konpuk_local`
-- the connection string contains production-like indicators such as `prod`, `production`, `live`, `stage`, or `staging`
-
-The seed script also prompts for explicit confirmation and requires typing `YES` before it will continue.
-
-### Login
-
-After seeding:
-
-- Start backend: `npm run dev` from `server`
-- Start frontend: `npm run dev` from `client`
-- Open the frontend URL shown in the terminal
-- Login and visit `/profile`
-
-### Known Test Accounts
-
-| Role  | Purpose        | Email                     | Password         | Email Verified | Status |
-|-------|----------------|---------------------------|------------------|----------------|--------|
-| Admin | Admin testing  | `dev-admin@example.com`   | `AdminPass123!`  | true           | active |
-| Seller| Seller testing | `dev-seller@example.com`  | `SellerPass123!` | true           | active |
-| Buyer | Buyer testing  | `dev-buyer@example.com`   | `BuyerPass123!`  | true           | active |
-
-### Developer Workflow
-
-A new developer should be able to complete these steps and get a functional local environment:
-
-1. `git clone ...`
-2. `cd Kh.Product`
-3. `cd server && npm install`
-4. `cd ../client && npm install`
-5. `cd ../server && copy .env.production.example .env`
-6. Set `NODE_ENV=development` and `DEV_SEED=true` in `server/.env`
-7. `npm run seed:dev`
-8. `npm run dev` in `server`
-9. `cd ../client && npm run dev`
-10. Login and verify `/profile`
-
-This workflow is intended to complete within 10 minutes for a new developer.
-
-## Environment variables
-
-The official development template is `server/.env.example`.
-Copy it to `server/.env` and update any local values.
-
-Allowed development databases:
-
-- `konpuk_dev`
-- `konpuk_local`
-
-Forbidden production-like databases:
-
-- `konpuk_prod`
-- `konpuk_production`
-- `konpuk_live`
-
-### Frontend (`client`)
-
-Required variable:
-
-- `VITE_API_BASE_URL` — backend API base URL, e.g. `https://your-backend.example.com/api`
-
-## Development seed accounts
-
-This repository includes an official development seed command that only runs in development.
-
-To seed dev accounts:
-
-```bash
-cd server
-set NODE_ENV=development&& set DEV_SEED=true&& npm run seed:dev
-```
-
-Default development credentials:
-
-- Admin:  `dev-admin@example.com` / `AdminPass123!`
-- Seller: `dev-seller@example.com` / `SellerPass123!`
-- Buyer:  `dev-buyer@example.com` / `BuyerPass123!`
-
-Each seeded account uses:
-
-- `emailVerified: true`
-- `isActive: true`
-- known email and password
-- role-specific account type
-
-The seed command will abort if `NODE_ENV` is not `development`, `DEV_SEED` is not `true`, or a CI/CD environment is detected.
-
-## Render deployment
-
-```powershell
-$env:MONGODB_URI="mongodb+srv://<user>:<password>@cluster.mongodb.net/konpuk?retryWrites=true&w=majority"
-npm run make:admin -- user@example.com
-```
-
-Or create `server/.env` with `MONGODB_URI` and run:
-```bash
-npm run make:admin -- user@example.com
-```
-
-8. Start the frontend app:
-
-```bash
-cd ../client
-npm run dev
-```
-
-7. Open the Vite frontend URL shown in the terminal.
-
-## Environment variables
-
-### Backend (`server`)
-
-Required variables:
-
-- `PORT` — backend port (example: `4000`)
-- `MONGODB_URI` — MongoDB connection string
-- `JWT_SECRET` — secret used to sign JWT tokens
-- `JWT_EXPIRES_IN` — access token lifetime (example: `1h`)
-- `REFRESH_TOKEN_EXPIRES_IN` — refresh token lifetime (example: `7d`)
-- `CLIENT_URL` or `CLIENT_ORIGIN` — frontend origin allowed by CORS
-- `CLOUDINARY_CLOUD_NAME` — Cloudinary cloud name
-- `CLOUDINARY_API_KEY` — Cloudinary API key
-- `CLOUDINARY_API_SECRET` — Cloudinary API secret
-
-Optional variables:
-
-- `RATE_LIMIT_WINDOW_MS` — rate limit window in milliseconds
-- `RATE_LIMIT_MAX` — maximum requests per window
-- `AUTH_RATE_LIMIT_WINDOW_MS` — auth rate limit window in milliseconds
-- `AUTH_RATE_LIMIT_MAX` — auth request limit per window
-- `UPLOAD_DIR` — local upload directory (default: `uploads`)
-- `NODE_ENV` — runtime environment (`development` or `production`)
-- `CLOUDINARY_FOLDER` — Cloudinary upload folder (default: `marketplace`)
-- `RESEND_API_KEY` — Resend API key for production email delivery
-- `EMAIL_FROM` — sender email address for transactional emails
-
-## Development seed accounts
-
-This repository includes an official development seed command that only runs in development.
-
-To seed dev accounts:
-
-```bash
-cd server
-set NODE_ENV=development&& npm run seed:dev
-```
-
-Default development credentials:
-
-- Admin:  `dev-admin@example.com` / `AdminPass123!`
-- Seller: `dev-seller@example.com` / `SellerPass123!`
-- Buyer:  `dev-buyer@example.com` / `BuyerPass123!`
-
-Each seeded account uses:
-
-- `emailVerified: true`
-- `isActive: true`
-- known email and password
-- role-specific account type
-
-The seed command will abort if `NODE_ENV` is not `development`, so production data is never modified.
-
-Optional variables:
-
-- `RATE_LIMIT_WINDOW_MS` — rate limit window in milliseconds
-- `RATE_LIMIT_MAX` — maximum requests per window
-- `AUTH_RATE_LIMIT_WINDOW_MS` — auth rate limit window in milliseconds
-- `AUTH_RATE_LIMIT_MAX` — auth request limit per window
-- `UPLOAD_DIR` — local upload directory (default: `uploads`)
-- `NODE_ENV` — runtime environment (`development` or `production`)
-- `CLOUDINARY_FOLDER` — Cloudinary upload folder (default: `marketplace`)
-- `RESEND_API_KEY` — Resend API key for production email delivery
-- `EMAIL_FROM` — sender email address for transactional emails
-
-### Frontend (`client`)
-
-Required environment variable:
-
-- `VITE_API_BASE_URL` — backend API base URL, e.g. `https://your-backend.example.com/api`
-
-## Render deployment
-
-Render is configured via `render.yaml` at the repository root.
-
-1. Connect your GitHub repository to Render.
-2. Create a new Web Service for the backend.
-3. Set the service root to `server`.
-4. Use the build command:
-
-```bash
-npm install
-```
-
-5. Use the start command:
-
-```bash
-npm start
-```
-
-6. Add the required environment variables in Render, including:
-
-- `MONGODB_URI`
-- `JWT_SECRET`
-- `CLIENT_URL`
-- `CLOUDINARY_CLOUD_NAME`
-- `CLOUDINARY_API_KEY`
-- `CLOUDINARY_API_SECRET`
-- `NODE_ENV=production`
-
-Important Render notes:
-- Set `CLIENT_URL` (or `CLIENT_ORIGIN` / `FRONTEND_URL`) to `https://konpuk.com`.
-- The backend already allows `https://konpuk.com` and `https://www.konpuk.com` by default.
-- If your frontend runs at `https://kh-product.vercel.app` during preview, set `CLIENT_URL` accordingly.
-
-7. Deploy the service.
-
-8. Point the frontend `VITE_API_BASE_URL` to the rendered backend URL and ensure `CLIENT_URL` matches the frontend origin.
-
-## Vercel deployment
-
-1. Create a new Vercel project and connect your repository.
-2. Set the project root to `client`.
-3. Configure the install command:
-
-```bash
-npm install && npm --prefix client install
-```
-
-4. Configure the build command:
-
-```bash
-npm --prefix client run build
-```
-
-5. Configure the output directory:
-
-```bash
-client/dist
-```
-
-6. Add the following environment variable in Vercel project settings:
-
-- `VITE_API_BASE_URL` — e.g. `https://your-backend.vercel.app/api`
-
-Important Vercel notes:
-- Set `VITE_API_BASE_URL` to your backend URL (for example the Render service URL) including the `/api` path, e.g. `https://your-backend.example.com/api`.
-- Ensure your backend `CLIENT_URL` on Render is set to `https://konpuk.com` so CORS and CSRF cookies work when the site is live.
-- During testing you can also point `VITE_API_BASE_URL` to `https://api.konpuk.com/api` (existing Render preview).
-
-7. Deploy the frontend.
-
-8. Update backend `CLIENT_URL` to the Vercel frontend URL and allow that origin in CORS.
-
-## Cloudinary setup
-
-1. Create a Cloudinary account at https://cloudinary.com.
-2. Copy your Cloud name, API key, and API secret.
-3. Add the values to backend environment variables:
-
-- `CLOUDINARY_CLOUD_NAME`
-- `CLOUDINARY_API_KEY`
-- `CLOUDINARY_API_SECRET`
-- `CLOUDINARY_FOLDER` (optional)
-
-4. Backend uploads use Cloudinary and will print configuration status during startup.
-
-## MongoDB setup
-
-1. Create a cluster in MongoDB Atlas or run a local MongoDB instance.
-2. Create a database user and whitelist your application host.
-3. Use the connection string format:
-
-```bash
-mongodb+srv://<user>:<password>@<cluster>.mongodb.net/konpuk?retryWrites=true&w=majority
-```
-
-4. Set `MONGODB_URI` in `server/.env` or your deployment platform.
-
-## Running integration tests
-
-Integration tests run from the backend package and use an in-memory MongoDB server.
-
-```bash
-cd server
-npm run test:integration
-```
-
-This script:
-
-- starts an in-memory MongoDB instance
-- boots the Express app
-- runs auth and profile flows against `/api`
-- validates login OTP, password change, profile updates, and verification requests
-
-## API overview
-
-The server exposes the API under `/api`.
-
-### Auth
-
-- `POST /api/auth/register`
-- `POST /api/auth/login`
-- `POST /api/auth/login/verify`
-- `POST /api/auth/login/resend`
-- `POST /api/auth/register/verify`
-- `POST /api/auth/register/verify/resend`
-- `POST /api/auth/password-reset/request`
-- `POST /api/auth/password-reset/verify`
-- `POST /api/auth/password-reset/confirm`
-- `POST /api/auth/password-reset/resend`
-- `POST /api/auth/refresh`
-- `POST /api/auth/logout`
-- `GET /api/auth/me`
-- `PUT /api/auth/me`
-- `POST /api/auth/change-password`
-- `POST /api/auth/verification-request`
-
-### Categories
-
-- `GET /api/categories`
-- `GET /api/categories/:id`
-- `POST /api/categories` (admin/moderator)
-- `PUT /api/categories/:id` (admin/moderator)
-- `DELETE /api/categories/:id` (admin)
-
-### Products
-
-- `GET /api/products`
-- `GET /api/products/:id`
-- `POST /api/products` (authenticated)
-- `PUT /api/products/:id` (authenticated)
-- `DELETE /api/products/:id` (authenticated)
-
-### Favorites
-
-- `GET /api/favorites`
-- `GET /api/favorites/count`
-- `GET /api/favorites/check/:productId`
-- `POST /api/favorites/:productId`
-- `DELETE /api/favorites/:productId`
-
-### Uploads
-
-- `POST /api/upload` (authenticated)
-- `DELETE /api/upload/:id` (authenticated)
-
-### Chats
-
-- `GET /api/chats` (authenticated)
-- `GET /api/chats/:id` (authenticated)
-- `POST /api/chats` (authenticated)
-- `POST /api/chats/:id/messages` (authenticated)
-- `PATCH /api/chats/:id/read` (authenticated)
-
-### Reports
-
-- `POST /api/reports` (authenticated)
-- `GET /api/reports/me` (authenticated)
-
-### Notifications
-
-- `GET /api/notifications` (authenticated)
-- `GET /api/notifications/count` (authenticated)
-- `PATCH /api/notifications/:id/read` (authenticated)
-
-### Admin
-
-- `GET /api/admin/overview` (admin/moderator)
-- `GET /api/admin/users` (admin/moderator)
-- `PATCH /api/admin/users/:id/status` (admin/moderator)
-- `GET /api/admin/products` (admin/moderator)
-- `PATCH /api/admin/products/:id/status` (admin/moderator)
-- `GET /api/admin/reports` (admin/moderator)
-- `PATCH /api/admin/reports/:id` (admin/moderator)
-
----
-
-## Notes
-
-- Frontend development runs from `client/` and builds to `client/dist`.
-- Backend development runs from `server/` and listens on the configured `PORT`.
-- Make sure `CLIENT_URL`/`CLIENT_ORIGIN` and `VITE_API_BASE_URL` are aligned in deployment.
+# Konpuk v1.0
+
+Purpose
+- Single entry point for all engineering and operational documentation for the v1.0 production baseline.
+
+Scope
+- Covers repository overview, quick start, and links to all core project documents.
+
+Prerequisites
+- Node.js 18+
+- npm 9+
+- MongoDB (local or hosted)
+- Git
+
+Instructions
+
+## 1) Repository Overview
+- Frontend: `client/` (React + Vite + TypeScript)
+- Backend: `server/` (Express + MongoDB/Mongoose)
+- Documentation: `docs/`
+
+## 2) Quick Start (Developer)
+1. Install dependencies:
+   - `npm --prefix server install`
+   - `npm --prefix client install`
+2. Create backend env file from development template:
+   - Windows PowerShell: `Copy-Item server/.env.example server/.env`
+3. Start backend:
+   - `npm --prefix server run dev`
+4. Start frontend:
+   - `npm --prefix client run dev`
+5. Open the local frontend URL shown by Vite.
+
+## 3) Build Verification
+- Frontend production build:
+  - `npm --prefix client run build`
+- Backend production start:
+  - `npm --prefix server run start`
+
+## 4) Documentation Index
+Release and governance
+- Changelog: [CHANGELOG.md](CHANGELOG.md)
+- Release Notes v1.0.0: [docs/RELEASE_NOTES_v1.0.0-production.md](docs/RELEASE_NOTES_v1.0.0-production.md)
+- Release Notes (Canonical): [docs/RELEASE_NOTES.md](docs/RELEASE_NOTES.md)
+
+Core engineering references
+- Project Bible: [docs/PROJECT_BIBLE.md](docs/PROJECT_BIBLE.md)
+- Design Bible: [docs/DESIGN_BIBLE.md](docs/DESIGN_BIBLE.md)
+- AI Engineering Bible: [docs/AI_ENGINEERING_BIBLE.md](docs/AI_ENGINEERING_BIBLE.md)
+- Architecture Overview: [docs/ARCHITECTURE_OVERVIEW.md](docs/ARCHITECTURE_OVERVIEW.md)
+- Repository Structure: [docs/REPOSITORY_STRUCTURE.md](docs/REPOSITORY_STRUCTURE.md)
+- API Overview: [docs/API_OVERVIEW.md](docs/API_OVERVIEW.md)
+- Database Overview: [docs/DATABASE_OVERVIEW.md](docs/DATABASE_OVERVIEW.md)
+
+Operations and setup
+- Deployment Guide: [docs/DEPLOYMENT_GUIDE.md](docs/DEPLOYMENT_GUIDE.md)
+- Environment Guide: [docs/ENVIRONMENT_GUIDE.md](docs/ENVIRONMENT_GUIDE.md)
+- Developer Setup Guide: [docs/DEVELOPER_SETUP_GUIDE.md](docs/DEVELOPER_SETUP_GUIDE.md)
+- Troubleshooting Guide: [docs/TROUBLESHOOTING_GUIDE.md](docs/TROUBLESHOOTING_GUIDE.md)
+- Production Release Checklist: [docs/PRODUCTION_RELEASE_CHECKLIST.md](docs/PRODUCTION_RELEASE_CHECKLIST.md)
+- Scripts Guide: [server/scripts/README.md](server/scripts/README.md)
+
+Legacy product requirements
+- Original PRD: [docs/PRD.md](docs/PRD.md)
+
+Verification
+- `README.md` links resolve to existing files in this repository.
+- Quick start commands align with `client/package.json` and `server/package.json` scripts.
+
+Troubleshooting
+- If backend fails at boot due to env validation, verify values in `server/.env` against [docs/ENVIRONMENT_GUIDE.md](docs/ENVIRONMENT_GUIDE.md).
+- If frontend API calls fail, verify `VITE_API_BASE_URL` and backend CORS origin settings.
