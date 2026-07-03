@@ -13,6 +13,8 @@ interface CategoryItem {
   labelKh?: string;
 }
 
+let categoriesLoadPromise: Promise<CategoryItem[]> | null = null;
+
 const Header = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [categories, setCategories] = useState<CategoryItem[]>([]);
@@ -31,6 +33,7 @@ const Header = () => {
   const navigate = useNavigate();
   const notificationsButtonRef = useRef<HTMLButtonElement | null>(null);
   const notificationsMenuRef = useRef<HTMLDivElement | null>(null);
+  const lastCountLoadUserRef = useRef<string | null>(null);
 
   const fetchNotificationsCount = async () => {
     const token = localStorage.getItem('authToken');
@@ -94,13 +97,20 @@ const Header = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await api.get('/categories');
-        setCategories(response.data.data || []);
+        if (!categoriesLoadPromise) {
+          categoriesLoadPromise = api.get('/categories').then((response) => response.data.data || []);
+        }
+        const loadedCategories = await categoriesLoadPromise;
+        setCategories(loadedCategories);
       } catch (error) {
         setCategories([]);
       }
     };
 
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
     const fetchFavoriteCount = async () => {
       const token = localStorage.getItem('authToken');
       if (!token) return;
@@ -112,8 +122,9 @@ const Header = () => {
       }
     };
 
-    fetchCategories();
-    if (user) {
+    const userKey = user?._id || user?.id || user?.email || null;
+    if (userKey && lastCountLoadUserRef.current !== userKey) {
+      lastCountLoadUserRef.current = userKey;
       fetchFavoriteCount();
       fetchNotificationsCount();
     } else {
@@ -122,6 +133,12 @@ const Header = () => {
     }
 
     return undefined;
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) {
+      lastCountLoadUserRef.current = null;
+    }
   }, [user]);
 
   useEffect(() => {

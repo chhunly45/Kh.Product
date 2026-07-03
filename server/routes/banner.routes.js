@@ -1,8 +1,9 @@
 const express = require('express');
 const { body, param, query } = require('express-validator');
 const bannerController = require('../controllers/banner.controller');
-const authMiddleware = require('../middleware/auth.middleware');
-const roleMiddleware = require('../middleware/role.middleware');
+const requireAuth = require('../middleware/authentication/requireAuth');
+const requireVerifiedAccount = require('../middleware/authorization/requireVerifiedAccount');
+const requireAdmin = require('../middleware/authorization/requireAdmin');
 const upload = require('../middleware/upload.middleware');
 const validate = require('../middleware/validation.middleware');
 
@@ -16,7 +17,7 @@ router.get('/active',
 );
 
 // Admin endpoints - protected
-router.use(authMiddleware, roleMiddleware(['admin']));
+router.use(requireAuth, requireVerifiedAccount, requireAdmin);
 
 router.get('/', bannerController.listBanners);
 

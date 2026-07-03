@@ -35,7 +35,6 @@ const ProductCard = ({ title, titleKh, titleEn, price, location, category, id, i
   }, [isFavorite]);
 
   const fallback = '/no-image.png';
-  console.log('IMAGE SRC:', imageUrl);
   const src = imageUrl || fallback;
 
   const formatPrice = (p: string | number): { usd: string; khr: string } => ({
@@ -52,17 +51,13 @@ const ProductCard = ({ title, titleKh, titleEn, price, location, category, id, i
       className="group block overflow-hidden rounded-2xl border border-surface-muted bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
     >
           <div className="relative overflow-hidden bg-surface">
-        <div className="w-full bg-gray-100 aspect-[16/9] sm:aspect-[4/3]">
+        <div className="w-full bg-gray-100 aspect-[4/3] md:aspect-[3/2]">
           <img
             src={src}
             alt={altText}
             loading="lazy"
             className="h-full w-full object-cover transition duration-500 group-hover:scale-105 rounded-t-2xl"
-            onLoad={() => {
-              console.log('IMAGE LOADED:', src);
-            }}
             onError={(e) => {
-              console.log('IMAGE FAILED:', src);
               e.currentTarget.src = fallback;
             }}
           />
@@ -98,9 +93,9 @@ const ProductCard = ({ title, titleKh, titleEn, price, location, category, id, i
         </button>
       </div>
 
-      <div className="p-4 sm:p-5 flex flex-col h-40">
+      <div className="p-4 sm:p-5 flex flex-col h-full min-h-[260px]">
         <div className="flex-1">
-          <h3 className="text-base sm:text-lg font-semibold text-text-primary leading-[1.5] mb-1 line-clamp-1 break-words overflow-hidden">
+          <h3 className="text-base sm:text-lg font-semibold text-text-primary leading-6 mb-2 line-clamp-2 break-words overflow-hidden">
             {titleKh || title || titleEn}
           </h3>
 

@@ -25,6 +25,9 @@ import {
   Package
 } from 'lucide-react';
 import { formatPriceKHR, formatPriceUSD } from '../utils/price';
+import SellerHero from '../components/marketplace/SellerHero';
+import SellerStats from '../components/marketplace/SellerStats';
+import SellerSidebar from '../components/marketplace/SellerSidebar';
 
 const defaultCover = 'https://images.unsplash.com/photo-1528222354215-6da0c9bd62f9?auto=format&fit=crop&w=1600&q=80';
 const defaultAvatar = 'https://images.unsplash.com/photo-1502685104226-ee32379fefbe?auto=format&fit=crop&w=256&q=80';
@@ -360,269 +363,91 @@ const ProfilePage = () => {
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(15,118,110,0.10),_transparent_32%),linear-gradient(135deg,_#f8fafc_0%,_#eef6f4_100%)] pb-14">
-      <div className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8 lg:pt-8">
+      <div className="mx-auto max-w-7xl px-4 pt-4 sm:px-6 lg:px-8 lg:pt-6">
         <div className="overflow-hidden rounded-[2.25rem] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.12)]">
-          <div className="relative min-h-[22rem] overflow-hidden bg-text-primary sm:min-h-[24rem]">
-            <img src={coverImage} alt={profile?.displayName ? `${profile.displayName} cover` : 'Seller cover'} className="h-full w-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-r from-slate-950/80 via-[#0f766e]/80 to-[#0f766e]/65" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.16),_transparent_35%)]" />
-            <div className="relative px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
-              <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-                <div className="flex flex-col gap-5 sm:flex-row sm:items-end">
-                  <div className="relative h-28 w-28 overflow-hidden rounded-[1.8rem] border-4 border-white/90 bg-background shadow-2xl sm:h-32 sm:w-32">
-                    <img src={avatarImage} alt={profile?.displayName ? `${profile.displayName} avatar` : 'Seller avatar'} className="h-full w-full object-cover" />
-                  </div>
-                  <div className="max-w-2xl">
-                    <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-[0.7rem] font-semibold uppercase tracking-[0.3em] text-emerald-50 backdrop-blur">
-                      <Shield className="h-3.5 w-3.5" /> {profileUi.pageTitle}
-                    </div>
-                    <h1 className="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-[2.4rem]">{profile?.displayName || 'ឈ្មោះអ្នកលក់ / Seller Name'}</h1>
-                    <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-emerald-50/90">
-                      <span className="rounded-full bg-white/10 px-3 py-1.5">{username}</span>
-                      {profile?.location && (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-3 py-1.5">
-                          <MapPin className="h-4 w-4" /> {profile.location}
-                        </span>
-                      )}
-                      {profile?.createdAt && (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-3 py-1.5">
-                          <CalendarDays className="h-4 w-4" /> {profileUi.memberSince} {memberSinceLabel}
-                        </span>
-                      )}
-                    </div>
-                    <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                      <div className="rounded-[1.1rem] border border-white/15 bg-white/12 p-3.5 backdrop-blur-sm">
-                        <div className="flex items-center gap-2 text-sm font-semibold text-emerald-50">
-                          <Shield className="h-4 w-4" /> {profileUi.verificationStatus}
-                        </div>
-                        <p className="mt-2 text-sm text-emerald-50/90">{verificationStatusLabel}</p>
-                      </div>
-                      <div className="rounded-[1.1rem] border border-white/15 bg-white/12 p-3.5 backdrop-blur-sm">
-                        <div className="flex items-center gap-2 text-sm font-semibold text-emerald-50">
-                          <CalendarDays className="h-4 w-4" /> {profileUi.memberSince}
-                        </div>
-                        <p className="mt-2 text-sm text-emerald-50/90">{memberSinceLabel}</p>
-                      </div>
-                      <div className="rounded-[1.1rem] border border-white/15 bg-white/12 p-3.5 backdrop-blur-sm">
-                        <div className="flex items-center gap-2 text-sm font-semibold text-emerald-50">
-                          <Package className="h-4 w-4" /> {profileUi.productCount}
-                        </div>
-                        <p className="mt-2 text-sm text-emerald-50/90">{stats.totalProducts}</p>
-                      </div>
-                      <div className="rounded-[1.1rem] border border-white/15 bg-white/12 p-3.5 backdrop-blur-sm">
-                        <div className="flex items-center gap-2 text-sm font-semibold text-emerald-50">
-                          <Eye className="h-4 w-4" /> {profileUi.profileViews}
-                        </div>
-                        <p className="mt-2 text-sm text-emerald-50/90">{stats.totalViews}</p>
-                      </div>
-                    </div>
-                    <p className="mt-5 max-w-xl text-sm leading-7 text-emerald-50/90 sm:text-base">
-                      {profile?.bio ? profile.bio : 'ព័ត៌មានអ្នកលក់របស់អ្នកនឹងបង្ហាញនៅទីនេះ។ / Seller details will appear here.'}
-                    </p>
-                    <div className="mt-5 rounded-[1.35rem] border border-white/20 bg-white/10 p-4 backdrop-blur">
-                      <div className="flex flex-wrap items-center justify-between gap-3">
-                        <div>
-                          <p className="text-sm font-semibold text-emerald-50">{profileUi.storeCompletion}</p>
-                          <p className="mt-1 text-sm text-emerald-50/85">{profileUi.completionHint}</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-2xl font-semibold text-white">{completionPercentage}%</p>
-                          <p className="text-[0.7rem] uppercase tracking-[0.25em] text-emerald-100/90">{profileUi.trustedStore}</p>
-                        </div>
-                      </div>
-                      <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-white/15">
-                        <div className={`h-full rounded-full bg-gradient-to-r ${completionTone}`} style={{ width: `${completionPercentage}%` }} />
-                      </div>
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        {completionChecks.slice(0, 4).map((item) => (
-                          <span key={item.label} className={`rounded-full px-3 py-1 text-xs font-medium ${item.complete ? 'bg-emerald-500/20 text-emerald-50' : 'bg-white/10 text-emerald-50/80'}`}>
-                            {item.label}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-3">
-                  {isOwner && (
-                    <button
-                      type="button"
-                      onClick={startEdit}
-                      className="inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-text-primary shadow-lg transition hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 sm:w-auto"
-                    >
-                      <Edit3 className="h-4 w-4" /> {profileUi.editProfile}
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab('products')}
-                    className={`min-h-[44px] rounded-full px-5 py-3 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${activeTab === 'products' ? 'bg-primary text-white shadow-lg' : 'bg-white/90 text-text-secondary hover:bg-background'} w-full justify-center sm:w-auto`}
-                  >
-                    {profileUi.products}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab('about')}
-                    className={`min-h-[44px] rounded-full px-5 py-3 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${activeTab === 'about' ? 'bg-primary text-white shadow-lg' : 'bg-white/90 text-text-secondary hover:bg-background'} w-full justify-center sm:w-auto`}
-                  >
-                    {profileUi.about}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab('reviews')}
-                    className={`min-h-[44px] rounded-full px-5 py-3 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${activeTab === 'reviews' ? 'bg-primary text-white shadow-lg' : 'bg-white/90 text-text-secondary hover:bg-background'} w-full justify-center sm:w-auto`}
-                  >
-                    {profileUi.reviews}
-                  </button>
-                </div>
-              </div>
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(320px,0.65fr)] lg:items-start">
+            <div className="relative overflow-hidden bg-text-primary">
+              <SellerHero
+                profile={profile}
+                avatarImage={avatarImage}
+                coverImage={coverImage}
+                username={username}
+                verificationStatusLabel={verificationStatusLabel}
+                memberSinceLabel={memberSinceLabel}
+              />
+              <SellerStats stats={stats} memberSinceLabel={memberSinceLabel} />
             </div>
+
+            <SellerSidebar
+              profile={profile}
+              isOwner={isOwner}
+              completionPercentage={completionPercentage}
+              completionTone={completionTone}
+              completionChecks={completionChecks}
+              startEdit={startEdit}
+              setActiveTab={setActiveTab}
+              profileUi={profileUi}
+            />
           </div>
         </div>
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
-        <div className="grid gap-6 lg:grid-cols-[300px_1fr]">
-          <aside className="space-y-6">
-            <div className="rounded-[1.6rem] border border-slate-200 bg-white p-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-[0.7rem] font-semibold uppercase tracking-[0.3em] text-primary">{profileUi.sellerProfile}</p>
-                  <h2 className="mt-3 text-lg font-semibold text-text-primary">{profile?.displayName || 'អ្នកលក់ / Seller'}</h2>
-                </div>
-                <div className="space-y-2 text-right">
-                  <div className="rounded-full bg-primary/10 px-3 py-2 text-[0.7rem] font-semibold text-primary">
-                    {profile?.role === 'seller' ? profileUi.sellerRole : profileUi.userRole}
-                  </div>
-                  {profile?.sellerVerificationStatus === 'verified' ? (
-                    <div className="rounded-full bg-emerald-50 px-3 py-2 text-[0.7rem] font-semibold text-emerald-700">
-                      {profileUi.verifiedSellerBadge}
-                    </div>
-                  ) : profile?.sellerVerificationStatus === 'unverified' ? (
-                    <div className="rounded-full bg-amber-100 px-3 py-2 text-[0.7rem] font-semibold text-amber-700">
-                      {profileUi.unverifiedSellerBadge}
-                    </div>
-                  ) : null}
-                </div>
-              </div>
-
-              <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-[1.15rem] border border-emerald-100 bg-gradient-to-br from-emerald-50 to-white p-4">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-emerald-700">
-                    <Package className="h-4 w-4" /> {profileUi.productCount}
-                  </div>
-                  <p className="mt-3 text-2xl font-semibold text-text-primary">{stats.totalProducts}</p>
-                </div>
-                <div className="rounded-[1.15rem] border border-slate-100 bg-gradient-to-br from-slate-50 to-white p-4">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-text-secondary">
-                    <Eye className="h-4 w-4" /> {profileUi.profileViews}
-                  </div>
-                  <p className="mt-3 text-2xl font-semibold text-text-primary">{stats.totalViews}</p>
-                </div>
-                <div className="rounded-[1.15rem] border border-slate-100 bg-background p-4">
-                  <p className="text-[0.7rem] uppercase tracking-[0.22em] text-muted">{profileUi.favorites}</p>
-                  <p className="mt-3 text-2xl font-semibold text-text-primary">{stats.favoritesCount}</p>
-                </div>
-                <div className="rounded-[1.15rem] border border-slate-100 bg-background p-4">
-                  <p className="text-[0.7rem] uppercase tracking-[0.22em] text-muted">{profileUi.memberSince}</p>
-                  <p className="mt-3 text-2xl font-semibold text-text-primary">{profile?.createdAt ? new Date(profile.createdAt).toLocaleDateString() : '—'}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-[1.6rem] border border-slate-200 bg-white p-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="text-[0.7rem] font-semibold uppercase tracking-[0.3em] text-muted">{profileUi.trustAndSafety}</p>
-                {profile?.emailVerified ? (
-                  <span className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-[0.7rem] font-semibold text-emerald-700">
-                    <Shield className="h-4 w-4" /> {profileUi.verifiedLabel}
-                  </span>
-                ) : null}
-              </div>
-              <div className="mt-4 space-y-3 text-sm text-text-secondary">
-                <div className="rounded-[1.15rem] border border-slate-200 bg-gradient-to-br from-emerald-50 to-white p-4">
-                  <div className="flex items-center justify-between gap-3">
-                    <p className="font-semibold text-text-primary">{profileUi.storeCompletion}</p>
-                    <span className="text-sm font-semibold text-emerald-700">{completionPercentage}%</span>
-                  </div>
-                  <div className="mt-3 h-2.25 overflow-hidden rounded-full bg-slate-200">
-                    <div className={`h-full rounded-full bg-gradient-to-r ${completionTone}`} style={{ width: `${completionPercentage}%` }} />
-                  </div>
-                  <p className="mt-3 text-sm text-text-secondary">{profileUi.completionHint}</p>
-                </div>
-                {trustHighlights.map((item) => (
-                  <div key={item.label} className="rounded-[1.15rem] border border-slate-200 bg-background p-4">
-                    <p className="font-semibold text-text-primary">{item.label}</p>
-                    <p className="mt-2">{item.value}</p>
-                  </div>
-                ))}
-                {profile?.sellerVerificationStatus === 'unverified' && authUser?.id === profile?.id && (
-                  <div className="rounded-[1.15rem] border border-slate-200 bg-background p-4 text-sm text-text-secondary">
-                    <p className="font-semibold text-text-primary">{profileUi.trustPromptTitle}</p>
-                    <p className="mt-2">{profileUi.trustPromptBody}</p>
-                    <button
-                      type="button"
-                      onClick={() => window.location.assign('/verification/request')}
-                      className="mt-4 inline-flex rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
-                    >
-                      {profileUi.requestVerification}
-                    </button>
+      <div className="mx-auto max-w-7xl px-4 pt-4 sm:px-6 lg:px-8">
+        <div className="grid gap-5 lg:grid-cols-[320px_minmax(0,1fr)]">
+          <aside className="hidden lg:block space-y-5">
+            <div className="rounded-[1.6rem] border border-slate-200 bg-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
+              <p className="text-[0.7rem] font-semibold uppercase tracking-[0.3em] text-muted">{profileUi.contactInformation}</p>
+              <div className="mt-4 space-y-3 text-text-secondary">
+                {profile?.phoneNumber && (
+                  <a href={`tel:${profile.phoneNumber}`} className="flex items-center gap-3 rounded-[1.1rem] border border-slate-200 bg-background px-4 py-3 text-sm text-text-secondary hover:border-primary hover:text-primary transition">
+                    <Phone className="h-4 w-4 text-primary" /> {profile.phoneNumber}
+                  </a>
+                )}
+                {profile?.email && (
+                  <a href={`mailto:${profile.email}`} className="flex items-center gap-3 rounded-[1.1rem] border border-slate-200 bg-background px-4 py-3 text-sm text-text-secondary hover:border-primary hover:text-primary transition">
+                    <Mail className="h-4 w-4 text-primary" /> {profile.email}
+                  </a>
+                )}
+                {profile?.location && (
+                  <div className="flex items-center gap-3 rounded-[1.1rem] border border-slate-200 bg-background px-4 py-3 text-sm text-text-secondary">
+                    <MapPin className="h-4 w-4 text-primary" /> {profile.location}
                   </div>
                 )}
               </div>
             </div>
-
-            <div className="rounded-[1.6rem] border border-slate-200 bg-white p-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-[0.7rem] font-semibold uppercase tracking-[0.3em] text-muted">{profileUi.quickActions}</p>
-                <span className="rounded-full bg-primary/10 px-3 py-1 text-[0.7rem] font-semibold text-primary">{profileUi.contactSeller}</span>
+            <div className="rounded-[1.6rem] border border-slate-200 bg-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
+              <p className="text-[0.7rem] font-semibold uppercase tracking-[0.3em] text-muted">Social</p>
+              <div className="mt-4 space-y-3 text-text-secondary">
+                {profile?.telegram && (
+                  <a href={profile.telegram.startsWith('http') ? profile.telegram : `https://t.me/${profile.telegram.replace(/^@/, '')}`} target="_blank" rel="noreferrer" className="flex items-center gap-3 rounded-[1.1rem] border border-slate-200 bg-background px-4 py-3 text-sm text-text-secondary hover:border-primary hover:text-primary transition">
+                    <Link2 className="h-4 w-4 text-primary" /> {profile.telegram}
+                  </a>
+                )}
+                {profile?.facebook && (
+                  <a href={profile.facebook.startsWith('http') ? profile.facebook : `https://www.facebook.com/${profile.facebook.replace(/^\//, '')}`} target="_blank" rel="noreferrer" className="flex items-center gap-3 rounded-[1.1rem] border border-slate-200 bg-background px-4 py-3 text-sm text-text-secondary hover:border-primary hover:text-primary transition">
+                    <Globe className="h-4 w-4 text-primary" /> {profile.facebook}
+                  </a>
+                )}
               </div>
-              <div className="mt-5 grid gap-3">
-                {profile?.phoneNumber ? (
-                  <a
-                    href={`tel:${profile.phoneNumber}`}
-                    className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-3 text-sm font-semibold text-white transition hover:bg-primary-hover"
-                  >
-                    📞 {profileUi.contactSeller}
-                  </a>
-                ) : null}
-                {profile?.email ? (
-                  <a
-                    href={`mailto:${profile.email}`}
-                    className="inline-flex min-h-[44px] items-center justify-center rounded-full bg-text-primary px-4 py-3 text-sm font-semibold text-white transition hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
-                  >
-                    ✉️ {profileUi.contactInformation}
-                  </a>
-                ) : null}
-                {profile?.telegram ? (
-                  <a
-                    href={profile.telegram.startsWith('http') ? profile.telegram : `https://t.me/${profile.telegram.replace(/^@/, '')}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex min-h-[44px] items-center justify-center rounded-full bg-emerald-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/40"
-                  >
-                    {profileUi.telegramLabel}
-                  </a>
-                ) : null}
-                {profile?.facebook ? (
-                  <a
-                    href={profile.facebook.startsWith('http') ? profile.facebook : profile.facebook.startsWith('facebook.com') ? `https://${profile.facebook}` : `https://www.facebook.com/${profile.facebook.replace(/^\//, '')}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex min-h-[44px] items-center justify-center rounded-full bg-primary px-4 py-3 text-sm font-semibold text-white transition hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
-                  >
-                    {profileUi.facebookLabel}
-                  </a>
-                ) : null}
-                {!profile?.phoneNumber && !profile?.email && !profile?.telegram && !profile?.facebook ? (
-                  <p className="rounded-[1.25rem] bg-background p-4 text-sm text-muted">{profileUi.noContactDetails}</p>
-                ) : null}
+            </div>
+            <div className="rounded-[1.6rem] border border-slate-200 bg-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
+              <p className="text-[0.7rem] font-semibold uppercase tracking-[0.3em] text-muted">{profileUi.storeInformation}</p>
+              <div className="mt-4 space-y-3 text-text-secondary">
+                <div className="rounded-[1.15rem] border border-slate-200 bg-background p-4">
+                  <p className="text-sm font-semibold text-text-primary">{profileUi.verificationStatus}</p>
+                  <p className="mt-2 text-sm">{verificationStatusLabel}</p>
+                </div>
+                <div className="rounded-[1.15rem] border border-slate-200 bg-background p-4">
+                  <p className="text-sm font-semibold text-text-primary">{profileUi.trustAndSafety}</p>
+                  <div className="mt-2 space-y-2 text-sm text-text-secondary">
+                    <p>{profile?.bio ? 'Store story added' : 'Story pending'}</p>
+                    <p>{profile?.location || 'Location not set'}</p>
+                  </div>
+                </div>
               </div>
             </div>
           </aside>
-
-          <main className="space-y-6">
+          <main className="space-y-5">
             {successMessage && (
               <div className="rounded-[1.5rem] border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">{successMessage}</div>
             )}
@@ -855,7 +680,7 @@ const ProfilePage = () => {
                   <div className="space-y-6">
                     <div className="rounded-[1.5rem] border border-slate-200 bg-background p-6">
                       <p className="text-sm font-semibold text-text-secondary">{profileUi.biography}</p>
-                      <p className="mt-3 leading-7 text-text-secondary">{profile?.bio || profileUi.noBiography}</p>
+                      <p className="mt-4 leading-8 text-text-secondary text-sm max-w-prose">{profile?.bio || profileUi.noBiography}</p>
                     </div>
                     <div className="rounded-[1.5rem] border border-slate-200 bg-background p-6">
                       <div className="flex items-center gap-3">

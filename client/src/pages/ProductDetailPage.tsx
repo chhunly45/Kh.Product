@@ -262,7 +262,7 @@ const ProductDetailPage = () => {
 
       <div className="max-w-7xl mx-auto px-4 py-10 sm:px-6 lg:px-8">
         <div className="space-y-6 rounded-[2rem] bg-white p-6 shadow-xl ring-1 ring-border sm:p-10">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div className="space-y-2">
               <p className="text-sm uppercase tracking-[0.35em] text-primary">Product detail</p>
               <div className="flex flex-wrap items-center gap-3">
@@ -314,18 +314,18 @@ const ProductDetailPage = () => {
             </div>
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-[minmax(360px,0.5fr)_minmax(480px,0.7fr)]">
+          <div className="grid gap-6 md:grid-cols-[minmax(0,0.55fr)_minmax(0,0.45fr)]">
             <div className="space-y-6">
               <div className="overflow-hidden rounded-[2rem] bg-background shadow-sm">
                 <img
                   src={selectedImage || getProductCoverImageUrl(product, '/no-image.png')}
                   alt={displayTitle}
-                  className="h-96 w-full object-cover"
+                  className="h-[24rem] w-full object-cover sm:h-[26rem] md:h-[28rem] xl:h-[34rem]"
                 />
               </div>
 
               {product.images && product.images.length > 1 && (
-                <div className="grid gap-3 grid-cols-3 sm:grid-cols-4">
+                <div className="grid gap-2 grid-cols-3 sm:grid-cols-4 md:grid-cols-5">
                   {product.images.map((image: any) => {
                     const src = image.secureUrl || image.url;
                     return (
@@ -333,9 +333,11 @@ const ProductDetailPage = () => {
                         key={image._id}
                         type="button"
                         onClick={() => setSelectedImage(src)}
-                        className={`overflow-hidden rounded-3xl border ${selectedImage === src ? 'border-primary' : 'border-transparent'} bg-white focus:outline-none focus:ring-2 focus:ring-primary/30`}
+                        className={`overflow-hidden rounded-3xl border ${selectedImage === src ? 'border-primary ring-2 ring-primary/20' : 'border-transparent'} bg-white focus:outline-none focus:ring-2 focus:ring-primary/30`}
                       >
-                        <img src={src} alt={displayTitle} className="h-24 w-full object-cover" />
+                        <div className="aspect-square w-full overflow-hidden">
+                          <img src={src} alt={displayTitle} className="h-full w-full object-cover" />
+                        </div>
                       </button>
                     );
                   })}
@@ -368,7 +370,7 @@ const ProductDetailPage = () => {
             <div className="space-y-6">
               <div className="rounded-[2rem] bg-background p-6 shadow-sm">
                 <h2 className="text-xl font-semibold text-text-primary">Product overview</h2>
-                <p className="mt-4 text-sm leading-7 text-text-secondary">{product.description}</p>
+                <p className="mt-4 text-base leading-8 text-text-secondary">{product.description}</p>
               </div>
 
               <div className="rounded-[2rem] bg-white p-6 shadow-sm">
@@ -419,7 +421,7 @@ const ProductDetailPage = () => {
                       <button
                         type="button"
                         onClick={startChatWithSeller}
-                        className="inline-flex w-full items-center justify-center gap-2 rounded-3xl bg-primary px-4 py-3 text-sm font-semibold text-white hover:bg-primary-hover transition"
+                        className="inline-flex w-full min-h-[52px] items-center justify-center gap-2 rounded-3xl bg-primary px-4 py-3 text-sm font-semibold text-white hover:bg-primary-hover transition"
                       >
                         <MessageCircle className="w-4 h-4" />
                         Message seller
@@ -429,7 +431,7 @@ const ProductDetailPage = () => {
                         onClick={() => {
                           window.open(`mailto:${product.seller?.email}?subject=${encodeURIComponent(`Question about ${displayTitle}`)}`, '_blank');
                         }}
-                        className="inline-flex w-full items-center justify-center gap-2 rounded-3xl border border-muted bg-white px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background transition"
+                        className="inline-flex w-full min-h-[52px] items-center justify-center gap-2 rounded-3xl border border-muted bg-white px-4 py-3 text-sm font-semibold text-text-secondary hover:bg-background transition"
                       >
                         <ArrowUpRight className="w-4 h-4" />
                         Email seller
@@ -592,7 +594,7 @@ const ProductDetailPage = () => {
                   Loading similar products...
                 </div>
               ) : relatedProducts.length > 0 ? (
-                <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+                <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
                   {relatedProducts.map((item) => (
                     <ProductCard
                       key={item._id}

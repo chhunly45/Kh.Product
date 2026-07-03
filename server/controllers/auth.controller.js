@@ -13,8 +13,9 @@ const register = async (req, res, next) => {
 const login = async (req, res, next) => {
   try {
     const { identifier, password, useOtp } = req.body;
-    // Default to OTP for additional security (can be disabled by passing useOtp: false)
-    const useOtpFlag = useOtp !== false;
+    // Only request OTP when explicitly enabled by the client.
+    // Credential login without useOtp should return a token directly.
+    const useOtpFlag = useOtp === true;
     const result = await authService.loginUser(identifier, password, { useOtp: useOtpFlag });
     res.json({ success: true, data: result });
   } catch (error) {

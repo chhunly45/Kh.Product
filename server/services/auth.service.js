@@ -208,20 +208,15 @@ const sendPasswordResetOtpEmail = async (user, code) => {
 
 const loginUser = async (identifier, password, options = {}) => {
   const user = await findUserByIdentifier(identifier);
+
   if (!user || !user.isActive) {
     const error = new Error('Invalid credentials');
     error.statusCode = 401;
     throw error;
   }
 
-  // Require email verification for accounts that have an email address registered.
-  if (user.email && !user.emailVerified) {
-    const error = new Error('Email not verified. Please verify your email before logging in.');
-    error.statusCode = 403;
-    throw error;
-  }
-
   const valid = await bcrypt.compare(password, user.passwordHash);
+
   if (!valid) {
     const error = new Error('Invalid credentials');
     error.statusCode = 401;
@@ -231,15 +226,6 @@ const loginUser = async (identifier, password, options = {}) => {
   // Default to OTP if not explicitly disabled
   const useOtp = options.useOtp !== false;
   const requestLoginOtp = useOtp && loginOtpEnabled && !!(user.email || user.phoneNumber);
-  if (process.env.NODE_ENV !== 'production') {
-    console.log('[LOGIN_FLOW]', {
-      useOtp,
-      loginOtpEnabled,
-      hasEmail: Boolean(user.email),
-      hasPhone: Boolean(user.phoneNumber),
-      requestLoginOtp
-    });
-  }
 
   if (requestLoginOtp) {
     const now = new Date();

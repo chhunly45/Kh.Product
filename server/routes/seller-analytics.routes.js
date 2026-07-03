@@ -1,18 +1,19 @@
 const express = require('express');
 const { param, query } = require('express-validator');
 const analyticsController = require('../controllers/seller-analytics.controller');
-const authMiddleware = require('../middleware/auth.middleware');
+const requireAuth = require('../middleware/authentication/requireAuth');
+const requireSellerOwnership = require('../middleware/authorization/requireSellerOwnership');
 const validate = require('../middleware/validation.middleware');
 
 const router = express.Router();
 
-router.use(authMiddleware);
+router.use(requireAuth);
 
 /**
  * GET /api/seller-analytics
  * Get current seller's analytics overview
  */
-router.get('/', analyticsController.getSellerAnalytics);
+router.get('/', requireSellerOwnership, analyticsController.getSellerAnalytics);
 
 /**
  * GET /api/seller-analytics/top-products
@@ -21,6 +22,7 @@ router.get('/', analyticsController.getSellerAnalytics);
  */
 router.get(
   '/top-products',
+  requireSellerOwnership,
   query('sortBy').optional().isIn(['views', 'favorites', 'messages']),
   query('limit').optional().isInt({ min: 1, max: 100 }),
   validate,
@@ -33,6 +35,7 @@ router.get(
  */
 router.get(
   '/daily-views',
+  requireSellerOwnership,
   query('limit').optional().isInt({ min: 1, max: 365 }),
   validate,
   analyticsController.getDailyViewData
@@ -44,6 +47,7 @@ router.get(
  */
 router.get(
   '/weekly-views',
+  requireSellerOwnership,
   query('limit').optional().isInt({ min: 1, max: 52 }),
   validate,
   analyticsController.getWeeklyViewData
@@ -55,6 +59,7 @@ router.get(
  */
 router.get(
   '/monthly-views',
+  requireSellerOwnership,
   query('limit').optional().isInt({ min: 1, max: 60 }),
   validate,
   analyticsController.getMonthlyViewData
@@ -66,6 +71,7 @@ router.get(
  */
 router.get(
   '/growth',
+  requireSellerOwnership,
   query('limit').optional().isInt({ min: 1, max: 365 }),
   validate,
   analyticsController.getListingGrowthData
@@ -75,6 +81,6 @@ router.get(
  * GET /api/seller-analytics/insights
  * Get seller insights and recommendations
  */
-router.get('/insights', analyticsController.getSellerInsights);
+router.get('/insights', requireSellerOwnership, analyticsController.getSellerInsights);
 
 module.exports = router;

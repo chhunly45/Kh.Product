@@ -1,12 +1,14 @@
-import { io } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 
 const safeImportMetaEnv = () => {
-  try {
-    // eslint-disable-next-line no-eval
-    return (eval('import.meta.env') as Record<string, string>) || {};
-  } catch {
-    return {} as Record<string, string>;
+  if (typeof import.meta !== 'undefined' && typeof import.meta.env !== 'undefined') {
+    return import.meta.env as Record<string, string>;
   }
+
+  // Fallback to Node `process.env` when running in non-Vite environments (tests)
+  // Cast to Record<string,string> for compatibility
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (typeof process !== 'undefined' && (process as any).env) ? (process as any).env : ({} as Record<string, string>);
 };
 
 const getSocketBaseUrl = () => {
@@ -26,41 +28,48 @@ const getSocketBaseUrl = () => {
 };
 
 const baseURL = getSocketBaseUrl();
+const env = safeImportMetaEnv();
+const socketEnabled = String(env.VITE_ENABLE_SOCKET || '').toLowerCase() === 'true';
 
-// DEBUG: log the env-derived socket URL so we can verify what the client will use at runtime
-try {
-  const env = safeImportMetaEnv();
-  // eslint-disable-next-line no-console
-  console.log('[socket] VITE_API_BASE_URL=', env.VITE_API_BASE_URL, ' -> baseURL=', baseURL);
-  try {
-    // also log the full socket.io endpoint URL we expect the client to use
-    const socketEndpoint = new URL('/socket.io/', baseURL).toString();
-    // eslint-disable-next-line no-console
-    console.log('[socket] socket endpoint=', socketEndpoint);
-  } catch (err) {
-    // if baseURL isn't a valid URL, still log baseURL
-    // eslint-disable-next-line no-console
-    console.log('[socket] socket endpoint failed to parse, baseURL=', baseURL);
+let socket: Socket | null = null;
+
+const getOrCreateSocket = () => {
+  if (!socketEnabled) {
+    return null;
   }
-} catch (e) {
-  // ignore logging errors in unusual environments
-}
 
-// single socket instance (autoConnect: false)
-const socket = io(baseURL, { autoConnect: false, transports: ['websocket'] });
-
-export const connectSocket = (token?: string | null) => {
-  const t = token || localStorage.getItem('authToken') || '';
-  if (!socket.connected) {
-    socket.auth = { token: t };
-    socket.connect();
+  if (!socket) {
+    // single socket instance (autoConnect disabled and reconnection disabled for release stability)
+    socket = io(baseURL, {
+      autoConnect: false,
+      transports: ['websocket'],
+      reconnection: false,
+    });
   }
+
   return socket;
 };
 
-export const disconnectSocket = () => {
-  if (socket.connected) socket.disconnect();
+export const connectSocket = (token?: string | null) => {
+  const s = getOrCreateSocket();
+  if (!s) return null;
+
+  const t = token || localStorage.getItem('authToken') || '';
+  if (!s.connected && !s.active) {
+    s.auth = { token: t };
+    s.connect();
+  }
+  return s;
 };
 
-export const getSocket = () => socket;
+export const disconnectSocket = () => {
+  if (!socket) return;
+
+  socket.removeAllListeners();
+  if (socket.connected || socket.active) {
+    socket.disconnect();
+  }
+};
+
+export const getSocket = () => getOrCreateSocket();
 

@@ -1,12 +1,12 @@
 const express = require('express');
 const { param, query } = require('express-validator');
 const notificationController = require('../controllers/notification.controller');
-const authMiddleware = require('../middleware/auth.middleware');
+const requireAuth = require('../middleware/authentication/requireAuth');
 const validate = require('../middleware/validation.middleware');
 
 const router = express.Router();
 
-router.use(authMiddleware);
+router.use(requireAuth);
 router.get(
   '/',
   [

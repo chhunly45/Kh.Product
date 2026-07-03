@@ -1,8 +1,8 @@
 const express = require('express');
 const { body, param, query } = require('express-validator');
 const productController = require('../controllers/product.controller');
-const authMiddleware = require('../middleware/auth.middleware');
-const roleMiddleware = require('../middleware/role.middleware');
+const requireAuth = require('../middleware/authentication/requireAuth');
+const requireVerifiedAccount = require('../middleware/authorization/requireVerifiedAccount');
 const validate = require('../middleware/validation.middleware');
 
 const router = express.Router();
@@ -45,7 +45,8 @@ router.post('/:id/views', param('id').isMongoId(), validate, productController.a
 
 router.post(
   '/',
-  authMiddleware,
+  requireAuth,
+  requireVerifiedAccount,
   body('title').optional().trim().isString(),
   body('titleKh').optional().trim().isString(),
   body('titleEn').optional().trim().isString(),
@@ -57,7 +58,7 @@ router.post(
   productController.createProduct
 );
 
-router.put('/:id', authMiddleware, param('id').isMongoId(), body('coverImage').optional().isMongoId().withMessage('Cover image must be a valid image id'), validate, productController.updateProduct);
-router.delete('/:id', authMiddleware, param('id').isMongoId(), validate, productController.deleteProduct);
+router.put('/:id', requireAuth, requireVerifiedAccount, param('id').isMongoId(), body('coverImage').optional().isMongoId().withMessage('Cover image must be a valid image id'), validate, productController.updateProduct);
+router.delete('/:id', requireAuth, requireVerifiedAccount, param('id').isMongoId(), validate, productController.deleteProduct);
 
 module.exports = router;

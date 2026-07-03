@@ -1,8 +1,9 @@
 const express = require('express');
 const { body, param } = require('express-validator');
 const categoryController = require('../controllers/category.controller');
-const authMiddleware = require('../middleware/auth.middleware');
-const roleMiddleware = require('../middleware/role.middleware');
+const requireAuth = require('../middleware/authentication/requireAuth');
+const requireVerifiedAccount = require('../middleware/authorization/requireVerifiedAccount');
+const requireAdmin = require('../middleware/authorization/requireAdmin');
 const validate = require('../middleware/validation.middleware');
 
 const router = express.Router();
@@ -12,8 +13,9 @@ router.get('/:id', param('id').isMongoId(), validate, categoryController.getCate
 
 router.post(
   '/',
-  authMiddleware,
-  roleMiddleware(['admin', 'moderator']),
+  requireAuth,
+  requireVerifiedAccount,
+  requireAdmin,
   body('name').notEmpty().withMessage('Category name is required'),
   body('slug').notEmpty().withMessage('Slug is required'),
   validate,
@@ -22,8 +24,9 @@ router.post(
 
 router.put(
   '/:id',
-  authMiddleware,
-  roleMiddleware(['admin', 'moderator']),
+  requireAuth,
+  requireVerifiedAccount,
+  requireAdmin,
   param('id').isMongoId(),
   body('name').optional().notEmpty(),
   body('slug').optional().notEmpty(),
@@ -31,6 +34,6 @@ router.put(
   categoryController.updateCategory
 );
 
-router.delete('/:id', authMiddleware, roleMiddleware(['admin']), param('id').isMongoId(), validate, categoryController.deleteCategory);
+router.delete('/:id', requireAuth, requireVerifiedAccount, requireAdmin, param('id').isMongoId(), validate, categoryController.deleteCategory);
 
 module.exports = router;

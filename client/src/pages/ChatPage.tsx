@@ -15,16 +15,6 @@ const decodeTokenUserId = (): string | null => {
   }
 };
 
-const getIsDev = (): boolean => {
-  try {
-    // eslint-disable-next-line no-eval
-    const env = eval('import.meta.env') as Record<string, unknown>;
-    return Boolean(env?.DEV);
-  } catch {
-    return process.env.NODE_ENV === 'development';
-  }
-};
-
 const ChatPage = () => {
   const [chats, setChats] = useState<any[]>([]);
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
@@ -39,14 +29,6 @@ const ChatPage = () => {
   const currentUserId = useMemo(() => decodeTokenUserId(), []);
   const { id: routeChatId } = useParams<{ id?: string }>();
   const navigate = useNavigate();
-  const isDev = getIsDev();
-
-  const debugLog = (...args: unknown[]) => {
-    if (isDev) {
-      // eslint-disable-next-line no-console
-      console.log('[ChatPage socket]', ...args);
-    }
-  };
 
   const selectedChat = useMemo(
     () => chats.find((chat) => chat._id === selectedChatId),
@@ -67,18 +49,14 @@ const ChatPage = () => {
     socketRef.current = socket;
 
     socket?.on('online_users', (users: string[]) => {
-      debugLog('online_users', users);
       setOnlineUsers(users);
     });
     socket?.on('connect', () => {
-      debugLog('connected', { socketId: socket.id, selectedChatId: selectedChatIdRef.current });
       if (selectedChatIdRef.current) {
-        debugLog('joining room', selectedChatIdRef.current);
         socket.emit('join_chat', { chatId: selectedChatIdRef.current });
       }
     });
     socket?.on('new_message', ({ chatId, message, unreadCount }: any) => {
-      debugLog('new_message', { chatId, message, unreadCount, selectedChatId: selectedChatIdRef.current });
       setChats((prev) => prev.map((chat) => chat._id === chatId ? {
         ...chat,
         unreadCount,
@@ -86,7 +64,6 @@ const ChatPage = () => {
       } : chat));
     });
     socket?.on('message_received', (message: any) => {
-      debugLog('message_received', { message, selectedChatId: selectedChatIdRef.current });
       if (message.chatId === selectedChatIdRef.current) {
         setMessages((prev) => {
           if (message._id && prev.some((msg) => msg._id === message._id)) {
@@ -97,7 +74,6 @@ const ChatPage = () => {
       }
     });
     socket?.on('chat_updated', ({ chatId, unreadCount, lastMessageAt }: any) => {
-      debugLog('chat_updated', { chatId, unreadCount, lastMessageAt });
       setChats((prev) => prev.map((chat) => chat._id === chatId ? {
         ...chat,
         unreadCount: typeof unreadCount === 'number' ? unreadCount : chat.unreadCount,

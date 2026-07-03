@@ -114,7 +114,7 @@ describe('auth.service loginUser', () => {
     assert.equal(result.user.emailVerified, true);
   });
 
-  it('requires email verification for email accounts with emailVerified=false', async () => {
+  it('allows login for unverified email accounts while preserving the emailVerified flag', async () => {
     const password = 'Password123!';
     const passwordHash = await bcrypt.hash(password, 12);
     await User.create({
@@ -125,14 +125,11 @@ describe('auth.service loginUser', () => {
       emailVerified: false
     });
 
-    await assert.rejects(
-      async () => {
-        await authService.loginUser('unverified@example.com', password);
-      },
-      {
-        message: 'Email not verified. Please verify your email before logging in.',
-        statusCode: 403
-      }
-    );
+    const result = await authService.loginUser('unverified@example.com', password);
+
+    assert.ok(result.accessToken, 'accessToken should be present');
+    assert.ok(result.refreshToken, 'refreshToken should be present');
+    assert.equal(result.user.email, 'unverified@example.com');
+    assert.equal(result.user.emailVerified, false);
   });
 });

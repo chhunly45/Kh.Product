@@ -7,18 +7,18 @@ const getViteEnv = (key: string, fallback: string) => {
 };
 
 const safeImportMetaEnv = () => {
-  try {
-    return eval('import.meta.env') as Record<string, string>;
-  } catch {
-    // Fallback to Node `process.env` when running in non-Vite environments (tests)
-    // Cast to Record<string,string> for compatibility
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (typeof process !== 'undefined' && (process as any).env) ? (process as any).env : ({} as Record<string, string>);
+  if (typeof import.meta !== 'undefined' && typeof import.meta.env !== 'undefined') {
+    return import.meta.env as Record<string, string>;
   }
+
+  // Fallback to Node `process.env` when running in non-Vite environments (tests)
+  // Cast to Record<string,string> for compatibility
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (typeof process !== 'undefined' && (process as any).env) ? (process as any).env : ({} as Record<string, string>);
 };
 
-const defaultApiBase = typeof window !== 'undefined' && window.location.hostname === 'localhost'
-  ? 'http://localhost:5002/api'
+const defaultApiBase = typeof window !== 'undefined' && ['localhost', '127.0.0.1'].includes(window.location.hostname)
+  ? 'http://localhost:5000/api'
   : 'https://api.konpuk.com/api';
 
 const created = axios.create({

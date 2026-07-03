@@ -5,11 +5,11 @@ import { useAuth } from '../hooks/useAuth';
 import { getPasswordStrength, getPasswordStrengthLabel } from '../utils/password';
 
 const safeImportMetaEnv = () => {
-  try {
-    return eval('import.meta.env') as Record<string, string>;
-  } catch {
-    return {} as Record<string, string>;
+  if (typeof import.meta !== 'undefined' && typeof import.meta.env !== 'undefined') {
+    return import.meta.env as Record<string, string>;
   }
+
+  return {} as Record<string, string>;
 };
 
 const env = safeImportMetaEnv();

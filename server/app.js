@@ -58,9 +58,11 @@ app.use(xssClean());
 app.use(hpp());
 app.use(morgan('combined'));
 
+// In development, use lenient rate limits for testing
+const isDev = process.env.NODE_ENV !== 'production';
 const authLimiter = rateLimit({
-  windowMs: config.authRateLimitWindowMs,
-  max: config.authRateLimitMax,
+  windowMs: isDev ? 60 * 1000 : config.authRateLimitWindowMs,
+  max: isDev ? 100 : config.authRateLimitMax,
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, message: 'Too many authentication requests, please try again later.' }
@@ -69,7 +71,7 @@ const authLimiter = rateLimit({
 // A lighter limiter for non-sensitive auth endpoints (optional).
 const authMeLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 60, // allow more requests for /auth/me
+  max: isDev ? 200 : 60, // allow more requests for /auth/me in dev
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, message: 'Too many requests, please try again later.' }
@@ -83,6 +85,13 @@ const apiLimiter = rateLimit({
   message: { success: false, message: 'Too many requests, please try again later.' }
 });
 
+const skipApiLimiterForAuthMe = (req, res, next) => {
+  if (req.path === '/auth/me' && req.method === 'GET') {
+    return next();
+  }
+  return apiLimiter(req, res, next);
+};
+
 // Exclude the public "me" endpoint from the strict auth limiter to avoid
 // accidental 429s from frequent client-side profile checks. We still apply
 // a lighter limiter for GET /api/auth/me to protect from abuse.
@@ -92,9 +101,15 @@ app.use('/api/auth', (req, res, next) => {
   }
   return authLimiter(req, res, next);
 });
-app.use(apiLimiter);
+app.use(skipApiLimiterForAuthMe);
 
-const authCsrfExceptionPaths = new Set(['/api/auth/login', '/api/auth/login/verify']);
+const authCsrfExceptionPaths = new Set([
+  '/api/auth/login',
+  '/api/auth/login/verify',
+  '/api/auth/register',
+  '/api/auth/register/verify',
+  '/api/auth/register/verify/resend'
+]);
 const csrfProtection = csurf({ cookie: { httpOnly: true, secure: config.nodeEnv === 'production', sameSite: 'none' } });
 
 const isAllowedOriginOrReferer = (req) => {

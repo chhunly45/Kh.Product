@@ -1,12 +1,13 @@
 const express = require('express');
 const { body } = require('express-validator');
 const promotionController = require('../controllers/promotion.controller');
-const authMiddleware = require('../middleware/auth.middleware');
-const roleMiddleware = require('../middleware/role.middleware');
+const requireAuth = require('../middleware/authentication/requireAuth');
+const requireVerifiedAccount = require('../middleware/authorization/requireVerifiedAccount');
+const requireSeller = require('../middleware/authorization/requireSeller');
 const validate = require('../middleware/validation.middleware');
 
 const router = express.Router();
-router.use(authMiddleware, roleMiddleware(['seller']));
+router.use(requireAuth, requireSeller, requireVerifiedAccount);
 
 router.get('/plans', promotionController.getPromotionPlans);
 router.post(

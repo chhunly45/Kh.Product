@@ -1,30 +1,29 @@
-﻿import { useEffect, useState } from 'react';
+﻿import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getProfile } from '../services/auth.api';
 import { getProducts, updateProduct, deleteProduct } from '../services/product.api';
 import { getSellerPromotions, PromotionRecord } from '../services/promotion.api';
 import { Edit3, Trash2, CheckCircle, PlusCircle, Eye, TrendingUp, DollarSign, Clock } from 'lucide-react';
 import { formatViewsCount } from '../utils/views';
 import { formatPriceKHR, formatPriceUSD } from '../utils/price';
+import { useAuth } from '../hooks/useAuth';
 
 const DashboardPage = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [promotions, setPromotions] = useState<PromotionRecord[]>([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
-  const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const loadedSellerIdRef = useRef<string | null>(null);
 
   const loadDashboard = async () => {
     setLoading(true);
     setMessage('');
     try {
-      const profile = await getProfile();
-      setUser(profile);
-
-      if (profile?.id) {
+      const sellerId = user?._id || user?.id;
+      if (sellerId) {
         const [productResponse, promotionResponse] = await Promise.all([
-          getProducts({ seller: profile.id, page: '1', perPage: '50', sort: 'newest' }),
+          getProducts({ seller: sellerId, page: '1', perPage: '50', sort: 'newest' }),
           getSellerPromotions()
         ]);
 
@@ -39,8 +38,12 @@ const DashboardPage = () => {
   };
 
   useEffect(() => {
-    loadDashboard();
-  }, []);
+    const sellerId = user?._id || user?.id || null;
+    if (sellerId && loadedSellerIdRef.current !== sellerId) {
+      loadedSellerIdRef.current = sellerId;
+      loadDashboard();
+    }
+  }, [user]);
 
   const handleMarkSold = async (productId: string) => {
     try {

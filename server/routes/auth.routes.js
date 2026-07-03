@@ -1,7 +1,7 @@
 const express = require('express');
 const { body } = require('express-validator');
 const authController = require('../controllers/auth.controller');
-const authMiddleware = require('../middleware/auth.middleware');
+const requireAuth = require('../middleware/authentication/requireAuth');
 const validate = require('../middleware/validation.middleware');
 
 const rateLimit = require('express-rate-limit');
@@ -133,17 +133,17 @@ router.post(
 );
 
 router.post('/refresh', authController.refreshToken);
-router.post('/logout', authMiddleware, authController.logout);
-router.get('/me', authMiddleware, authController.getProfile);
-router.put('/me', authMiddleware, authController.updateProfile);
+router.post('/logout', requireAuth, authController.logout);
+router.get('/me', requireAuth, authController.getProfile);
+router.put('/me', requireAuth, authController.updateProfile);
 router.post(
   '/change-password',
-  authMiddleware,
+  requireAuth,
   body('currentPassword').notEmpty().withMessage('Current password is required'),
   body('newPassword').isLength({ min: 8 }).withMessage('New password must have at least 8 characters'),
   validate,
   authController.changePassword
 );
-router.post('/verification-request', authMiddleware, body('details').optional().trim().isString(), validate, authController.requestVerification);
+router.post('/verification-request', requireAuth, body('details').optional().trim().isString(), validate, authController.requestVerification);
 
 module.exports = router;

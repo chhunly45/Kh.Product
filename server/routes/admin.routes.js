@@ -2,15 +2,16 @@ const express = require('express');
 const { body, param, query } = require('express-validator');
 const adminController = require('../controllers/admin.controller');
 const verificationController = require('../controllers/verification.controller');
-const authMiddleware = require('../middleware/auth.middleware');
-const roleMiddleware = require('../middleware/role.middleware');
+const requireAuth = require('../middleware/authentication/requireAuth');
+const requireVerifiedAccount = require('../middleware/authorization/requireVerifiedAccount');
+const requireAdmin = require('../middleware/authorization/requireAdmin');
 const validate = require('../middleware/validation.middleware');
 
 const rateLimit = require('express-rate-limit');
 
 const router = express.Router();
-// Apply authentication and role checks first
-router.use(authMiddleware, roleMiddleware(['admin', 'moderator']));
+// Apply authentication, verified-account, and role checks first
+router.use(requireAuth, requireVerifiedAccount, requireAdmin);
 
 // Stricter limiter for admin actions
 const adminLimiter = rateLimit({

@@ -1,6 +1,7 @@
 const express = require('express');
 const { body, param, query } = require('express-validator');
-const authMiddleware = require('../middleware/auth.middleware');
+const requireAuth = require('../middleware/authentication/requireAuth');
+const requireVerifiedAccount = require('../middleware/authorization/requireVerifiedAccount');
 const validate = require('../middleware/validation.middleware');
 const reviewController = require('../controllers/review.controller');
 
@@ -8,7 +9,8 @@ const router = express.Router();
 
 router.post(
   '/',
-  authMiddleware,
+  requireAuth,
+  requireVerifiedAccount,
   body('seller').notEmpty().isMongoId().withMessage('Seller is required'),
   body('product').optional().isMongoId().withMessage('Invalid product identifier'),
   body('rating').isInt({ min: 1, max: 5 }).withMessage('Rating must be between 1 and 5'),

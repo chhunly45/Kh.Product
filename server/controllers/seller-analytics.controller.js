@@ -4,11 +4,6 @@ const getSellerAnalytics = async (req, res, next) => {
   try {
     const sellerId = req.params.sellerId || req.user.id;
 
-    // Permission check: user can view own analytics or admin can view any
-    if (sellerId !== req.user.id && req.user.role !== 'admin') {
-      return res.status(403).json({ success: false, message: 'Forbidden: cannot view other seller analytics' });
-    }
-
     const analytics = await analyticsService.getSellerAnalytics(sellerId);
     res.json({ success: true, data: analytics });
   } catch (error) {
@@ -20,11 +15,6 @@ const getTopProducts = async (req, res, next) => {
   try {
     const sellerId = req.params.sellerId || req.user.id;
     const { sortBy = 'views', limit = 10 } = req.query;
-
-    // Permission check
-    if (sellerId !== req.user.id && req.user.role !== 'admin') {
-      return res.status(403).json({ success: false, message: 'Forbidden' });
-    }
 
     const products = await analyticsService.getTopProducts(sellerId, sortBy, Number(limit));
     res.json({ success: true, data: products });
@@ -38,11 +28,6 @@ const getDailyViewData = async (req, res, next) => {
     const sellerId = req.params.sellerId || req.user.id;
     const { limit = 30 } = req.query;
 
-    // Permission check
-    if (sellerId !== req.user.id && req.user.role !== 'admin') {
-      return res.status(403).json({ success: false, message: 'Forbidden' });
-    }
-
     const data = await analyticsService.getDailyViewData(sellerId, Number(limit));
     res.json({ success: true, data });
   } catch (error) {
@@ -54,11 +39,6 @@ const getWeeklyViewData = async (req, res, next) => {
   try {
     const sellerId = req.params.sellerId || req.user.id;
     const { limit = 12 } = req.query;
-
-    // Permission check
-    if (sellerId !== req.user.id && req.user.role !== 'admin') {
-      return res.status(403).json({ success: false, message: 'Forbidden' });
-    }
 
     const data = await analyticsService.getWeeklyViewData(sellerId, Number(limit));
     res.json({ success: true, data });
@@ -72,11 +52,6 @@ const getMonthlyViewData = async (req, res, next) => {
     const sellerId = req.params.sellerId || req.user.id;
     const { limit = 12 } = req.query;
 
-    // Permission check
-    if (sellerId !== req.user.id && req.user.role !== 'admin') {
-      return res.status(403).json({ success: false, message: 'Forbidden' });
-    }
-
     const data = await analyticsService.getMonthlyViewData(sellerId, Number(limit));
     res.json({ success: true, data });
   } catch (error) {
@@ -89,11 +64,6 @@ const getListingGrowthData = async (req, res, next) => {
     const sellerId = req.params.sellerId || req.user.id;
     const { limit = 30 } = req.query;
 
-    // Permission check
-    if (sellerId !== req.user.id && req.user.role !== 'admin') {
-      return res.status(403).json({ success: false, message: 'Forbidden' });
-    }
-
     const data = await analyticsService.getListingGrowthData(sellerId, Number(limit));
     res.json({ success: true, data });
   } catch (error) {
@@ -104,11 +74,6 @@ const getListingGrowthData = async (req, res, next) => {
 const getSellerInsights = async (req, res, next) => {
   try {
     const sellerId = req.params.sellerId || req.user.id;
-
-    // Permission check
-    if (sellerId !== req.user.id && req.user.role !== 'admin') {
-      return res.status(403).json({ success: false, message: 'Forbidden' });
-    }
 
     const insights = await analyticsService.getSellerInsights(sellerId);
     res.json({ success: true, data: insights });

@@ -1,5 +1,6 @@
 const express = require('express');
-const authMiddleware = require('../middleware/auth.middleware');
+const requireAuth = require('../middleware/authentication/requireAuth');
+const requireVerifiedAccount = require('../middleware/authorization/requireVerifiedAccount');
 const userController = require('../controllers/user.controller');
 
 const router = express.Router();
@@ -37,6 +38,6 @@ router.get('/profile/:id', userController.getProfileById);
  * - 401: Unauthorized
  * - 500: Server error
  */
-router.put('/profile', authMiddleware, userController.updateProfile);
+router.put('/profile', requireAuth, requireVerifiedAccount, userController.updateProfile);
 
 module.exports = router;

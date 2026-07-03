@@ -83,6 +83,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
+    if (!authToken) {
+      setRestoreAttempted(true);
+      setUser(null);
+      setIsHydrated(true);
+      return;
+    }
+
     const restoreUserFromProfile = async () => {
       setRestoreAttempted(true);
       try {

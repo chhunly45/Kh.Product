@@ -1,24 +1,18 @@
 import { useEffect, useRef } from 'react';
-import { connectSocket, disconnectSocket, getSocket } from '../services/socket';
 import { useAuth } from './useAuth';
+import { getSocket } from '../services/socket';
 
 export const useSocket = () => {
-  const { authToken, isAuthenticated } = useAuth();
-  const socketRef = useRef<any>(null);
+  useAuth();
+  const socketRef = useRef<any | null>(null);
 
   useEffect(() => {
-    if (isAuthenticated && authToken) {
-      socketRef.current = connectSocket(authToken);
-    } else {
-      disconnectSocket();
-      socketRef.current = null;
-    }
+    socketRef.current = null;
 
     return () => {
-      disconnectSocket();
       socketRef.current = null;
     };
-  }, [authToken, isAuthenticated]);
+  }, []);
 
   return {
     socket: getSocket(),

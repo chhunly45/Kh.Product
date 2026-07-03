@@ -94,8 +94,15 @@ describe('CSRF fallback for auth login', () => {
     assert.equal(loginResp.data.message, 'Restricted form submission.');
   });
 
-  it('preserves normal CSRF protection for non-login auth routes', async () => {
+  it('allows register with valid X-CSRF-Token header and allowed origin even when cookie is absent', async () => {
     const client = axios.create({ validateStatus: null });
+
+    const csrfResp = await client.get(`${base}/csrf-token`, {
+      headers: { Origin: 'http://localhost:5173' }
+    });
+
+    assert.equal(csrfResp.status, 200);
+    assert.ok(csrfResp.data.csrfToken, 'Expected csrfToken in response');
 
     const registerResp = await client.post(
       `${base}/auth/register`,
@@ -108,12 +115,14 @@ describe('CSRF fallback for auth login', () => {
       {
         headers: {
           Origin: 'http://localhost:5173',
+          'X-CSRF-Token': csrfResp.data.csrfToken,
           'Content-Type': 'application/json'
         }
       }
     );
 
-    assert.equal(registerResp.status, 403);
-    assert.equal(registerResp.data.message, 'Restricted form submission.');
+    assert.equal(registerResp.status, 201, `Expected register to succeed, got ${registerResp.status}`);
+    assert.ok(registerResp.data.success, 'Expected register success response');
+    assert.ok(registerResp.data.data, 'Expected data in register response');
   });
 });

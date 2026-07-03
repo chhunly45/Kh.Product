@@ -17,46 +17,164 @@ Konpuk is a Cambodian local classifieds platform built with a React frontend and
 - Admin dashboard endpoints for user, product, and report moderation
 - CSRF protection, rate limiting, and security middleware for production readiness
 
-## Local setup
+## Development Environment
 
-1. Clone the repository:
+### Prerequisites
+
+- Node.js 18+ and npm
+- MongoDB available locally or via connection string
+- `git`
+- Terminal/PowerShell access
+
+### Install
 
 ```bash
 git clone https://github.com/chhunly45/Kh.Product.git
 cd Kh.Product
-```
-
-2. Install backend dependencies:
-
-```bash
 cd server
 npm install
-```
-
-3. Install frontend dependencies:
-
-```bash
 cd ../client
 npm install
 ```
 
-4. Create backend environment variables:
+### Environment Variables
 
 ```bash
 cd ../server
 copy .env.production.example .env
 ```
 
-Then edit `server/.env` with your local values.
+Copy `server/.env.example` to `server/.env` and update values as needed.
 
-5. Start the backend server:
+`DEV_SEED` must NEVER be enabled in production.
 
-```bash
-npm run dev
+The official development environment template is `server/.env.example`.
+Use it as the source of truth for backend environment configuration.
+
+### Database
+
+Use a local MongoDB instance or a development MongoDB URI.
+
+Example:
+
+```env
+MONGODB_URI=mongodb://localhost:27017/konpuk
 ```
 
-7. From the repository root, promote a user to admin by email:
-PowerShell:
+### Seed
+
+Run the development seed only when both conditions are met:
+
+- `NODE_ENV=development`
+- `DEV_SEED=true`
+
+Windows:
+
+```powershell
+cd server
+set NODE_ENV=development&& set DEV_SEED=true&& npm run seed:dev
+```
+
+macOS/Linux:
+
+```bash
+cd server
+NODE_ENV=development DEV_SEED=true npm run seed:dev
+```
+
+The script exits immediately if any of the following are true:
+
+- `NODE_ENV` is not `development`
+- `DEV_SEED` is not `true`
+- a CI/CD environment is detected
+- the database name is not one of `konpuk_dev` or `konpuk_local`
+- the connection string contains production-like indicators such as `prod`, `production`, `live`, `stage`, or `staging`
+
+The seed script also prompts for explicit confirmation and requires typing `YES` before it will continue.
+
+### Login
+
+After seeding:
+
+- Start backend: `npm run dev` from `server`
+- Start frontend: `npm run dev` from `client`
+- Open the frontend URL shown in the terminal
+- Login and visit `/profile`
+
+### Known Test Accounts
+
+| Role  | Purpose        | Email                     | Password         | Email Verified | Status |
+|-------|----------------|---------------------------|------------------|----------------|--------|
+| Admin | Admin testing  | `dev-admin@example.com`   | `AdminPass123!`  | true           | active |
+| Seller| Seller testing | `dev-seller@example.com`  | `SellerPass123!` | true           | active |
+| Buyer | Buyer testing  | `dev-buyer@example.com`   | `BuyerPass123!`  | true           | active |
+
+### Developer Workflow
+
+A new developer should be able to complete these steps and get a functional local environment:
+
+1. `git clone ...`
+2. `cd Kh.Product`
+3. `cd server && npm install`
+4. `cd ../client && npm install`
+5. `cd ../server && copy .env.production.example .env`
+6. Set `NODE_ENV=development` and `DEV_SEED=true` in `server/.env`
+7. `npm run seed:dev`
+8. `npm run dev` in `server`
+9. `cd ../client && npm run dev`
+10. Login and verify `/profile`
+
+This workflow is intended to complete within 10 minutes for a new developer.
+
+## Environment variables
+
+The official development template is `server/.env.example`.
+Copy it to `server/.env` and update any local values.
+
+Allowed development databases:
+
+- `konpuk_dev`
+- `konpuk_local`
+
+Forbidden production-like databases:
+
+- `konpuk_prod`
+- `konpuk_production`
+- `konpuk_live`
+
+### Frontend (`client`)
+
+Required variable:
+
+- `VITE_API_BASE_URL` — backend API base URL, e.g. `https://your-backend.example.com/api`
+
+## Development seed accounts
+
+This repository includes an official development seed command that only runs in development.
+
+To seed dev accounts:
+
+```bash
+cd server
+set NODE_ENV=development&& set DEV_SEED=true&& npm run seed:dev
+```
+
+Default development credentials:
+
+- Admin:  `dev-admin@example.com` / `AdminPass123!`
+- Seller: `dev-seller@example.com` / `SellerPass123!`
+- Buyer:  `dev-buyer@example.com` / `BuyerPass123!`
+
+Each seeded account uses:
+
+- `emailVerified: true`
+- `isActive: true`
+- known email and password
+- role-specific account type
+
+The seed command will abort if `NODE_ENV` is not `development`, `DEV_SEED` is not `true`, or a CI/CD environment is detected.
+
+## Render deployment
 
 ```powershell
 $env:MONGODB_URI="mongodb+srv://<user>:<password>@cluster.mongodb.net/konpuk?retryWrites=true&w=majority"
@@ -92,6 +210,44 @@ Required variables:
 - `CLOUDINARY_CLOUD_NAME` — Cloudinary cloud name
 - `CLOUDINARY_API_KEY` — Cloudinary API key
 - `CLOUDINARY_API_SECRET` — Cloudinary API secret
+
+Optional variables:
+
+- `RATE_LIMIT_WINDOW_MS` — rate limit window in milliseconds
+- `RATE_LIMIT_MAX` — maximum requests per window
+- `AUTH_RATE_LIMIT_WINDOW_MS` — auth rate limit window in milliseconds
+- `AUTH_RATE_LIMIT_MAX` — auth request limit per window
+- `UPLOAD_DIR` — local upload directory (default: `uploads`)
+- `NODE_ENV` — runtime environment (`development` or `production`)
+- `CLOUDINARY_FOLDER` — Cloudinary upload folder (default: `marketplace`)
+- `RESEND_API_KEY` — Resend API key for production email delivery
+- `EMAIL_FROM` — sender email address for transactional emails
+
+## Development seed accounts
+
+This repository includes an official development seed command that only runs in development.
+
+To seed dev accounts:
+
+```bash
+cd server
+set NODE_ENV=development&& npm run seed:dev
+```
+
+Default development credentials:
+
+- Admin:  `dev-admin@example.com` / `AdminPass123!`
+- Seller: `dev-seller@example.com` / `SellerPass123!`
+- Buyer:  `dev-buyer@example.com` / `BuyerPass123!`
+
+Each seeded account uses:
+
+- `emailVerified: true`
+- `isActive: true`
+- known email and password
+- role-specific account type
+
+The seed command will abort if `NODE_ENV` is not `development`, so production data is never modified.
 
 Optional variables:
 

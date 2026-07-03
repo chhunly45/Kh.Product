@@ -1,12 +1,12 @@
 const express = require('express');
 const { param } = require('express-validator');
 const favoriteController = require('../controllers/favorite.controller');
-const authMiddleware = require('../middleware/auth.middleware');
+const requireAuth = require('../middleware/authentication/requireAuth');
 const validate = require('../middleware/validation.middleware');
 
 const router = express.Router();
 
-router.use(authMiddleware);
+router.use(requireAuth);
 
 router.get('/', favoriteController.listFavorites);
 router.get('/count', favoriteController.getFavoritesCount);
