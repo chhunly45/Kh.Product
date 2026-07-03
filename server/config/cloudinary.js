@@ -12,7 +12,9 @@ cloudinary.config({
 const cloudNameLog = cloudName || '<missing>';
 const apiKeyLog = apiKey ? 'present' : '<missing>';
 
-console.log(`[Cloudinary] configured with cloud_name=${cloudNameLog} api_key=${apiKeyLog}`);
+if (config.nodeEnv !== 'production') {
+  console.log(`[Cloudinary] configured with cloud_name=${cloudNameLog} api_key=${apiKeyLog}`);
+}
 
 if (!cloudName || !apiKey || !apiSecret) {
   console.warn(

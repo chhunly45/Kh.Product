@@ -4,7 +4,9 @@ const validate = (req, res, next) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    console.log('VALIDATION ERROR:', errors.array());
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('VALIDATION ERROR:', errors.array());
+    }
 
     return res.status(400).json({
       success: false,

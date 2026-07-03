@@ -50,12 +50,14 @@ const sendEmail = async ({ to, subject, text, html }) => {
         html
       });
 
-      console.log('[EMAIL] Resend send success:', {
-        recipient: maskEmail(to),
-        subject,
-        messageId: response.id,
-        status: response.status || 'sent'
-      });
+      if (config.nodeEnv !== 'production') {
+        console.log('[EMAIL] Resend send success:', {
+          recipient: maskEmail(to),
+          subject,
+          messageId: response.id,
+          status: response.status || 'sent'
+        });
+      }
 
       return response;
     }
