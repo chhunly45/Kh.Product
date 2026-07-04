@@ -48,6 +48,65 @@ describe('AdminDashboardPage', () => {
     expect(screen.getByText(/Report management/i)).toBeInTheDocument();
   });
 
+  it('handles seller approvals and featured toggles', async () => {
+    mockedAdminApi.getAdminUsers.mockResolvedValueOnce({
+      items: [
+        { _id: 's1', displayName: 'Seller User', email: 'seller@example.com', role: 'seller', isActive: true, verified: false, verificationStatus: 'pending' }
+      ],
+      meta: { page: 1, limit: 25, total: 1 }
+    });
+    mockedAdminApi.getAdminProducts.mockResolvedValueOnce({
+      items: [
+        {
+          _id: 'p4',
+          title: 'Featured item',
+          category: { name: 'Electronics' },
+          seller: { displayName: 'Seller One', email: 'seller@example.com' },
+          status: 'published',
+          featured: false
+        }
+      ],
+      meta: { page: 1, limit: 25, total: 1 }
+    });
+    mockedAdminApi.updateAdminUserStatus.mockResolvedValue({} as any);
+    mockedAdminApi.updateAdminProductFeatured.mockResolvedValue({} as any);
+
+    render(
+      <MemoryRouter>
+        <AdminDashboardPage />
+      </MemoryRouter>
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /sellers/i }));
+    await waitFor(() => expect(mockedAdminApi.getAdminUsers).toHaveBeenCalled());
+    fireEvent.click(screen.getByRole('button', { name: /approve/i }));
+    await waitFor(() => expect(mockedAdminApi.updateAdminUserStatus).toHaveBeenCalledWith('s1', { sellerVerificationStatus: 'verified' }));
+
+    fireEvent.click(screen.getByRole('button', { name: /products/i }));
+    await waitFor(() => expect(mockedAdminApi.getAdminProducts).toHaveBeenCalled());
+    fireEvent.click(screen.getByRole('checkbox'));
+    await waitFor(() => expect(mockedAdminApi.updateAdminProductFeatured).toHaveBeenCalledWith('p4', true));
+  });
+
+  it('renders audit logs when the audit tab is selected', async () => {
+    mockedAdminApi.getAdminAuditLogs.mockResolvedValueOnce({
+      items: [
+        { _id: 'a1', action: 'User banned', admin: { displayName: 'Admin One' }, target: 'User', createdAt: '2024-01-01' }
+      ],
+      meta: { page: 1, limit: 25, total: 1 }
+    });
+
+    render(
+      <MemoryRouter>
+        <AdminDashboardPage />
+      </MemoryRouter>
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /audit/i }));
+    await waitFor(() => expect(mockedAdminApi.getAdminAuditLogs).toHaveBeenCalled());
+    expect(screen.getByText(/User banned/i)).toBeInTheDocument();
+  });
+
   it('renders analytics cards and updates product and report status', async () => {
     mockedAdminApi.getAdminProducts.mockResolvedValueOnce({
       items: [

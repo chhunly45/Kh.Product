@@ -19,6 +19,7 @@ export const Music = createIcon('Music');
 export const TrendingUp = createIcon('TrendingUp');
 export const Star = createIcon('Star');
 export const Zap = createIcon('Zap');
+export const Shield = createIcon('Shield');
 export const ShieldCheck = createIcon('ShieldCheck');
 export const LayoutDashboard = createIcon('LayoutDashboard');
 export const MessageSquare = createIcon('MessageSquare');
@@ -77,6 +78,7 @@ const MockedIcons = {
   TrendingUp,
   Star,
   Zap,
+  Shield,
   ShieldCheck,
   LayoutDashboard,
   MessageSquare,

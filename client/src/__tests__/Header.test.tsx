@@ -1,9 +1,12 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within, act } from '@testing-library/react';
 import Header from '../components/layout/Header';
 import api from '../services/api';
 import * as favApi from '../services/favorites.api';
 import * as notifApi from '../services/notification.api';
+import useSocket from '../hooks/useSocket';
+
+const mockNavigate = jest.fn();
 
 jest.mock('../services/api', () => ({
   __esModule: true,
@@ -17,11 +20,17 @@ jest.mock('../services/favorites.api', () => ({
 
 jest.mock('../services/notification.api', () => ({
   __esModule: true,
-  getNotificationsCount: jest.fn()
+  getNotificationsCount: jest.fn(),
+  getNotifications: jest.fn()
 }));
 
 jest.mock('../hooks/useAuth', () => ({
   useAuth: jest.fn()
+}));
+
+jest.mock('../hooks/useSocket', () => ({
+  __esModule: true,
+  default: jest.fn()
 }));
 
 // react-router's useNavigate is used in Header; mock it to observe navigation
@@ -29,16 +38,21 @@ jest.mock('react-router-dom', () => {
   const original = jest.requireActual('react-router-dom');
   return {
     ...original,
-    useNavigate: () => jest.fn()
+    useNavigate: () => mockNavigate
   };
 });
+
+const mockedUseSocket = useSocket as jest.MockedFunction<typeof useSocket>;
 
 describe('Header component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockNavigate.mockReset();
     (api.get as jest.Mock).mockResolvedValue({ data: { data: [] } });
     (favApi.getFavoritesCount as jest.Mock).mockResolvedValue(0);
     (notifApi.getNotificationsCount as jest.Mock).mockResolvedValue(0);
+    (notifApi.getNotifications as jest.Mock).mockResolvedValue([]);
+    mockedUseSocket.mockReturnValue({ socket: null } as any);
   });
 
   it('renders unauthenticated links after hydration', async () => {
@@ -107,6 +121,43 @@ describe('Header component', () => {
     expect(screen.getByText(/Logout/i)).toBeInTheDocument();
   });
 
+  it('shows profile image in mobile menu and clears storage on logout error', async () => {
+    const logout = jest.fn().mockRejectedValue(new Error('logout failed'));
+    const { useAuth } = require('../hooks/useAuth');
+    useAuth.mockReturnValue({
+      user: {
+        id: 'user-1',
+        email: 'user@example.com',
+        displayName: 'Test User',
+        profileImageUrl: 'https://example.com/avatar.png',
+        role: 'user'
+      },
+      logout,
+      isHydrated: true
+    });
+    localStorage.setItem('authToken', 'tok');
+    (favApi.getFavoritesCount as jest.Mock).mockResolvedValue(0);
+    (notifApi.getNotificationsCount as jest.Mock).mockResolvedValue(0);
+
+    render(<Header /> , { wrapper: require('react-router-dom').MemoryRouter });
+
+    const toggle = screen.getByLabelText(/Toggle mobile menu/i);
+    fireEvent.click(toggle);
+
+    const avatarImages = await screen.findAllByAltText('avatar');
+    expect(avatarImages.length).toBeGreaterThanOrEqual(2);
+    const mobileAvatar = avatarImages.find((img) => img.closest('div')?.textContent?.includes('Signed in'));
+    expect(mobileAvatar).toBeDefined();
+
+    fireEvent.click(screen.getByRole('button', { name: /Logout/i }));
+
+    await waitFor(() => expect(logout).toHaveBeenCalled());
+    expect(localStorage.getItem('authToken')).toBeNull();
+    expect(localStorage.getItem('refreshToken')).toBeNull();
+    expect(localStorage.getItem('user')).toBeNull();
+    expect(mockNavigate).toHaveBeenCalledWith('/');
+  });
+
   it('hides auth actions until hydration completes', async () => {
     const { useAuth } = require('../hooks/useAuth');
     useAuth.mockReturnValue({ user: null, logout: jest.fn(), isHydrated: false });
@@ -127,5 +178,63 @@ describe('Header component', () => {
 
     // should not throw and login remains
     expect(await screen.findByText(/ចូលគណនី/i)).toBeInTheDocument();
+  });
+
+  it('opens category and notification menus and closes them via keyboard and outside clicks', async () => {
+    const { useAuth } = require('../hooks/useAuth');
+    useAuth.mockReturnValue({
+      user: { id: 'user-1', email: 'user@example.com', displayName: 'Test User', profileImageUrl: '', role: 'user' },
+      logout: jest.fn(),
+      isHydrated: true
+    });
+    localStorage.setItem('authToken', 'tok');
+    (favApi.getFavoritesCount as jest.Mock).mockResolvedValue(4);
+    (notifApi.getNotificationsCount as jest.Mock).mockResolvedValue(2);
+    (notifApi.getNotifications as jest.Mock).mockResolvedValue([{ _id: 'n1', title: 'New offer', message: 'Check it out', read: false, link: '/products' }]);
+
+    render(<Header /> , { wrapper: require('react-router-dom').MemoryRouter });
+
+    fireEvent.click(screen.getByRole('button', { name: /ក្រុមផលិតផល/i }));
+    const categoryMenu = await screen.findByRole('menu', { name: /Categories/i });
+    const firstCategory = within(categoryMenu).getByRole('menuitem', { name: /ម្ហូប/i });
+    firstCategory.focus();
+    fireEvent.keyDown(categoryMenu, { key: 'ArrowDown' });
+    expect(document.activeElement).toBe(within(categoryMenu).getByRole('menuitem', { name: /ទូរស័ព្ទ/i }));
+    fireEvent.keyDown(categoryMenu, { key: 'Escape' });
+    await waitFor(() => expect(screen.queryByRole('menu', { name: /Categories/i })).not.toBeInTheDocument());
+
+    fireEvent.click(screen.getByTitle(/Notifications/i));
+    expect(await screen.findByText(/New offer/i)).toBeInTheDocument();
+    fireEvent.click(document.body);
+    await waitFor(() => expect(screen.queryByRole('menu', { name: /Notifications/i })).not.toBeInTheDocument());
+  });
+
+  it('handles socket notifications and logout flows', async () => {
+    const logout = jest.fn().mockResolvedValue(undefined);
+    const { useAuth } = require('../hooks/useAuth');
+    useAuth.mockReturnValue({
+      user: { id: 'user-1', email: 'user@example.com', displayName: 'Test User', profileImageUrl: '', role: 'user' },
+      logout,
+      isHydrated: true
+    });
+
+    const socket = {
+      on: jest.fn(),
+      off: jest.fn()
+    };
+    mockedUseSocket.mockReturnValue({ socket } as any);
+
+    render(<Header /> , { wrapper: require('react-router-dom').MemoryRouter });
+
+    const handler = socket.on.mock.calls.find(([eventName]) => eventName === 'new_notification')?.[1];
+    expect(handler).toBeInstanceOf(Function);
+    await act(async () => {
+      await handler({ unreadCount: 3 });
+    });
+    expect(socket.on).toHaveBeenCalledWith('new_notification', expect.any(Function));
+
+    fireEvent.click(screen.getByTitle(/Notifications/i));
+    fireEvent.click(screen.getByRole('button', { name: /ចេញពីប្រព័ន្ធ/i }));
+    await waitFor(() => expect(logout).toHaveBeenCalled());
   });
 });

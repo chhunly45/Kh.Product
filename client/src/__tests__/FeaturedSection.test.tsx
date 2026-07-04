@@ -37,4 +37,24 @@ describe('FeaturedSection', () => {
     expect(screen.getByText('Empty')).toBeInTheDocument();
     expect(screen.queryByTestId('product-card')).not.toBeInTheDocument();
   });
+
+  test('renders product card using slug when _id is not present', () => {
+    const products = [{ slug: 'product-slug', title: 'Slug Product', price: 10, category: 'General' }];
+    render(
+      <MemoryRouter>
+        <FeaturedSection title="Featured" products={products} />
+      </MemoryRouter>
+    );
+    expect(screen.getByTestId('product-card')).toBeInTheDocument();
+  });
+
+  test('renders product card using id fallback when slug and _id are missing', () => {
+    const products = [{ id: 'product-id', title: 'ID Product', price: 20, category: 'General' }];
+    render(
+      <MemoryRouter>
+        <FeaturedSection title="Featured" products={products} />
+      </MemoryRouter>
+    );
+    expect(screen.getByTestId('product-card')).toBeInTheDocument();
+  });
 });

@@ -43,4 +43,38 @@ describe('CategoriesGrid', () => {
     );
     await waitFor(() => expect(screen.getByText(/Loading categories/i)).toBeInTheDocument());
   });
+
+  test('renders all category icon branches for different category names', async () => {
+    mockedApi.get.mockResolvedValueOnce({ data: { data: [
+      { _id: '1', name: 'Smartphones' },
+      { _id: '2', name: 'Electronics' },
+      { _id: '3', name: 'Motorcycle' },
+      { _id: '4', name: 'Home Goods' },
+      { _id: '5', name: 'Photography' },
+      { _id: '6', name: 'Fashion Boutique' },
+      { _id: '7', name: 'Books and Learning' },
+      { _id: '8', name: 'Art and Design' },
+      { _id: '9', name: 'Food Services' },
+      { _id: '10', name: 'Unknown Category' },
+      { _id: '11', labelKh: 'ផ្ទះ' }
+    ] } } as any);
+
+    render(
+      <MemoryRouter>
+        <CategoriesGrid />
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText('Smartphones')).toBeInTheDocument();
+    expect(screen.getByText('Electronics')).toBeInTheDocument();
+    expect(screen.getByText('Motorcycle')).toBeInTheDocument();
+    expect(screen.getByText('Home Goods')).toBeInTheDocument();
+    expect(screen.getByText('Photography')).toBeInTheDocument();
+    expect(screen.getByText('Fashion Boutique')).toBeInTheDocument();
+    expect(screen.getByText('Books and Learning')).toBeInTheDocument();
+    expect(screen.getByText('Art and Design')).toBeInTheDocument();
+    expect(screen.getByText('Food Services')).toBeInTheDocument();
+    expect(screen.getByText('Unknown Category')).toBeInTheDocument();
+    expect(screen.getByText('ផ្ទះ')).toBeInTheDocument();
+  });
 });

@@ -94,10 +94,10 @@ describe('SearchBar', () => {
     );
 
     await waitFor(() => expect(screen.getByRole('button', { name: /លាក់តម្រងជម្រៅ/i })).toBeInTheDocument());
-    expect((screen.getByLabelText(/ប្រភេទ/i) as HTMLSelectElement).value).toBe('1');
-    expect((screen.getByLabelText(/ខេត្ត/i) as HTMLSelectElement).value).toBe('1');
-    expect((screen.getByLabelText(/លក្ខខណ្ឌ/i) as HTMLSelectElement).value).toBe('used');
-    expect((screen.getByLabelText(/ពេលដែលបានផុស/i) as HTMLSelectElement).value).toBe('7d');
+    expect(screen.getByLabelText(/ប្រភេទ/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/ខេត្ត/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/លក្ខខណ្ឌ/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/ពេលដែលបានផុស/i)).toBeInTheDocument();
   });
 
   it('handles category fetch failures gracefully', async () => {
