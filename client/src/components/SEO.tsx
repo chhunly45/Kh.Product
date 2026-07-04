@@ -1,10 +1,10 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
-const getViteEnv = (key: string, fallback: string) => {
+export const getViteEnv = (key: string, fallback: string, viteEnv?: Record<string, string>) => {
   try {
-    // @ts-ignore
-    const value = (import.meta && import.meta.env && import.meta.env[key]) || process.env[key];
+    const env = viteEnv ?? (typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env : undefined);
+    const value = (env && env[key]) || process.env[key];
     return value || fallback;
   } catch {
     return fallback;
@@ -13,6 +13,10 @@ const getViteEnv = (key: string, fallback: string) => {
 
 const defaultSiteUrl = getViteEnv('VITE_SITE_URL', 'https://konpuk.com');
 const defaultImage = `${defaultSiteUrl}/logo.png`;
+
+export const getMetaUrl = (url?: string, currentLocationHref?: string) => {
+  return url || currentLocationHref || defaultSiteUrl;
+};
 
 interface SEOProps {
   title?: string;
@@ -28,7 +32,7 @@ const SEO: React.FC<SEOProps> = ({ title, description, url, image, type = 'websi
   const pageTitle = title ? `${title} | Konpuk` : 'Konpuk';
   const metaDescription = description || 'Cambodian marketplace for buyers and sellers.';
   const metaImage = image || defaultImage;
-  const metaUrl = url || (typeof window !== 'undefined' ? window.location.href : defaultSiteUrl);
+  const metaUrl = getMetaUrl(url, typeof window !== 'undefined' ? window.location.href : undefined);
 
   return (
     <Helmet>
