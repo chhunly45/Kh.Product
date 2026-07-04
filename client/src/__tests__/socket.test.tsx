@@ -1,11 +1,13 @@
 jest.mock('socket.io-client', () => {
   const mockConnect = jest.fn();
   const mockDisconnect = jest.fn();
+  const mockRemoveAllListeners = jest.fn();
   const socket = {
     connected: false,
     auth: { token: '' },
     connect: mockConnect,
-    disconnect: mockDisconnect
+    disconnect: mockDisconnect,
+    removeAllListeners: mockRemoveAllListeners
   };
 
   return {
@@ -13,14 +15,21 @@ jest.mock('socket.io-client', () => {
   };
 });
 
-import { connectSocket, disconnectSocket } from '../services/socket';
-import { io } from 'socket.io-client';
-
 describe('socket service', () => {
-  it('connects and disconnects the socket', () => {
-    const fakeSocket = (io as jest.Mock).mock.results[0].value;
+  beforeEach(() => {
+    jest.resetModules();
+    process.env.VITE_ENABLE_SOCKET = 'true';
+  });
 
-    connectSocket();
+  it('connects and disconnects the socket', () => {
+    const { connectSocket, disconnectSocket } = require('../services/socket');
+    const { io } = require('socket.io-client');
+
+    const connectedSocket = connectSocket();
+    expect(io).toHaveBeenCalled();
+
+    const fakeSocket = (io as jest.Mock).mock.results[0].value;
+    expect(connectedSocket).toBe(fakeSocket);
     expect(fakeSocket.connect).toHaveBeenCalled();
 
     fakeSocket.connected = true;

@@ -16,6 +16,8 @@ mockedAxios.create = mockCreate as any;
 
 describe('API service configuration', () => {
   it('creates an axios instance with default configuration and registers interceptors', async () => {
+    process.env.VITE_API_BASE_URL = '  http://localhost:4000/  ';
+
     const apiModule = await import('../services/api');
     const api = apiModule.default;
 

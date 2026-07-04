@@ -79,7 +79,17 @@ describe('Header component', () => {
 
   it('renders authenticated state with favorite/notification counts after hydration', async () => {
     const { useAuth } = require('../hooks/useAuth');
-    useAuth.mockReturnValue({ user: { displayName: 'Test User' , profileImageUrl: '' , role: 'user' }, logout: jest.fn(), isHydrated: true });
+    useAuth.mockReturnValue({
+      user: {
+        id: 'user-1',
+        email: 'user@example.com',
+        displayName: 'Test User',
+        profileImageUrl: '',
+        role: 'user'
+      },
+      logout: jest.fn(),
+      isHydrated: true
+    });
     localStorage.setItem('authToken', 'tok');
     (favApi.getFavoritesCount as jest.Mock).mockResolvedValue(5);
     (notifApi.getNotificationsCount as jest.Mock).mockResolvedValue(2);
@@ -93,8 +103,8 @@ describe('Header component', () => {
     await waitFor(() => expect(favApi.getFavoritesCount).toHaveBeenCalled());
     await waitFor(() => expect(notifApi.getNotificationsCount).toHaveBeenCalled());
 
-    expect(screen.getAllByText(/ពត៌មានគណនី/i).length).toBeGreaterThanOrEqual(1);
-    expect(screen.getByText(/ចេញពីប្រព័ន្ធ/i)).toBeInTheDocument();
+    expect(screen.getByText(/Profile/i)).toBeInTheDocument();
+    expect(screen.getByText(/Logout/i)).toBeInTheDocument();
   });
 
   it('hides auth actions until hydration completes', async () => {

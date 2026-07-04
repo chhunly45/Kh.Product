@@ -1,5 +1,6 @@
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import ProductDetailPage from '../pages/ProductDetailPage';
 import * as productApi from '../services/product.api';
 import * as favoritesApi from '../services/favorites.api';
@@ -33,11 +34,13 @@ describe('ProductDetailPage', () => {
 
     mockedFavoritesApi.checkFavorite.mockResolvedValue(false);
     mockedAuthApi.getProfile.mockResolvedValue(null);
+    mockedProductApi.getProductBySlug.mockReset();
   });
 
   it('loads and renders product details', async () => {
-    mockedProductApi.getProductById.mockResolvedValue({
+    mockedProductApi.getProductBySlug.mockResolvedValue({
       _id: '123',
+      slug: 'detailed-product',
       title: 'Detailed Product',
       description: 'A detailed product description',
       price: 2500,
@@ -50,14 +53,16 @@ describe('ProductDetailPage', () => {
     });
 
     render(
-      <MemoryRouter initialEntries={['/products/123']}>
-        <Routes>
-          <Route path="/products/:id" element={<ProductDetailPage />} />
-        </Routes>
-      </MemoryRouter>
+      <HelmetProvider>
+        <MemoryRouter initialEntries={['/products/detailed-product']}>
+          <Routes>
+            <Route path="/products/:slug" element={<ProductDetailPage />} />
+          </Routes>
+        </MemoryRouter>
+      </HelmetProvider>
     );
 
-    await waitFor(() => expect(mockedProductApi.getProductById).toHaveBeenCalledWith('123'));
+    await waitFor(() => expect(mockedProductApi.getProductBySlug).toHaveBeenCalledWith('detailed-product'));
     expect(mockedFavoritesApi.checkFavorite).not.toHaveBeenCalled();
     expect(screen.getByRole('heading', { name: /Detailed Product/i })).toBeInTheDocument();
     expect(screen.getByText(/A detailed product description/i)).toBeInTheDocument();
@@ -65,8 +70,9 @@ describe('ProductDetailPage', () => {
   });
 
   it('renders fallback content when no product images are available', async () => {
-    mockedProductApi.getProductById.mockResolvedValue({
+    mockedProductApi.getProductBySlug.mockResolvedValue({
       _id: '456',
+      slug: 'no-image-product',
       title: 'No Image Product',
       description: 'Product without images',
       price: 1500,
@@ -79,31 +85,35 @@ describe('ProductDetailPage', () => {
     });
 
     render(
-      <MemoryRouter initialEntries={['/products/456']}>
-        <Routes>
-          <Route path="/products/:id" element={<ProductDetailPage />} />
-        </Routes>
-      </MemoryRouter>
+      <HelmetProvider>
+        <MemoryRouter initialEntries={['/products/no-image-product']}>
+          <Routes>
+            <Route path="/products/:slug" element={<ProductDetailPage />} />
+          </Routes>
+        </MemoryRouter>
+      </HelmetProvider>
     );
 
-    await waitFor(() => expect(mockedProductApi.getProductById).toHaveBeenCalledWith('456'));
+    await waitFor(() => expect(mockedProductApi.getProductBySlug).toHaveBeenCalledWith('no-image-product'));
     expect(screen.queryByRole('img', { name: /Product image/i })).not.toBeInTheDocument();
     expect(screen.queryByText(/Gallery/i)).not.toBeInTheDocument();
     expect(screen.getByText(/No Image Product/i)).toBeInTheDocument();
   });
 
   it('shows an error message when product load fails', async () => {
-    mockedProductApi.getProductById.mockRejectedValue(new Error('Network failure'));
+    mockedProductApi.getProductBySlug.mockRejectedValue(new Error('Network failure'));
 
     render(
-      <MemoryRouter initialEntries={['/products/999']}>
-        <Routes>
-          <Route path="/products/:id" element={<ProductDetailPage />} />
-        </Routes>
-      </MemoryRouter>
+      <HelmetProvider>
+        <MemoryRouter initialEntries={['/products/missing-product']}>
+          <Routes>
+            <Route path="/products/:slug" element={<ProductDetailPage />} />
+          </Routes>
+        </MemoryRouter>
+      </HelmetProvider>
     );
 
-    await waitFor(() => expect(screen.getByText(/Unable to load product/i)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText('Unable to load product.')).toBeInTheDocument());
   });
 
   it('calls checkFavorite when authenticated and skips it for guests', async () => {
@@ -118,8 +128,9 @@ describe('ProductDetailPage', () => {
       setUser: jest.fn() as any
     });
 
-    mockedProductApi.getProductById.mockResolvedValue({
+    mockedProductApi.getProductBySlug.mockResolvedValue({
       _id: '321',
+      slug: 'authenticated-product',
       title: 'Authenticated Product',
       description: 'Product visible to authenticated users',
       price: 2000,
@@ -133,11 +144,13 @@ describe('ProductDetailPage', () => {
     mockedFavoritesApi.checkFavorite.mockResolvedValueOnce(true);
 
     render(
-      <MemoryRouter initialEntries={['/products/321']}>
-        <Routes>
-          <Route path="/products/:id" element={<ProductDetailPage />} />
-        </Routes>
-      </MemoryRouter>
+      <HelmetProvider>
+        <MemoryRouter initialEntries={['/products/authenticated-product']}>
+          <Routes>
+            <Route path="/products/:slug" element={<ProductDetailPage />} />
+          </Routes>
+        </MemoryRouter>
+      </HelmetProvider>
     );
 
     await waitFor(() => expect(mockedFavoritesApi.checkFavorite).toHaveBeenCalledWith('321'));

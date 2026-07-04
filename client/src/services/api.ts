@@ -21,8 +21,22 @@ const defaultApiBase = typeof window !== 'undefined' && ['localhost', '127.0.0.1
   ? 'http://localhost:5000/api'
   : 'https://api.konpuk.com/api';
 
+const normalizeApiBaseUrl = (value: string) => {
+  const trimmed = value.trim();
+  const withoutTrailingSlashes = trimmed.replace(/\/+$/, '');
+
+  if (withoutTrailingSlashes.endsWith('/api')) {
+    return withoutTrailingSlashes;
+  }
+
+  return `${withoutTrailingSlashes}/api`;
+};
+
+const resolvedApiBase = getViteEnv('VITE_API_BASE_URL', defaultApiBase);
+const normalizedApiBase = normalizeApiBaseUrl(resolvedApiBase);
+
 const created = axios.create({
-  baseURL: getViteEnv('VITE_API_BASE_URL', defaultApiBase),
+  baseURL: normalizedApiBase,
   headers: {
     'Content-Type': 'application/json'
   },
