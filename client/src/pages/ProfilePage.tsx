@@ -620,7 +620,7 @@ const ProfilePage = () => {
             {activeTab === 'products' && !isEditing && (
               <div className="rounded-[1.6rem] border border-slate-200 bg-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <h2 className="text-lg font-bold text-text-primary">{profileUi.productsBySeller.replace('{name}', profile?.displayName || 'អ្នកលក់ / this seller')}</h2>
+                  <h2 className="text-lg font-bold text-text-primary">{profileUi.productsBySeller.replace(/\{name\}/g, profile?.displayName || 'អ្នកលក់ / this seller')}</h2>
                   {isOwner && (
                     <button
                       type="button"
