@@ -27,6 +27,17 @@ describe('ProductCard', () => {
     expect(screen.getByText('Product')).toBeInTheDocument();
   });
 
+  it('renders formatted USD and KHR price when price is provided', () => {
+    render(
+      <MemoryRouter>
+        <ProductCard id="789" titleEn="Price Test" price={49} location="Phnom Penh" category="General" />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText('$49.00')).toBeInTheDocument();
+    expect(screen.getByText(/KHR/)).toBeInTheDocument();
+  });
+
   it('toggles favorite state and calls onToggleFavorite', () => {
     const onToggleFavorite = jest.fn();
 

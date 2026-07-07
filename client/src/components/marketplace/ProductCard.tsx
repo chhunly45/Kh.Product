@@ -9,7 +9,7 @@ interface ProductCardProps {
   title?: string;
   titleKh?: string;
   titleEn?: string;
-  price: string | number;
+  price?: string | number;
   location?: string;
   category?: string | { name?: string; labelKh?: string };
   id: string;
@@ -42,7 +42,7 @@ const ProductCard = ({ title, titleKh, titleEn, price, location, category, id, i
     khr: formatPriceKHR(p)
   });
 
-  const priceText = formatPrice(price);
+  const priceText = formatPrice(price ?? '');
   const sellerVerified = seller?.sellerVerificationStatus === 'verified';
 
   return (
@@ -103,30 +103,32 @@ const ProductCard = ({ title, titleKh, titleEn, price, location, category, id, i
             <p className="text-xs sm:text-sm text-text-secondary line-clamp-1 truncate">{titleEn}</p>
           ) : null}
 
+          {price !== undefined && price !== '' ? (
+            <div className="mt-3">
+              <p className="text-lg sm:text-xl font-extrabold text-[#0F766E] leading-6">
+                {priceText.usd}
+              </p>
+              <p className="text-xs text-text-secondary">{priceText.khr}</p>
+            </div>
+          ) : null}
+
           {location && (
-            <div className="flex items-center gap-2 text-xs text-text-secondary">
+            <div className="mt-3 flex items-center gap-2 text-xs text-text-secondary">
               <MapPin className="w-3.5 h-3.5 text-muted" />
               <span className="truncate">{location}</span>
             </div>
           )}
         </div>
 
-        <div className="mt-3 flex items-end justify-between">
-            <div>
-            <p className="text-lg font-extrabold text-[#0F766E]" aria-label={`Price ${priceText.usd} ${priceText.khr}`}>{priceText.usd}</p>
-            <p className="text-xs text-text-secondary" aria-hidden="true">{priceText.khr}</p>
-          </div>
+        <div className="mt-3 flex items-center gap-2 text-xs text-text-secondary">
+          {seller?.sellerVerificationStatus && (
+            <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-semibold whitespace-nowrap ${sellerVerified ? 'bg-primary/15 text-primary font-bold' : 'bg-muted/20 text-text-secondary'}`} title={sellerVerified ? 'Verified seller' : 'Not verified'}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              <span>{sellerVerified ? 'ផ្ទៀងផ្ទាត់' : 'មិនផ្ទៀងផ្ទាត់'}</span>
+            </span>
+          )}
 
-          <div className="flex items-center gap-2 text-xs text-text-secondary">
-            {seller?.sellerVerificationStatus && (
-              <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-semibold whitespace-nowrap ${sellerVerified ? 'bg-primary/15 text-primary font-bold' : 'bg-muted/20 text-text-secondary'}`} title={sellerVerified ? 'Verified seller' : 'Not verified'}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                  <span>{sellerVerified ? 'ផ្ទៀងផ្ទាត់' : 'មិនផ្ទៀងផ្ទាត់'}</span>
-                </span>
-            )}
-
-            <span className="text-xs text-text-secondary">{formatViewsCount(viewsCount)} views</span>
-          </div>
+          <span className="text-xs text-text-secondary">{formatViewsCount(viewsCount)} views</span>
         </div>
       </div>
     </Link>
