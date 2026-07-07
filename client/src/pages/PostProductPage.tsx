@@ -129,11 +129,11 @@ const PostProductPage = () => {
   const handleRemovePreview = (index: number) => {
     const currentTotal = existingImages.length + previews.length;
     if (currentTotal <= 1) {
-      window.alert('At least one product image is required.');
+      window.alert('ត្រូវការ​រូបភាពផលិតផល​យ៉ាងតិច​មួយ​រូប។ / At least one product image is required.');
       return;
     }
 
-    const confirmed = window.confirm('Delete this image from the upload queue?');
+    const confirmed = window.confirm('លុប​រូបភាព​នេះ​ពី​ជួរ​បញ្ចូល​រូបភាព? / Delete this image from the upload queue?');
     if (!confirmed) return;
 
     setPreviews((current) => current.filter((_, idx) => idx !== index));
@@ -150,11 +150,11 @@ const PostProductPage = () => {
   const handleDeleteExistingImage = async (imageId: string) => {
     const currentTotal = existingImages.length + previews.length;
     if (currentTotal <= 1) {
-      window.alert('At least one product image is required.');
+      window.alert('ត្រូវការ​រូបភាពផលិតផល​យ៉ាងតិច​មួយ​រូប។ / At least one product image is required.');
       return;
     }
 
-    const confirmed = window.confirm('Delete this image? This will remove it from the product and cannot be undone.');
+    const confirmed = window.confirm('លុប​រូបភាព​នេះ? វានឹងលុបវាពីផលិតផល និង​មិនអាច​ស្ដារឡើងវិញ​បានទេ។ / Delete this image? This will remove it from the product and cannot be undone.');
     if (!confirmed) return;
 
     try {
@@ -175,10 +175,10 @@ const PostProductPage = () => {
         }
       }
 
-      setStatus('Image removed from listing.');
+      setStatus('រូបភាពត្រូវបានលុបចេញពីបញ្ជី / Image removed from listing.');
     } catch (error) {
       console.error('Failed to delete existing image:', error);
-      setStatus('Unable to remove image. Please try again.');
+      setStatus('មិនអាចលុបរូបភាពបាន។ សូមព្យាយាមម្តងទៀត។ / Unable to remove image. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -198,10 +198,9 @@ const PostProductPage = () => {
     if (!description.trim()) nextErrors.description = 'Description is required';
     if (!price || Number(price) <= 0) nextErrors.price = 'Price must be a positive number';
     if (!location.trim()) nextErrors.location = 'Location is required';
-    if (!category) nextErrors.category = 'Category is required';
-    if (!condition) nextErrors.condition = 'Condition is required';
-    if (!province) nextErrors.province = 'Province is required';
-    if (!district) nextErrors.district = 'District is required';
+    if (!category) nextErrors.category = 'ប្រភេទផលិតផលត្រូវបានទាមទារ / Category is required';
+    if (!condition) nextErrors.condition = 'ស្ថានភាពត្រូវបានទាមទារ / Condition is required';
+    if (!province) nextErrors.province = 'រាជធានី ឬ ខេត្ត ត្រូវបានទាមទារ / Province is required';
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
   };
@@ -209,11 +208,11 @@ const PostProductPage = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!validateForm()) {
-      setStatus('Please fix the highlighted fields.');
+      setStatus('សូមត្រួតពិនិត្យចំណុចដែលបានពណ៌ស។ / Please fix the highlighted fields.');
       return;
     }
 
-    setStatus(isEditing ? 'Updating listing...' : 'Publishing product...');
+    setStatus(isEditing ? 'កំពុងកែប្រែបញ្ជី...' : 'កំពុងផ្សព្វផ្សាយផលិតផល...');
     setIsSubmitting(true);
 
     const payload: any = {
@@ -234,10 +233,10 @@ const PostProductPage = () => {
       let product;
       if (isEditing && productId) {
         product = await updateProduct(productId, payload);
-        setStatus('Your listing was updated successfully.');
+        setStatus('បញ្ជីរបស់អ្នកត្រូវបានអាប់ដេតដោយជោគជ័យ។ / Your listing was updated successfully.');
       } else {
         product = await createProduct(payload);
-        setStatus('Your product was published successfully.');
+        setStatus('ផលិតផលរបស់អ្នកត្រូវបានផ្សព្វផ្សាយដោយជោគជ័យ។ / Your product was published successfully.');
       }
 
       if (images.length && product?._id) {
@@ -265,7 +264,7 @@ const PostProductPage = () => {
       }
     } catch (error) {
       console.error('PostProductPage submit error:', error);
-      setStatus('Unable to save your listing. Please try again.');
+      setStatus('មិនអាចរក្សាបញ្ជីរបស់អ្នកបាន។ សូមព្យាយាមម្តងទៀត។ / Unable to save your listing. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -274,29 +273,31 @@ const PostProductPage = () => {
   return (
     <div className="mx-auto max-w-4xl rounded-[2rem] bg-white p-10 shadow-xl ring-1 ring-border">
       <div className="space-y-3">
-        <p className="text-sm uppercase tracking-[0.35em] text-primary">{isEditing ? 'Edit listing' : 'New listing'}</p>
-        <h1 className="text-3xl font-semibold text-text-primary">{isEditing ? 'Update your product' : 'Post your product'}</h1>
-        <p className="text-sm text-muted">Share your product with thousands of local buyers quickly.</p>
+        {isEditing && (
+          <p className="text-sm uppercase tracking-[0.35em] text-primary">កែសម្រួលការផ្សព្វផ្សាយ / Edit listing</p>
+        )}
+        <h1 className="text-3xl font-semibold text-text-primary">{isEditing ? 'កែប្រែផលិតផលរបស់អ្នក / Update your product' : 'បង្ហោះផលិតផលរបស់អ្នក / Post your product'}</h1>
+        <p className="text-sm text-muted">ចែករំលែកផលិតផលរបស់អ្នកទៅកាន់អ្នកទិញក្នុងស្រុកបានយ៉ាងឆាប់រហ័ស / Share your product with thousands of local buyers quickly.</p>
       </div>
 
       <form className="mt-10 space-y-6" onSubmit={handleSubmit}>
         <div className="grid gap-6 lg:grid-cols-2">
           <label className="block">
-            <span className="text-sm font-medium text-text-secondary">Product title (Khmer)</span>
+            <span className="text-sm font-medium text-text-secondary">ចំណងជើងផលិតផល (ខ្មែរ) / Product title (Khmer)</span>
             <input
               value={titleKh}
               onChange={(event) => setTitleKh(event.target.value)}
-              placeholder="ឈ្មោះផលិតផល"
+              placeholder="ចំណងជើងផលិតផល (ខ្មែរ) / Product title (Khmer)"
               className={`mt-2 w-full rounded-3xl border px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 ${errors.title ? 'border-rose-400 bg-rose-50' : 'border-muted bg-background'}`}
             />
           </label>
 
           <label className="block">
-            <span className="text-sm font-medium text-text-secondary">Product title (English)</span>
+            <span className="text-sm font-medium text-text-secondary">ចំណងជើងផលិតផល (អង់គ្លេស) / Product title (English)</span>
             <input
               value={titleEn}
               onChange={(event) => setTitleEn(event.target.value)}
-              placeholder="Product name"
+              placeholder="ចំណងជើងផលិតផល (អង់គ្លេស) / Product title (English)"
               className={`mt-2 w-full rounded-3xl border px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 ${errors.title ? 'border-rose-400 bg-rose-50' : 'border-muted bg-background'}`}
             />
           </label>
@@ -306,24 +307,24 @@ const PostProductPage = () => {
 
         <div className="grid gap-6 lg:grid-cols-2">
           <label className="block">
-            <span className="text-sm font-medium text-text-secondary">Fallback title (legacy)</span>
+            <span className="text-sm font-medium text-text-secondary">ចំណងជើងជំនួស / Fallback title</span>
             <input
               value={title}
               onChange={(event) => setTitle(event.target.value)}
-              placeholder="(Optional - used if no Khmer/English titles)"
+              placeholder="ចំណងជើងជំនួស / Fallback title"
               className={`mt-2 w-full rounded-3xl border px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 border-muted bg-background opacity-75`}
             />
-            <p className="mt-2 text-xs text-muted">Optional. The system will use Khmer or English titles if available.</p>
+            <p className="mt-2 text-xs text-muted">ស្រេចចិត្ត — ប្រើតែនៅពេលគ្មានចំណងជើងខ្មែរ ឬអង់គ្លេស / Optional — used if no Khmer/English titles are available.</p>
           </label>
 
           <label className="block">
-            <span className="text-sm font-medium text-text-secondary">Category</span>
+            <span className="text-sm font-medium text-text-secondary">ប្រភេទផលិតផល / Category</span>
             <select
               value={category}
               onChange={(event) => setCategory(event.target.value)}
               className={`mt-2 w-full rounded-3xl border px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 ${errors.category ? 'border-rose-400 bg-rose-50' : 'border-muted bg-background'}`}
             >
-              <option value="">Select category</option>
+              <option value="">ជ្រើសរើសប្រភេទ / Select category</option>
               {categories.map((item) => (
                 <option key={item._id} value={item._id}>{item.labelKh || item.name}</option>
               ))}
@@ -333,11 +334,12 @@ const PostProductPage = () => {
         </div>
 
         <label className="block">
-          <span className="text-sm font-medium text-text-secondary">Description</span>
+          <span className="text-sm font-medium text-text-secondary">ការពិពណ៌នា / Description</span>
           <textarea
             value={description}
             onChange={(event) => setDescription(event.target.value)}
             rows={5}
+            placeholder="សរសេរការពិពណ៌នាអំពីផលិតផល / Describe your product"
             className={`mt-2 w-full rounded-3xl border px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 ${errors.description ? 'border-rose-400 bg-rose-50' : 'border-muted bg-background'}`}
           />
           {errors.description && <p className="mt-2 text-sm text-rose-600">{errors.description}</p>}
@@ -345,24 +347,25 @@ const PostProductPage = () => {
 
         <div className="grid gap-6 lg:grid-cols-2">
           <label className="block">
-            <span className="text-sm font-medium text-text-secondary">Price (USD)</span>
+            <span className="text-sm font-medium text-text-secondary">តម្លៃ (ដុល្លារ USD) / Price (USD)</span>
             <input
               type="number"
               step="0.01"
               min="0"
               value={price}
               onChange={(event) => setPrice(event.target.value)}
-              placeholder="Enter price in USD"
+              placeholder="បញ្ចូលតម្លៃជាដុល្លារ / Enter price in USD"
               className={`mt-2 w-full rounded-3xl border px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 ${errors.price ? 'border-rose-400 bg-rose-50' : 'border-muted bg-background'}`}
             />
             {errors.price && <p className="mt-2 text-sm text-rose-600">{errors.price}</p>}
           </label>
 
           <label className="block">
-            <span className="text-sm font-medium text-text-secondary">Location</span>
+            <span className="text-sm font-medium text-text-secondary">ទីតាំង / Location</span>
             <input
               value={location}
               onChange={(event) => setLocation(event.target.value)}
+              placeholder="បញ្ចូលទីតាំង / Enter location"
               className={`mt-2 w-full rounded-3xl border px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 ${errors.location ? 'border-rose-400 bg-rose-50' : 'border-muted bg-background'}`}
             />
             {errors.location && <p className="mt-2 text-sm text-rose-600">{errors.location}</p>}
@@ -371,30 +374,30 @@ const PostProductPage = () => {
 
         <div className="grid gap-6 lg:grid-cols-2">
           <label className="block">
-            <span className="text-sm font-medium text-text-secondary">Condition</span>
+            <span className="text-sm font-medium text-text-secondary">ស្ថានភាពផលិតផល / Condition</span>
             <select
               value={condition}
               onChange={(event) => setCondition(event.target.value)}
               className={`mt-2 w-full rounded-3xl border px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 ${errors.condition ? 'border-rose-400 bg-rose-50' : 'border-muted bg-background'}`}
             >
-              <option value="">Select condition</option>
-              <option value="new">New</option>
-              <option value="used">Used</option>
-              <option value="refurbished">Refurbished</option>
+              <option value="">ជ្រើសរើសស្ថានភាព / Select condition</option>
+              <option value="new">ថ្មី / New</option>
+              <option value="used">ប្រើរួច / Used</option>
+              <option value="refurbished">ធ្វើឡើងវិញ / Refurbished</option>
             </select>
             {errors.condition && <p className="mt-2 text-sm text-rose-600">{errors.condition}</p>}
           </label>
           <label className="block">
-            <span className="text-sm font-medium text-text-secondary">Province</span>
+            <span className="text-sm font-medium text-text-secondary">រាជធានី ឬ ខេត្ត / Province</span>
             <select
               value={province}
               onChange={(event) => setProvince(event.target.value ? Number(event.target.value) : '')}
               className={`mt-2 w-full rounded-3xl border px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 ${errors.province ? 'border-rose-400 bg-rose-50' : 'border-muted bg-background'}`}
             >
-              <option value="">Select province</option>
+              <option value="">ជ្រើសរើសរាជធានី ឬ ខេត្ត / Select province</option>
               {provinces.map((prov) => (
                 <option key={prov.id} value={prov.id}>
-                  {prov.name}
+                  {prov.nameKh || prov.name}
                 </option>
               ))}
             </select>
@@ -404,41 +407,26 @@ const PostProductPage = () => {
 
         <div className="grid gap-6 lg:grid-cols-2">
           <label className="block">
-            <span className="text-sm font-medium text-text-secondary">District</span>
-            <select
-              value={district}
-              onChange={(event) => setDistrict(event.target.value ? Number(event.target.value) : '')}
-              disabled={!province}
-              className={`mt-2 w-full rounded-3xl border px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 ${errors.district ? 'border-rose-400 bg-rose-50' : 'border-muted bg-background'} ${!province ? 'opacity-50 cursor-not-allowed' : ''}`}
-            >
-              <option value="">Select district</option>
-              {districts.map((dist) => (
-                <option key={dist.id} value={dist.id}>
-                  {dist.name}
-                </option>
-              ))}
-            </select>
-            {errors.district && <p className="mt-2 text-sm text-rose-600">{errors.district}</p>}
-          </label>
-          <label className="block">
-            <span className="text-sm font-medium text-text-secondary">Product images</span>
+            <span className="text-sm font-medium text-text-secondary">រូបភាពផលិតផល / Product images</span>
             <input
               type="file"
               accept="image/*"
               multiple
               onChange={handleFiles}
               className="mt-2 w-full text-sm text-text-secondary"
+              aria-label="ជ្រើសរើសរូបភាព / Choose Files"
+              title="ជ្រើសរើសរូបភាព / Choose Files"
             />
-            <p className="mt-2 text-xs text-muted">Upload up to 6 new images. Images will be optimized automatically.</p>
+            <p className="mt-2 text-xs text-muted">អាចបង្ហោះរូបភាពថ្មីបានរហូតដល់ ៦ រូប។ រូបភាពនឹងត្រូវបានកែលម្អដោយស្វ័យប្រវត្តិ។ / Upload up to 6 new images. Images will be optimized automatically.</p>
             {isEditing && existingImageCount > 0 && (
-              <p className="mt-2 text-xs text-muted">This listing already has {existingImageCount} existing image{existingImageCount > 1 ? 's' : ''}. Uploading new images will add to the gallery.</p>
+              <p className="mt-2 text-xs text-muted">បញ្ជីនេះមានរូបភាពដែលមានស្រាប់ {existingImageCount} រូប។ ការបង្ហោះរូបភាពថ្មីនឹងបន្ថែមទៅក្នុងចំណតរូបភាព។ / This listing already has {existingImageCount} existing image{existingImageCount > 1 ? 's' : ''}. Uploading new images will add to the gallery.</p>
             )}
           </label>
         </div>
 
         {existingImages.length > 0 && (
           <div className="space-y-3">
-            <p className="text-sm font-medium text-text-secondary">Existing images</p>
+            <p className="text-sm font-medium text-text-secondary">រូបភាពដែលមានស្រាប់ / Existing images</p>
             <div className="grid gap-3 sm:grid-cols-3">
               {existingImages.map((image, index) => {
                 const src = image.secureUrl || image.url;
@@ -455,11 +443,11 @@ const PostProductPage = () => {
                         setSelectedNewCoverIndex(null);
                       }}
                       className="absolute inset-0 z-0"
-                      aria-label={`Select existing image ${index + 1} as cover`}
+                      aria-label={`ជ្រើស existing image ${index + 1} ជា​មុខក្បាល / Select existing image ${index + 1} as cover`}
                     />
-                    <img src={src} alt={`Existing image ${index + 1}`} className="h-28 w-full object-cover" />
+                    <img src={src} alt={`រូបភាពដែលមានស្រាប់ ${index + 1} / Existing image ${index + 1}`} className="h-28 w-full object-cover" />
                     <span className="pointer-events-none absolute left-2 top-2 rounded-full bg-white/90 px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-text-primary">
-                      {isCover ? 'Cover' : 'Set cover'}
+                      {isCover ? 'មុខក្បាល / Cover' : 'កំណត់ជារូបភាពគម្រប / Set cover'}
                     </span>
                     <button
                       type="button"
@@ -469,9 +457,9 @@ const PostProductPage = () => {
                       }}
                       disabled={totalImageCount <= 1}
                       className={`absolute right-2 top-2 z-20 rounded-full px-2 py-1 text-xs font-semibold transition ${totalImageCount <= 1 ? 'bg-slate-200 text-slate-500 cursor-not-allowed' : 'bg-rose-600 text-white hover:bg-rose-700'}`}
-                      aria-label={`Delete existing image ${index + 1}`}
+                      aria-label={`លុប​រូបភាព​មាន​ស្រាប់ ${index + 1} / Delete existing image ${index + 1}`}
                     >
-                      Delete
+                      លុប / Delete
                     </button>
                   </div>
                 );
@@ -482,7 +470,7 @@ const PostProductPage = () => {
 
         {previews.length > 0 && (
           <div className="space-y-3">
-            <p className="text-sm font-medium text-text-secondary">New uploads</p>
+            <p className="text-sm font-medium text-text-secondary">ការបង្ហោះថ្មី / New uploads</p>
             <div className="grid gap-3 sm:grid-cols-3">
               {previews.map((preview, index) => {
                 const isCover = selectedNewCoverIndex === index && coverImageId === null;
@@ -497,7 +485,7 @@ const PostProductPage = () => {
                       }}
                       className={`absolute left-2 top-2 rounded-full bg-white/90 px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-text-primary ${isCover ? 'border border-primary' : ''}`}
                     >
-                      {isCover ? 'Cover' : 'Set cover'}
+                      {isCover ? 'មុខក្បាល / Cover' : 'កំណត់ជារូបភាពគម្រប / Set cover'}
                     </button>
                     <button
                       type="button"
@@ -505,7 +493,7 @@ const PostProductPage = () => {
                       disabled={existingImages.length + previews.length <= 1}
                       className={`absolute right-2 top-2 rounded-full px-2 py-1 text-xs font-semibold transition ${existingImages.length + previews.length <= 1 ? 'bg-slate-200 text-slate-500 cursor-not-allowed opacity-80' : 'bg-black/70 text-white opacity-0 group-hover:opacity-100 hover:bg-black'}`}
                     >
-                      Remove
+                      ដកចេញ / Remove
                     </button>
                   </div>
                 );
@@ -522,7 +510,7 @@ const PostProductPage = () => {
             disabled={isSubmitting}
             className="rounded-3xl bg-primary px-6 py-3 text-sm font-semibold text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {isSubmitting ? (isEditing ? 'Updating...' : 'Publishing...') : (isEditing ? 'Update listing' : 'Publish listing')}
+            {isSubmitting ? (isEditing ? 'កំពុងកែប្រែ...' : 'កំពុងផ្សព្វផ្សាយ...') : (isEditing ? 'កែប្រែបញ្ជី / Update listing' : 'ផ្សព្វផ្សាយបញ្ជី / Publish listing')}
           </button>
           {savedProductId && (
             <button
@@ -530,7 +518,7 @@ const PostProductPage = () => {
               onClick={() => navigate(`/products/${savedProductId}`)}
               className="rounded-3xl border border-muted bg-white px-6 py-3 text-sm font-semibold text-text-secondary hover:bg-background transition"
             >
-              View listing
+              មើលបញ្ជី / View listing
             </button>
           )}
         </div>
