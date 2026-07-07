@@ -10,7 +10,7 @@ import ProductCard from '../components/marketplace/ProductCard';
 import { getProductCoverImageUrl } from '../utils/product';
 import {
   MapPin,
-  Mail,
+  MailIcon,
   Phone,
   Shield,
   TrendingUp,
@@ -166,6 +166,28 @@ const ProfilePage = () => {
     ? profileUi.emailVerifiedLabel
     : profileUi.notVerifiedLabel;
 
+  const formatSocialDisplay = (value: string) => {
+    if (!value) return '';
+    if (value.startsWith('http://') || value.startsWith('https://')) {
+      try {
+        const parsedUrl = new URL(value);
+        return parsedUrl.hostname.replace(/^www\./, '');
+      } catch {
+        return value.replace(/^https?:\/\//, '').replace(/^www\./, '');
+      }
+    }
+
+    return value.replace(/^@/, '').replace(/^www\./, '');
+  };
+
+  const getProductsHeadingText = () => {
+    const sellerName = profile?.displayName?.trim();
+    if (sellerName) {
+      return profileUi.productsBySeller.replace(/\{name\}/g, sellerName);
+    }
+    return 'ផលិតផលរបស់អ្នកលក់នេះ / Products by this seller';
+  };
+
   const completionChecks = useMemo(() => {
     const hasDisplayName = Boolean(profile?.displayName);
     const hasBio = Boolean(profile?.bio);
@@ -221,8 +243,12 @@ const ProfilePage = () => {
         let storedUser = null;
         const savedUser = localStorage.getItem('user');
         if (savedUser) {
-          storedUser = JSON.parse(savedUser);
-          setCurrentUser(storedUser);
+          try {
+            storedUser = JSON.parse(savedUser);
+            setCurrentUser(storedUser);
+          } catch {
+            localStorage.removeItem('user');
+          }
         }
 
         if (!storedUser) {
@@ -230,7 +256,9 @@ const ProfilePage = () => {
             const me = await getProfile();
             storedUser = me;
             setCurrentUser(me);
-            localStorage.setItem('user', JSON.stringify(me));
+            if (me) {
+              localStorage.setItem('user', JSON.stringify(me));
+            }
           } catch (err) {
             // ignore if the user is viewing a public profile without authentication
           }
@@ -374,8 +402,8 @@ const ProfilePage = () => {
                 username={username}
                 verificationStatusLabel={verificationStatusLabel}
                 memberSinceLabel={memberSinceLabel}
+                stats={stats}
               />
-              <SellerStats stats={stats} memberSinceLabel={memberSinceLabel} />
             </div>
 
             <SellerSidebar
@@ -405,7 +433,7 @@ const ProfilePage = () => {
                 )}
                 {profile?.email && (
                   <a href={`mailto:${profile.email}`} className="flex items-center gap-3 rounded-[1.1rem] border border-slate-200 bg-background px-4 py-3 text-sm text-text-secondary hover:border-primary hover:text-primary transition">
-                    <Mail className="h-4 w-4 text-primary" /> {profile.email}
+                    <MailIcon className="h-4 w-4 text-primary" /> {profile.email}
                   </a>
                 )}
                 {profile?.location && (
@@ -420,12 +448,20 @@ const ProfilePage = () => {
               <div className="mt-4 space-y-3 text-text-secondary">
                 {profile?.telegram && (
                   <a href={profile.telegram.startsWith('http') ? profile.telegram : `https://t.me/${profile.telegram.replace(/^@/, '')}`} target="_blank" rel="noreferrer" className="flex items-center gap-3 rounded-[1.1rem] border border-slate-200 bg-background px-4 py-3 text-sm text-text-secondary hover:border-primary hover:text-primary transition">
-                    <Link2 className="h-4 w-4 text-primary" /> {profile.telegram}
+                    <Link2 className="h-4 w-4 text-primary" />
+                    <span className="min-w-0">
+                      <span className="block text-sm font-semibold text-text-primary">Telegram</span>
+                      <span className="text-xs text-muted">{formatSocialDisplay(profile.telegram)}</span>
+                    </span>
                   </a>
                 )}
                 {profile?.facebook && (
                   <a href={profile.facebook.startsWith('http') ? profile.facebook : `https://www.facebook.com/${profile.facebook.replace(/^\//, '')}`} target="_blank" rel="noreferrer" className="flex items-center gap-3 rounded-[1.1rem] border border-slate-200 bg-background px-4 py-3 text-sm text-text-secondary hover:border-primary hover:text-primary transition">
-                    <Globe className="h-4 w-4 text-primary" /> {profile.facebook}
+                    <Globe className="h-4 w-4 text-primary" />
+                    <span className="min-w-0">
+                      <span className="block text-sm font-semibold text-text-primary">Facebook</span>
+                      <span className="text-xs text-muted">{formatSocialDisplay(profile.facebook)}</span>
+                    </span>
                   </a>
                 )}
               </div>
@@ -448,6 +484,27 @@ const ProfilePage = () => {
             </div>
           </aside>
           <main className="space-y-5">
+            <div className="flex flex-wrap gap-2 rounded-[1.6rem] border border-slate-200 bg-white p-3 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
+              {([
+                ['products', profileUi.products],
+                ['about', profileUi.about],
+                ['reviews', profileUi.reviews]
+              ] as const).map(([tabKey, label]) => {
+                const isActive = activeTab === tabKey;
+                return (
+                  <button
+                    key={tabKey}
+                    type="button"
+                    onClick={() => setActiveTab(tabKey)}
+                    aria-pressed={isActive}
+                    className={`rounded-full px-4 py-2.5 text-sm font-semibold transition ${isActive ? 'bg-primary text-white shadow-sm' : 'bg-slate-50 text-text-secondary hover:bg-slate-100'}`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+
             {successMessage && (
               <div className="rounded-[1.5rem] border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">{successMessage}</div>
             )}
@@ -620,7 +677,7 @@ const ProfilePage = () => {
             {activeTab === 'products' && !isEditing && (
               <div className="rounded-[1.6rem] border border-slate-200 bg-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <h2 className="text-lg font-bold text-text-primary">{profileUi.productsBySeller.replace(/\{name\}/g, profile?.displayName || 'អ្នកលក់ / this seller')}</h2>
+                  <h2 className="text-lg font-bold text-text-primary">{getProductsHeadingText()}</h2>
                   {isOwner && (
                     <button
                       type="button"
@@ -720,7 +777,7 @@ const ProfilePage = () => {
                       {profile?.email && (
                         <div className="flex items-center gap-3 rounded-[1.1rem] border border-slate-200 bg-white p-3 shadow-sm">
                           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary">
-                            <Mail className="h-4 w-4" />
+                            <MailIcon className="h-4 w-4" />
                           </div>
                           <a className="text-sm text-text-secondary hover:text-primary" href={`mailto:${profile.email}`}>
                             {profile.email}
@@ -738,7 +795,8 @@ const ProfilePage = () => {
                             target="_blank"
                             rel="noreferrer"
                           >
-                            {profile.telegram}
+                            <span className="block font-semibold text-text-primary">Telegram</span>
+                            <span className="text-xs text-muted">{formatSocialDisplay(profile.telegram)}</span>
                           </a>
                         </div>
                       )}
@@ -753,7 +811,8 @@ const ProfilePage = () => {
                             target="_blank"
                             rel="noreferrer"
                           >
-                            {profile.facebook}
+                            <span className="block font-semibold text-text-primary">Facebook</span>
+                            <span className="text-xs text-muted">{formatSocialDisplay(profile.facebook)}</span>
                           </a>
                         </div>
                       )}
