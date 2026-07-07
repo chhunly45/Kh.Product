@@ -122,36 +122,47 @@ describe('high-impact component coverage', () => {
     expect(screen.getByText('Jan 2024')).toBeInTheDocument();
   });
 
-  it('shows an active banner when the API returns banner data', async () => {
+  it('renders only the artwork and keeps the banner clickable when linked', async () => {
     mockedGetActiveBanners.mockResolvedValueOnce({ data: [{ title: 'Summer Sale', subtitle: 'Big discounts', imageUrl: 'banner.png', linkUrl: '/sale' }] } as any);
 
-    render(<TopAdBanner imageUrl="fallback.png" link="/contact" />);
+    render(<TopAdBanner imageUrl="fallback.png" />);
 
-    await waitFor(() => expect(screen.getByText('Summer Sale')).toBeInTheDocument());
-    expect(screen.getByText('Big discounts')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /contact us about advertising/i })).toHaveAttribute('href', '/sale');
-    expect(screen.getByAltText('Summer Sale')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole('img', { name: /Summer Sale/i })).toBeInTheDocument());
+    expect(screen.queryByText('Summer Sale')).not.toBeInTheDocument();
+    expect(screen.queryByText('Big discounts')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /contact us/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Promotional banner: Summer Sale/i })).toHaveAttribute('href', '/sale');
   });
 
-  it('renders the default ad placeholder when no banner exists', async () => {
+  it('renders the default ad artwork placeholder when no banner exists', async () => {
     mockedGetActiveBanners.mockResolvedValueOnce({ data: [] } as any);
 
     render(<TopAdBanner imageUrl="fallback.png" link="/contact" />);
 
-    await waitFor(() => expect(screen.getByText('Advertise with Konpuk')).toBeInTheDocument());
-    expect(screen.getByText('Promote your products to thousands of local buyers')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /contact us about advertising/i })).toHaveAttribute('href', '/contact');
-    expect(screen.getByAltText('ad')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole('img', { name: /ad/i })).toBeInTheDocument());
+    expect(screen.queryByText('Advertise with Konpuk')).not.toBeInTheDocument();
+    expect(screen.queryByText('Promote your products to thousands of local buyers')).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Promotional banner/i })).toHaveAttribute('href', '/contact');
   });
 
-  it('renders an active banner fallback when the banner item has no imageUrl and no linkUrl', async () => {
-    mockedGetActiveBanners.mockResolvedValueOnce({ data: [{ title: 'Banner Without Image', subtitle: 'Still shows fallback', linkUrl: undefined, imageUrl: undefined }] } as any);
+  it('renders a clickable fallback link when no image URL exists but a link is provided', async () => {
+    mockedGetActiveBanners.mockResolvedValueOnce({ data: [{ title: 'Banner Without Image', subtitle: 'Still shows fallback', imageUrl: undefined, linkUrl: undefined }] } as any);
 
     render(<TopAdBanner imageUrl="fallback.png" link="/contact" />);
 
-    await waitFor(() => expect(screen.getByText('Banner Without Image')).toBeInTheDocument());
-    expect(screen.getByText('Still shows fallback')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /contact us about advertising/i })).toHaveAttribute('href', '/contact');
+    await waitFor(() => expect(screen.getByRole('img', { name: /ad/i })).toBeInTheDocument());
+    expect(screen.queryByText('Banner Without Image')).not.toBeInTheDocument();
+    expect(screen.queryByText('Still shows fallback')).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Promotional banner/i })).toHaveAttribute('href', '/contact');
+  });
+
+  it('renders a non-clickable artwork when no link exists', async () => {
+    mockedGetActiveBanners.mockResolvedValueOnce({ data: [{ title: 'No Link', subtitle: 'No click', imageUrl: 'banner.png' }] } as any);
+
+    render(<TopAdBanner />);
+
+    await waitFor(() => expect(screen.getByRole('img', { name: /No Link/i })).toBeInTheDocument());
+    expect(screen.queryByRole('link', { name: /Promotional banner: No Link/i })).not.toBeInTheDocument();
   });
 
   it('renders the placeholder when the banner API returns null data', async () => {
@@ -159,9 +170,8 @@ describe('high-impact component coverage', () => {
 
     render(<TopAdBanner imageUrl="fallback.png" link="/contact" />);
 
-    await waitFor(() => expect(screen.getByText('Advertise with Konpuk')).toBeInTheDocument());
-    expect(screen.getByRole('link', { name: /contact us about advertising/i })).toHaveAttribute('href', '/contact');
-    expect(screen.getByAltText('ad')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByAltText('ad')).toBeInTheDocument());
+    expect(screen.getByRole('link', { name: /Promotional banner/i })).toHaveAttribute('href', '/contact');
   });
 
   it('preserves placeholder state when the banner API rejects', async () => {
@@ -169,9 +179,8 @@ describe('high-impact component coverage', () => {
 
     render(<TopAdBanner imageUrl="fallback.png" link="/contact" />);
 
-    await waitFor(() => expect(screen.getByText('Advertise with Konpuk')).toBeInTheDocument());
-    expect(screen.getByRole('link', { name: /contact us about advertising/i })).toHaveAttribute('href', '/contact');
-    expect(screen.getByAltText('ad')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByAltText('ad')).toBeInTheDocument());
+    expect(screen.getByRole('link', { name: /Promotional banner/i })).toHaveAttribute('href', '/contact');
   });
 
   it('does not attempt to update state after unmount when banner promise resolves late', async () => {
@@ -191,13 +200,12 @@ describe('high-impact component coverage', () => {
     expect(screen.queryByText('Delayed Banner')).not.toBeInTheDocument();
   });
 
-  it('falls back to default contact link when no banner and no link prop are provided', async () => {
+  it('falls back to a placeholder image when no banner and no link prop are provided', async () => {
     mockedGetActiveBanners.mockResolvedValueOnce({ data: [] } as any);
 
     render(<TopAdBanner />);
 
-    await waitFor(() => expect(screen.getByText('Advertise with Konpuk')).toBeInTheDocument());
-    expect(screen.getByRole('link', { name: /contact us about advertising/i })).toHaveAttribute('href', '/contact');
-    expect(screen.getByText('Ad image')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText('Ad image')).toBeInTheDocument());
+    expect(screen.queryByRole('link', { name: /Promotional banner/i })).not.toBeInTheDocument();
   });
 });

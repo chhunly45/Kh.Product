@@ -132,6 +132,8 @@ const AdminBannersPage = () => {
         </div>
         <div>
           <input name="image" type="file" accept="image/*" />
+          <p className="mt-2 text-sm text-text-secondary">ទំហំរូបភាពដែលណែនាំ៖ 1600 × 400 px (សមាមាត្រ 4:1) / Recommended image size: 1600 × 400 px (4:1 ratio)</p>
+          <p className="text-sm text-text-secondary">ប្រើ WebP ឬ JPG សម្រាប់ល្បឿនល្អ / Use WebP or JPG for better performance</p>
         </div>
         <div className="flex gap-2">
           <button className="px-4 py-2 bg-primary text-white rounded">Save</button>

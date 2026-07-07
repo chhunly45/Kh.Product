@@ -25,75 +25,50 @@ const TopAdBanner = ({ imageUrl, link }: TopAdBannerProps) => {
     };
   }, []);
 
-  const display = banner
-    ? (
-      <div className="rounded-2xl overflow-hidden border border-muted bg-white shadow-sm">
-        <div className="flex items-center gap-4 p-4 sm:p-6">
-          <div className="flex-shrink-0">
-            {banner.imageUrl ? (
-              <img
-                src={banner.imageUrl}
-                alt={banner.title}
-                loading="lazy"
-                decoding="async"
-                className="hidden md:block w-48 h-20 object-cover rounded-md"
-              />
-            ) : (
-              <div className="hidden md:flex w-48 h-20 bg-background rounded-md items-center justify-center text-muted">Ad image</div>
-            )}
-          </div>
-
-          <div className="flex-1 min-w-0">
-            <h3 className="text-lg sm:text-xl font-bold text-text-primary">{banner.title}</h3>
-            <p className="text-sm text-text-secondary truncate">{banner.subtitle}</p>
-          </div>
-
-          <div className="flex-shrink-0">
-            <a
-              href={banner.linkUrl || link || '/contact'}
-              className="inline-flex items-center px-4 py-2 rounded-md bg-primary text-white font-semibold hover:bg-primary-hover transition text-sm"
-              aria-label="Contact us about advertising"
-            >
-              Contact us
-            </a>
-          </div>
+  const renderArtwork = (src?: string, alt?: string) => {
+    if (src) {
+      return (
+        <div style={{ paddingTop: '25%' }} className="w-full relative bg-background">
+          <img
+            src={src}
+            alt={alt || 'ad'}
+            loading="lazy"
+            decoding="async"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
         </div>
-      </div>
-    )
-    : (
-      <div className="rounded-2xl overflow-hidden border border-muted bg-white shadow-sm">
-        <div className="flex items-center gap-4 p-4 sm:p-6">
-          <div className="flex-shrink-0">
-            {imageUrl ? (
-              <img
-                src={imageUrl}
-                alt="ad"
-                loading="lazy"
-                decoding="async"
-                className="hidden md:block w-48 h-20 object-cover rounded-md"
-              />
-            ) : (
-              <div className="hidden md:flex w-48 h-20 bg-background rounded-md items-center justify-center text-muted">Ad image</div>
-            )}
-          </div>
+      );
+    }
 
-          <div className="flex-1 min-w-0">
-            <h3 className="text-lg sm:text-xl font-bold text-text-primary">Advertise with Konpuk</h3>
-            <p className="text-sm text-text-secondary truncate">Promote your products to thousands of local buyers</p>
-          </div>
-
-          <div className="flex-shrink-0">
-            <a
-              href={link || '/contact'}
-              className="inline-flex items-center px-4 py-2 rounded-md bg-primary text-white font-semibold hover:bg-primary-hover transition text-sm"
-              aria-label="Contact us about advertising"
-            >
-              Contact us
-            </a>
-          </div>
-        </div>
+    return (
+      <div style={{ paddingTop: '25%' }} className="w-full relative bg-background flex items-center justify-center">
+        <div className="text-muted">Ad image</div>
       </div>
     );
+  };
+
+  const renderWrapper = (children: React.ReactNode) => {
+    const href = banner?.linkUrl || link;
+    const label = banner?.title ? `Promotional banner: ${banner.title}` : 'Promotional banner';
+
+    if (href) {
+      return (
+        <a href={href} aria-label={label} className="block">
+          {children}
+        </a>
+      );
+    }
+
+    return <div>{children}</div>;
+  };
+
+  const display = (
+    <div className="rounded-2xl overflow-hidden border border-muted bg-white shadow-sm">
+      <div className="relative">
+        {renderWrapper(renderArtwork(banner?.imageUrl || imageUrl, banner?.title || 'ad'))}
+      </div>
+    </div>
+  );
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
