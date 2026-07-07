@@ -299,9 +299,6 @@ const Header = () => {
             </div>
 
             <div className="flex items-center gap-3">
-              <Link to="/help" className="hidden items-center justify-center rounded-3xl border border-muted bg-white px-4 py-2 text-sm font-medium text-text-secondary transition hover:bg-white/90 lg:inline-flex">
-                Help
-              </Link>
               <Link
                 to="/post-product"
                 className="inline-flex items-center gap-2 rounded-3xl bg-[#0F766E] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#0f6f63]"
@@ -380,35 +377,43 @@ const Header = () => {
                   {notificationsOpen && (
                     <div
                       ref={notificationsMenuRef}
-                      className="absolute right-0 z-50 mt-2 w-80 max-w-full rounded-3xl border border-muted bg-white p-3 shadow-xl"
+                      className="absolute right-0 z-50 mt-2 min-w-[22.5rem] max-w-[24rem] w-[24rem] rounded-[1.75rem] border border-muted bg-white p-4 shadow-[0_24px_60px_rgba(15,23,42,0.14)]"
                       role="menu"
                       aria-label="Notifications"
                     >
-                      <div className="flex items-center justify-between gap-3 px-2 pb-2">
-                        <div>
+                      <div className="mb-3 flex items-start justify-between gap-4 border-b border-muted/40 pb-3">
+                        <div className="min-w-0">
                           <p className="text-sm font-semibold text-text-primary">Notifications</p>
-                          <p className="text-xs text-muted">Recent updates for your account</p>
+                          <p className="mt-1 text-xs text-text-secondary">Recent updates for your account</p>
                         </div>
-                        <Link to="/notifications" onClick={() => setNotificationsOpen(false)} className="text-xs font-semibold text-primary hover:text-primary-hover">View all</Link>
+                        <Link to="/notifications" onClick={() => setNotificationsOpen(false)} className="text-sm font-semibold text-primary hover:text-primary-hover">View all</Link>
                       </div>
-                      <div className="max-h-72 space-y-2 overflow-y-auto pt-2">
+                      <div className="max-h-[26rem] space-y-2 overflow-y-auto pr-1">
                         {recentNotifications.length ? (
                           recentNotifications.slice(0, 5).map((notification) => (
                             <Link
                               key={notification._id}
                               to={notification.link || '/notifications'}
                               onClick={() => setNotificationsOpen(false)}
-                              className={`block rounded-3xl border p-3 text-sm transition ${notification.read ? 'border-muted bg-white' : 'border-primary/20 bg-primary/5 hover:bg-primary/10'}`}
+                              className={`group block rounded-3xl border p-4 text-sm transition ${notification.read ? 'border-muted bg-white hover:bg-background' : 'border-primary/20 bg-primary/5 hover:border-primary/30 hover:bg-primary/10'}`}
                             >
-                              <div className="flex items-center justify-between gap-2">
-                                <p className="line-clamp-1 font-medium text-text-primary">{notification.title}</p>
-                                {!notification.read && <span className="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-primary text-[0.65rem] font-semibold text-white">new</span>}
+                              <div className="flex items-start justify-between gap-3">
+                                <div className="min-w-0">
+                                  <p className="line-clamp-2 text-sm font-semibold text-text-primary">{notification.title || 'Notification'}</p>
+                                  {notification.message && (
+                                    <p className="mt-1 text-sm text-text-secondary line-clamp-2">{notification.message}</p>
+                                  )}
+                                </div>
+                                {!notification.read && (
+                                  <span className="inline-flex h-6 items-center justify-center rounded-full bg-primary px-2 text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-white">
+                                    New
+                                  </span>
+                                )}
                               </div>
-                              <p className="mt-1 line-clamp-2 text-xs text-text-secondary">{notification.message}</p>
                             </Link>
                           ))
                         ) : (
-                          <div className="rounded-3xl border border-muted bg-background p-4 text-sm text-text-secondary">
+                          <div className="rounded-3xl border border-muted bg-background p-5 text-sm text-text-secondary">
                             No new notifications yet.
                           </div>
                         )}
