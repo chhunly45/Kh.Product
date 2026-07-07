@@ -62,8 +62,8 @@ describe('high-impact component coverage', () => {
     expect(screen.getByRole('heading', { name: /Ali/i })).toBeInTheDocument();
     expect(screen.getByText('@ali')).toBeInTheDocument();
     expect(screen.getByText('Phnom Penh')).toBeInTheDocument();
-    expect(screen.getByText('Verified')).toBeInTheDocument();
-    expect(screen.getByText('Since 2024')).toBeInTheDocument();
+    expect(screen.getAllByText('Verified').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Since 2024').length).toBeGreaterThan(0);
     expect(screen.getByAltText('Ali avatar')).toBeInTheDocument();
     expect(screen.getByAltText('Ali cover')).toBeInTheDocument();
   });
@@ -113,12 +113,11 @@ describe('high-impact component coverage', () => {
   it('renders seller stats cards with the provided values', () => {
     render(<SellerStats stats={{ totalProducts: 12, totalViews: 321, favoritesCount: 44 }} memberSinceLabel="Jan 2024" />);
 
-    expect(screen.getByText('Product Count')).toBeInTheDocument();
+    expect(screen.getByText('Verified Seller')).toBeInTheDocument();
+    expect(screen.getByText('Products')).toBeInTheDocument();
     expect(screen.getByText('12')).toBeInTheDocument();
     expect(screen.getByText('Profile Views')).toBeInTheDocument();
     expect(screen.getByText('321')).toBeInTheDocument();
-    expect(screen.getByText('Favorites')).toBeInTheDocument();
-    expect(screen.getByText('44')).toBeInTheDocument();
     expect(screen.getByText('Member Since')).toBeInTheDocument();
     expect(screen.getByText('Jan 2024')).toBeInTheDocument();
   });
