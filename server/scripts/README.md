@@ -1,5 +1,27 @@
 # Server Scripts
 
+## cleanup-test-sellers.js
+
+This script permanently removes explicitly selected development/test seller accounts and their dependent test data.
+
+### Dry run example
+
+```bash
+cd server
+npm run cleanup:test-sellers -- --email qa-seller-one@example.test --email qa-seller-two@example.test
+```
+
+### Confirmed delete example
+
+```bash
+cd server
+npm run cleanup:test-sellers -- --email qa-seller-one@example.test --confirm-delete
+```
+
+### Safety warning
+
+The script defaults to dry run, refuses to delete protected admins, and requires exact typed confirmation before any destructive action.
+
 ## seed-dev-accounts.js
 
 This script seeds official development-only accounts for local development.
