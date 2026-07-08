@@ -537,31 +537,33 @@ const AdminDashboardPage = () => {
                         {user.sellerVerificationStatus}
                       </span>
                     </td>
-                    <td className="px-6 py-4 space-x-2">
-                      <button
-                        type="button"
-                        disabled={loading}
-                        onClick={() => handleApproveSeller(user._id)}
-                        className="rounded-full px-4 py-2 text-sm font-medium bg-emerald-600 text-white hover:bg-emerald-700 transition"
-                      >
-                        Approve
-                      </button>
-                      <button
-                        type="button"
-                        disabled={loading}
-                        onClick={() => handleRejectSeller(user._id)}
-                        className="rounded-full px-4 py-2 text-sm font-medium bg-rose-600 text-white hover:bg-rose-700 transition"
-                      >
-                        Reject
-                      </button>
-                      <button
-                        type="button"
-                        disabled={loading}
-                        onClick={() => openDeleteModal(user)}
-                        className="rounded-full px-4 py-2 text-sm font-medium bg-rose-700 text-white hover:bg-rose-800 transition"
-                      >
-                        Delete
-                      </button>
+                    <td className="px-6 py-4 align-top">
+                      <div className="flex flex-wrap gap-2 min-w-[11rem] sm:min-w-[13rem]">
+                        <button
+                          type="button"
+                          disabled={loading}
+                          onClick={() => handleApproveSeller(user._id)}
+                          className="rounded-full px-4 py-2 text-sm font-medium bg-emerald-600 text-white hover:bg-emerald-700 transition"
+                        >
+                          Approve
+                        </button>
+                        <button
+                          type="button"
+                          disabled={loading}
+                          onClick={() => handleRejectSeller(user._id)}
+                          className="rounded-full px-4 py-2 text-sm font-medium bg-rose-600 text-white hover:bg-rose-700 transition"
+                        >
+                          Reject
+                        </button>
+                        <button
+                          type="button"
+                          disabled={loading}
+                          onClick={() => openDeleteModal(user)}
+                          className="rounded-full px-4 py-2 text-sm font-medium bg-rose-700 text-white hover:bg-rose-800 transition"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
