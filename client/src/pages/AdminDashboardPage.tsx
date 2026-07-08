@@ -10,7 +10,9 @@ import {
   getAdminReports,
   updateAdminReportStatus,
   getAdminAuditLogs,
-  getProductsByProvince
+  getProductsByProvince,
+  previewSellerDeletion,
+  deleteSellerByAdmin
 } from '../services/admin.api';
 
 const statusOptions = ['published', 'sold', 'archived', 'flagged'];
@@ -34,6 +36,11 @@ const AdminDashboardPage = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [provinceStats, setProvinceStats] = useState<any[]>([]);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [sellerToDelete, setSellerToDelete] = useState<any | null>(null);
+  const [deletePreview, setDeletePreview] = useState<any | null>(null);
+  const [deleteConfirmationInput, setDeleteConfirmationInput] = useState('');
+  const [deletePending, setDeletePending] = useState(false);
 
   const loadOverview = async () => {
     try {
@@ -203,6 +210,43 @@ const AdminDashboardPage = () => {
       setMessage('Unable to reject seller.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const openDeleteModal = async (seller: any) => {
+    setSellerToDelete(seller);
+    setDeleteModalOpen(true);
+    setDeletePreview(null);
+    setDeleteConfirmationInput('');
+    setDeletePending(true);
+    try {
+      const response = await previewSellerDeletion(seller._id);
+      setDeletePreview(response.data);
+    } catch {
+      setMessage('Unable to load deletion preview.');
+      setDeleteModalOpen(false);
+    } finally {
+      setDeletePending(false);
+    }
+  };
+
+  const handleConfirmSellerDeletion = async () => {
+    if (!sellerToDelete) return;
+    setDeletePending(true);
+    try {
+      const response = await deleteSellerByAdmin(sellerToDelete._id, deleteConfirmationInput);
+      if (response?.success) {
+        setMessage('Seller deleted successfully.');
+        setDeleteModalOpen(false);
+        setSellerToDelete(null);
+        setDeletePreview(null);
+        setDeleteConfirmationInput('');
+        await loadSellers();
+      }
+    } catch {
+      setMessage('Unable to delete seller.');
+    } finally {
+      setDeletePending(false);
     }
   };
 
@@ -425,6 +469,44 @@ const AdminDashboardPage = () => {
         </section>
       )}
 
+      {deleteModalOpen && sellerToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-lg rounded-[2rem] bg-white p-6 shadow-2xl ring-1 ring-border">
+            <h3 className="text-xl font-semibold text-text-primary">Delete seller</h3>
+            <p className="mt-2 text-sm text-muted">Permanent deletion cannot be undone.</p>
+            <div className="mt-4 space-y-2 rounded-2xl bg-background p-4 text-sm text-text-secondary">
+              <div><span className="font-semibold text-text-primary">Name:</span> {sellerToDelete.displayName}</div>
+              <div><span className="font-semibold text-text-primary">Email:</span> {sellerToDelete.email}</div>
+              <div><span className="font-semibold text-text-primary">ID:</span> {sellerToDelete._id}</div>
+            </div>
+            {deletePending ? (
+              <p className="mt-4 text-sm text-muted">Loading dependency preview...</p>
+            ) : deletePreview ? (
+              <div className="mt-4 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
+                <p className="font-semibold">Dependency preview</p>
+                <p className="mt-2">products: {deletePreview.products} chats: {deletePreview.chats} messages: {deletePreview.messages}</p>
+                <p className="mt-1">favorites: {deletePreview.favorites} promotions: {deletePreview.promotions} sellerVerifications: {deletePreview.sellerVerifications}</p>
+                <p className="mt-1">reviews: {deletePreview.reviews} reports: {deletePreview.reports} admins: {deletePreview.admins}</p>
+              </div>
+            ) : null}
+            <label className="mt-4 block text-sm font-medium text-text-primary" htmlFor="delete-confirmation-input">
+              Type DELETE to confirm
+            </label>
+            <input
+              id="delete-confirmation-input"
+              value={deleteConfirmationInput}
+              onChange={(event) => setDeleteConfirmationInput(event.target.value)}
+              className="mt-2 w-full rounded-2xl border border-muted bg-white px-4 py-3 text-sm outline-none focus:border-primary"
+              placeholder="DELETE"
+            />
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
+              <button type="button" onClick={() => { setDeleteModalOpen(false); setSellerToDelete(null); setDeletePreview(null); setDeleteConfirmationInput(''); }} className="rounded-full px-4 py-2 text-sm font-medium bg-background text-text-secondary">Cancel</button>
+              <button type="button" disabled={deletePending || deleteConfirmationInput !== 'DELETE'} onClick={handleConfirmSellerDeletion} className="rounded-full px-4 py-2 text-sm font-medium bg-rose-700 text-white hover:bg-rose-800 disabled:cursor-not-allowed disabled:opacity-60">Delete Seller</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {activeTab === 'sellers' && (
         <section className="space-y-6">
           <div className="rounded-[2rem] bg-white p-6 shadow-xl ring-1 ring-border">
@@ -471,6 +553,14 @@ const AdminDashboardPage = () => {
                         className="rounded-full px-4 py-2 text-sm font-medium bg-rose-600 text-white hover:bg-rose-700 transition"
                       >
                         Reject
+                      </button>
+                      <button
+                        type="button"
+                        disabled={loading}
+                        onClick={() => openDeleteModal(user)}
+                        className="rounded-full px-4 py-2 text-sm font-medium bg-rose-700 text-white hover:bg-rose-800 transition"
+                      >
+                        Delete
                       </button>
                     </td>
                   </tr>

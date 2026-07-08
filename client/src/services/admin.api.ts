@@ -54,3 +54,13 @@ export const getProductsByProvince = async () => {
   const response = await api.get('/admin/analytics/products-by-province');
   return response.data.data;
 };
+
+export const previewSellerDeletion = async (sellerId: string) => {
+  const response = await api.get(`/admin/sellers/${sellerId}/deletion-preview`);
+  return response.data;
+};
+
+export const deleteSellerByAdmin = async (sellerId: string, confirmation: string) => {
+  const response = await api.delete(`/admin/sellers/${sellerId}`, { data: { confirmation } });
+  return response.data;
+};

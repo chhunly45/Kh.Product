@@ -57,6 +57,8 @@ router.patch('/reports/:id', param('id').isMongoId(), body('status').isIn(['pend
 router.patch('/verification/:id', param('id').isMongoId(), body('status').isIn(['approved','rejected']).withMessage('Invalid verification status'), validate, verificationController.reviewVerification);
 router.get('/audit-logs', adminController.listAuditLogs);
 router.delete('/reviews/:id', param('id').isMongoId(), validate, adminController.deleteReview);
+router.get('/sellers/:id/deletion-preview', param('id').isMongoId(), validate, adminController.previewSellerDeletion);
+router.delete('/sellers/:id', param('id').isMongoId(), body('confirmation').isString().notEmpty(), validate, adminController.deleteSeller);
 router.post('/email/test', body('to').isEmail(), validate, adminController.sendTestEmail);
 router.post('/backfill/product-sellers', adminController.backfillProductSellers);
 

@@ -3,6 +3,7 @@ const promotionService = require('../services/promotion.service');
 const revenueService = require('../services/revenue.service');
 const reviewService = require('../services/review.service');
 const emailService = require('../services/email.service');
+const sellerDeletionService = require('../services/seller-deletion.service');
 const config = require('../config');
 
 const getOverview = async (req, res, next) => {
@@ -100,6 +101,32 @@ const deleteReview = async (req, res, next) => {
   try {
     await reviewService.deleteReview(req.params.id);
     res.json({ success: true, message: 'Review deleted' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const previewSellerDeletion = async (req, res, next) => {
+  try {
+    const result = await sellerDeletionService.previewSellerDeletion({
+      userId: req.params.id,
+      actorId: req.user?.id
+    });
+    res.json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deleteSeller = async (req, res, next) => {
+  try {
+    const result = await sellerDeletionService.deleteSellerAccount({
+      userId: req.params.id,
+      confirmation: req.body?.confirmation,
+      actorId: req.user?.id,
+      confirmationText: 'DELETE'
+    });
+    res.json({ success: true, data: result });
   } catch (error) {
     next(error);
   }
@@ -274,6 +301,8 @@ module.exports = {
   updateReportStatus,
   listAuditLogs,
   deleteReview,
+  previewSellerDeletion,
+  deleteSeller,
   backfillProductSellers,
   sendTestEmail,
   getProductsByProvince,
