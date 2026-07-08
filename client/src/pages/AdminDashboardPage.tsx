@@ -391,7 +391,7 @@ const AdminDashboardPage = () => {
             <p className="mt-2 text-sm text-muted">Ban users, change roles, and review account status.</p>
           </div>
 
-          <div className="overflow-hidden rounded-3xl border border-muted bg-white shadow-sm">
+          <div className="overflow-x-auto rounded-3xl border border-muted bg-white shadow-sm">
             <table className="min-w-full divide-y divide-border text-sm">
               <thead className="bg-background text-text-secondary">
                 <tr>
@@ -431,35 +431,47 @@ const AdminDashboardPage = () => {
                         {user.verified ? 'Verified' : user.verificationStatus === 'pending' ? 'Pending' : user.verificationStatus === 'rejected' ? 'Rejected' : 'Unverified'}
                       </span>
                     </td>
-                    <td className="px-6 py-4 space-x-2">
-                      <button
-                        type="button"
-                        disabled={loading}
-                        onClick={() => handleToggleUser(user._id, user.isActive)}
-                        className={`rounded-full px-4 py-2 text-sm font-medium transition ${user.isActive ? 'bg-rose-600 text-white hover:bg-rose-700' : 'bg-emerald-600 text-white hover:bg-emerald-700'}`}
-                      >
-                        {user.isActive ? 'Ban' : 'Unban'}
-                      </button>
-                      {user.role === 'seller' && !user.verified && (
-                        <>
+                    <td className="px-6 py-4 align-top">
+                      <div className="flex flex-wrap gap-2 min-w-[11rem] sm:min-w-[13rem]">
+                        <button
+                          type="button"
+                          disabled={loading}
+                          onClick={() => handleToggleUser(user._id, user.isActive)}
+                          className={`rounded-full px-4 py-2 text-sm font-medium transition ${user.isActive ? 'bg-rose-600 text-white hover:bg-rose-700' : 'bg-emerald-600 text-white hover:bg-emerald-700'}`}
+                        >
+                          {user.isActive ? 'Ban' : 'Unban'}
+                        </button>
+                        {user.role === 'seller' && !user.verified && (
+                          <>
+                            <button
+                              type="button"
+                              disabled={loading}
+                              onClick={() => handleApproveVerification(user._id)}
+                              className="rounded-full px-4 py-2 text-sm font-medium bg-emerald-600 text-white hover:bg-emerald-700 transition"
+                            >
+                              Approve
+                            </button>
+                            <button
+                              type="button"
+                              disabled={loading}
+                              onClick={() => handleRejectVerification(user._id)}
+                              className="rounded-full px-4 py-2 text-sm font-medium bg-rose-600 text-white hover:bg-rose-700 transition"
+                            >
+                              Reject
+                            </button>
+                          </>
+                        )}
+                        {user.role === 'seller' && user.role !== 'admin' && (
                           <button
                             type="button"
                             disabled={loading}
-                            onClick={() => handleApproveVerification(user._id)}
-                            className="rounded-full px-4 py-2 text-sm font-medium bg-emerald-600 text-white hover:bg-emerald-700 transition"
+                            onClick={() => openDeleteModal(user)}
+                            className="rounded-full px-4 py-2 text-sm font-medium bg-rose-700 text-white hover:bg-rose-800 transition"
                           >
-                            Approve
+                            Delete / លុប
                           </button>
-                          <button
-                            type="button"
-                            disabled={loading}
-                            onClick={() => handleRejectVerification(user._id)}
-                            className="rounded-full px-4 py-2 text-sm font-medium bg-rose-600 text-white hover:bg-rose-700 transition"
-                          >
-                            Reject
-                          </button>
-                        </>
-                      )}
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
