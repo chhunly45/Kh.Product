@@ -59,11 +59,31 @@ if (!api.interceptors) {
 }
 
 let csrfToken: string | null = null;
+let csrfTokenBootstrapPromise: Promise<string | null> | null = null;
 
 const fetchCsrfToken = async () => {
   const response = await api.get('/csrf-token');
   csrfToken = response.data.csrfToken;
   return csrfToken;
+};
+
+export const initializeCsrfToken = async () => {
+  if (csrfToken) {
+    return csrfToken;
+  }
+
+  if (!csrfTokenBootstrapPromise) {
+    csrfTokenBootstrapPromise = fetchCsrfToken()
+      .catch((error) => {
+        console.warn('[CSRF] Startup token fetch failed', error);
+        return null;
+      })
+      .finally(() => {
+        csrfTokenBootstrapPromise = null;
+      });
+  }
+
+  return csrfTokenBootstrapPromise;
 };
 
 const clearExpiredSession = () => {

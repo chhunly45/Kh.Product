@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor, fireEvent, within } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent, within, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Header from '../../components/layout/Header';
 import api from '../../services/api';
@@ -69,7 +69,9 @@ describe('Header integration behaviors', () => {
     // simulate socket notification handler being registered
     const handler = socket.on.mock.calls.find((c: any) => c[0] === 'new_notification')?.[1];
     expect(typeof handler).toBe('function');
-    await handler({ unreadCount: 3 });
+    await act(async () => {
+      await handler({ unreadCount: 3 });
+    });
 
     // Open notifications
     userEvent.click(screen.getByTitle(/Notifications/i));

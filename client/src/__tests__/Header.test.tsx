@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor, within, act } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import Header from '../components/layout/Header';
 import api from '../services/api';
 import * as favApi from '../services/favorites.api';
@@ -44,6 +45,16 @@ jest.mock('react-router-dom', () => {
 
 const mockedUseSocket = useSocket as jest.MockedFunction<typeof useSocket>;
 
+const flushAsync = () => new Promise((resolve) => setTimeout(resolve, 0));
+
+const renderHeader = async () => {
+  await act(async () => {
+    render(<Header />, { wrapper: MemoryRouter });
+    await flushAsync();
+    await flushAsync();
+  });
+};
+
 describe('Header component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -59,7 +70,7 @@ describe('Header component', () => {
     const { useAuth } = require('../hooks/useAuth');
     useAuth.mockReturnValue({ user: null, logout: jest.fn(), isHydrated: true });
 
-    render(<Header /> , { wrapper: require('react-router-dom').MemoryRouter });
+    await renderHeader();
 
     expect((await screen.findAllByText(/ចូលគណនី/i)).length).toBeGreaterThanOrEqual(1);
     expect((await screen.findAllByText(/បង្កើតគណនី/i)).length).toBeGreaterThanOrEqual(1);
@@ -83,7 +94,7 @@ describe('Header component', () => {
     const { useAuth } = require('../hooks/useAuth');
     useAuth.mockReturnValue({ user: null, logout: jest.fn(), isHydrated: true });
 
-    render(<Header /> , { wrapper: require('react-router-dom').MemoryRouter });
+    await renderHeader();
 
     expect(screen.getByAltText('Konpuk')).toBeInTheDocument();
     expect(screen.getAllByText(/Help/i).length).toBeGreaterThanOrEqual(1);
@@ -108,7 +119,7 @@ describe('Header component', () => {
     (favApi.getFavoritesCount as jest.Mock).mockResolvedValue(5);
     (notifApi.getNotificationsCount as jest.Mock).mockResolvedValue(2);
 
-    render(<Header /> , { wrapper: require('react-router-dom').MemoryRouter });
+    await renderHeader();
 
     // open mobile menu to reveal account links
     const toggle = screen.getByLabelText(/Toggle mobile menu/i);
@@ -139,7 +150,7 @@ describe('Header component', () => {
     (favApi.getFavoritesCount as jest.Mock).mockResolvedValue(0);
     (notifApi.getNotificationsCount as jest.Mock).mockResolvedValue(0);
 
-    render(<Header /> , { wrapper: require('react-router-dom').MemoryRouter });
+    await renderHeader();
 
     const toggle = screen.getByLabelText(/Toggle mobile menu/i);
     fireEvent.click(toggle);
@@ -162,7 +173,7 @@ describe('Header component', () => {
     const { useAuth } = require('../hooks/useAuth');
     useAuth.mockReturnValue({ user: null, logout: jest.fn(), isHydrated: false });
 
-    render(<Header /> , { wrapper: require('react-router-dom').MemoryRouter });
+    await renderHeader();
 
     expect(screen.getByTestId('header-auth-placeholder')).toBeInTheDocument();
     expect(screen.queryByText(/ចូលគណនី/i)).not.toBeInTheDocument();
@@ -174,7 +185,7 @@ describe('Header component', () => {
     const { useAuth } = require('../hooks/useAuth');
     useAuth.mockReturnValue({ user: null, logout: jest.fn(), isHydrated: true });
 
-    render(<Header /> , { wrapper: require('react-router-dom').MemoryRouter });
+    await renderHeader();
 
     // should not throw and login remains
     expect(await screen.findByText(/ចូលគណនី/i)).toBeInTheDocument();
@@ -192,7 +203,7 @@ describe('Header component', () => {
     (notifApi.getNotificationsCount as jest.Mock).mockResolvedValue(2);
     (notifApi.getNotifications as jest.Mock).mockResolvedValue([{ _id: 'n1', title: 'New offer', message: 'Check it out', read: false, link: '/products' }]);
 
-    render(<Header /> , { wrapper: require('react-router-dom').MemoryRouter });
+    await renderHeader();
 
     fireEvent.click(screen.getByRole('button', { name: /ក្រុមផលិតផល/i }));
     const categoryMenu = await screen.findByRole('menu', { name: /Categories/i });

@@ -4,6 +4,20 @@ import ProductListPage from '../pages/ProductListPage';
 import * as productApi from '../services/product.api';
 
 jest.mock('../services/product.api');
+jest.mock('../services/banner.api', () => ({
+  __esModule: true,
+  getActiveBanners: jest.fn().mockResolvedValue({ data: [] })
+}));
+jest.mock('../services/api', () => ({
+  __esModule: true,
+  default: { get: jest.fn() }
+}));
+jest.mock('../services/location.api', () => ({
+  __esModule: true,
+  getProvinces: jest.fn().mockResolvedValue([]),
+  getDistricts: jest.fn().mockResolvedValue([])
+}));
+
 const mockedProductApi = productApi as jest.Mocked<typeof productApi>;
 
 describe('ProductListPage', () => {

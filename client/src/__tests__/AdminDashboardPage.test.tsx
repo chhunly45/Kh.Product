@@ -165,6 +165,29 @@ describe('AdminDashboardPage', () => {
     await waitFor(() => expect(mockedAdminApi.updateAdminReportStatus).toHaveBeenCalledWith('r1', 'resolved'));
   });
 
+  it('renders a numbered first column in the users table', async () => {
+    mockedAdminApi.getAdminUsers.mockResolvedValueOnce({
+      items: [
+        { _id: 'u1', displayName: 'Test User', email: 'test@example.com', role: 'user', isActive: true }
+      ],
+      meta: { page: 1, limit: 25, total: 1 }
+    });
+
+    render(
+      <MemoryRouter>
+        <AdminDashboardPage />
+      </MemoryRouter>
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /users/i }));
+    await waitFor(() => expect(mockedAdminApi.getAdminUsers).toHaveBeenCalled());
+
+    expect(screen.getByRole('columnheader', { name: /No\./i })).toBeInTheDocument();
+    const userRow = screen.getByText('Test User').closest('tr');
+    expect(userRow).not.toBeNull();
+    expect(within(userRow!).getByText('1')).toBeInTheDocument();
+  });
+
   it('updates a user role and toggles user status', async () => {
     mockedAdminApi.getAdminUsers.mockResolvedValueOnce({
       items: [

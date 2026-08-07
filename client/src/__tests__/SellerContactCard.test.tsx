@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import SellerContactCard from '../components/marketplace/SellerContactCard';
 
 describe('SellerContactCard', () => {
@@ -26,12 +26,13 @@ describe('SellerContactCard', () => {
   test('copy button writes to clipboard and shows Copied state', async () => {
     render(<SellerContactCard sellerPhone="+85512345678" />);
     const copyBtn = screen.getByRole('button', { name: /Copy/i });
-    fireEvent.click(copyBtn);
+    await act(async () => {
+      fireEvent.click(copyBtn);
+      jest.advanceTimersByTime(2000);
+    });
+
     expect((navigator as any).clipboard.writeText).toHaveBeenCalledWith('+85512345678');
-    // text changes to Copied!
-    expect(await screen.findByText(/Copied!/i)).toBeInTheDocument();
-    // advance timeout to clear
-    jest.advanceTimersByTime(2000);
+    await waitFor(() => expect(screen.queryByText(/Copied!/i)).not.toBeInTheDocument());
   });
 
   test('renders email, whatsapp and telegram links when provided', () => {

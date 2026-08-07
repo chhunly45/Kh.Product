@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import * as api from '../services/chat.api';
 import * as socketService from '../services/socket';
@@ -106,20 +106,23 @@ describe('ChatPage message handling', () => {
       expect(screen.getByText('Hello there')).toBeInTheDocument();
     });
 
-    mockedSocket.trigger('message_received', {
-      _id: 'msg-1',
-      chatId: 'chat1',
-      sender: 'user1',
-      content: 'Hello there',
-      createdAt: '2025-01-01T00:00:00.000Z'
-    });
+    await act(async () => {
+      mockedSocket.trigger('message_received', {
+        _id: 'msg-1',
+        chatId: 'chat1',
+        sender: 'user1',
+        content: 'Hello there',
+        createdAt: '2025-01-01T00:00:00.000Z'
+      });
 
-    mockedSocket.trigger('message_received', {
-      _id: 'msg-1',
-      chatId: 'chat1',
-      sender: 'user1',
-      content: 'Hello there',
-      createdAt: '2025-01-01T00:00:00.000Z'
+      mockedSocket.trigger('message_received', {
+        _id: 'msg-1',
+        chatId: 'chat1',
+        sender: 'user1',
+        content: 'Hello there',
+        createdAt: '2025-01-01T00:00:00.000Z'
+      });
+      await Promise.resolve();
     });
 
     await waitFor(() => {

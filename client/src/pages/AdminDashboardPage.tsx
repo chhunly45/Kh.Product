@@ -141,6 +141,14 @@ const AdminDashboardPage = () => {
     [totalUsers, totalProducts, totalChats, pendingReports]
   );
 
+  const getRowNumber = (index: number, currentPage?: number, pageSize?: number) => {
+    if (typeof currentPage === 'number' && typeof pageSize === 'number' && currentPage > 0 && pageSize > 0) {
+      return (currentPage - 1) * pageSize + index + 1;
+    }
+
+    return index + 1;
+  };
+
   const handleToggleUser = async (userId: string, isActive: boolean) => {
     setLoading(true);
     try {
@@ -395,6 +403,7 @@ const AdminDashboardPage = () => {
             <table className="min-w-full divide-y divide-border text-sm">
               <thead className="bg-background text-text-secondary">
                 <tr>
+                  <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">No.</th>
                   <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">User</th>
                   <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Role</th>
                   <th className="px-6 py-4 text-left font-medium uppercase tracking-[0.2em]">Status</th>
@@ -403,8 +412,9 @@ const AdminDashboardPage = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {users.map((user) => (
+                {users.map((user, index) => (
                   <tr key={user._id}>
+                    <td className="px-6 py-4 text-muted">{getRowNumber(index)}</td>
                     <td className="px-6 py-4">
                       <div className="font-semibold text-text-primary">{user.displayName}</div>
                       <div className="mt-1 text-muted">{user.email}</div>
